@@ -49,7 +49,7 @@ class host_group_tree(npyscreen.MLTreeMultiSelect):
             # update the group to root 
             self.treedata._children.append(new_grp_treedata)
             npyscreen.notify(name, '添加成功:')
-            time.sleep(1)
+            time.sleep(0.5)
 
     # give selected
     def give_groups(self):

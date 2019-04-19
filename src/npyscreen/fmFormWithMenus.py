@@ -11,6 +11,7 @@ class FormBaseNewWithMenus(fmForm.FormBaseNew, wgNMenuDisplay.HasMenus):
 
     def __init__(self, *args, **keywords):
         super(FormBaseNewWithMenus, self).__init__(*args, **keywords)
+        self.menu_advert_text = ': Menu '
         self.initialize_menus()
     
     def display_menu_advert_at(self):
@@ -18,7 +19,8 @@ class FormBaseNewWithMenus(fmForm.FormBaseNew, wgNMenuDisplay.HasMenus):
     
     def draw_form(self):
         super(FormBaseNewWithMenus, self).draw_form()
-        menu_advert = " " + self.__class__.MENU_KEY + ": Menu"
+        #menu_advert = " " + self.__class__.MENU_KEY + ": Menu"
+        menu_advert = " " + self.__class__.MENU_KEY + self.menu_advert_text
         if isinstance(menu_advert, bytes):
             menu_advert = menu_advert.decode('utf-8', 'replace')
         y, x = self.display_menu_advert_at()
