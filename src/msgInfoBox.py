@@ -1,23 +1,47 @@
 #!/usr/bin/env python
 # coding=utf-8
 import time
+import curses.ascii
 from src import npyscreen
+
+#class tail_MultiLine(npyscreen.Pager):
+class tail_MultiLine(npyscreen.MultiLine):
+    def refresh(self):
+        #self.editing = 1
+        #self._pre_edit()
+        #self._post_edit()
+        #self.h_exit_escape()
+
+        self.start_display_at = len(self.values) - len(self._my_widgets)
+        #self.self.highlight = self.start_display_at - self.height + 3
+        self.cursor_line = self.start_display_at
+        #self.h_show_end()
+        #self.update()
+        #self.display()
+
+        #self.parent.editing = False
+        #self.parent.how_exited = True
+
+        #self.edit()
+        #npyscreen.TEST_SETTINGS['TEST_INPUT'] = ['G', curses.ascii.TAB ]
+        #npyscreen.TEST_SETTINGS['CONTINUE_AFTER_TEST_INPUT'] = True
+        #self.parent.find_next_editable()
 
 #time.asctime( time.localtime(time.time()) )
 def str_timestamp():
     return time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
 
 class InfoBox(npyscreen.BoxTitle):
-    #_contained_widget = 
-    def create(self):
-        #self.buff_messages = 200 * [None]
-        pass
+    _contained_widget = tail_MultiLine
+    #def create(self):
+    #    #self.buff_messages = 200 * [None]
+    #    pass
 
-    def when_value_edited(self):
-        pass
+    #def when_value_edited(self):
+    #    pass
 
-    def when_cursor_moved(self):
-        self.parent.parentApp.queue_event(npyscreen.Event("event_messagebox_change_cursor"))
+    #def when_cursor_moved(self):
+    #    self.parent.parentApp.queue_event(npyscreen.Event("event_messagebox_change_cursor"))
 
     # self.height
     # self.width
@@ -27,31 +51,39 @@ class InfoBox(npyscreen.BoxTitle):
         # single line 
         if isinstance(msgs, str):
             self.values.append(str_timestamp() + ': ' + str(msgs))
+            self.entry_widget.cursor_line += 1
         # multiline 
         elif isinstance(msgs, list):
             if len(msgs) :
                 self.values.append(str_timestamp() + ': ' + str(msgs[0]))
                 for i in msgs[1:]:
                     self.values.append( 19 * ' ' + '  ' + str(i))
+                self.entry_widget.cursor_line += len(msgs)
             else:
                 self.values.append(str_timestamp() + ': 收到消息, 内容为空' + str(msgs))
         else:
             self.values.append(str_timestamp() + ': 收到消息, 格式错误' + str(type(msgs)))
+            self.entry_widget.cursor_line += 1
 
-        # focus on last line 
-        if len(msgs) > self.height - 3:
-            self.entry_widget.start_display_at = len(msgs) - self.entry_widget.start_display_at - (self.height - 3)
+
         
         # try to refresh widget 
-        try:
-            self.entry_widget.cursor_line = len(self.entry_widget._my_widgets) # doesn't work
-            #self.entry_widget.update(clear=True)
+        #try:
             #self.entry_widget.h_cursor_end('G') # doesn't work 
+            #self.entry_widget._resize()
+            #self.entry_widget.on_screen()
 
-            #self.entry_widget.display()
-            #self.parent.display()
-        except:
-            pass 
+            #old_editw = self.parent.editw 
+            #self.parent.editw = 3
+            #self.parent.on_screen()
+            #self.parent.editw = old_editw 
+            #self.parent.on_screen()
+
+        #except:
+        #    pass 
+        self.entry_widget.refresh()
+        self.entry_widget.update()
+        self.display()
 
 
     def update_msgs(self, messages):

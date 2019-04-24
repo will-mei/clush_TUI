@@ -31,7 +31,7 @@ class MainForm(npyscreen.FormBaseNewWithMenus):
     def __init__(self, parentApp, *args, **keywords):
         super(MainForm, self).__init__(*args, **keywords)
         #super().__init__(*args, **keywords)
-        self.menu_advert_text = ': Ctrl + x 打开菜单i, q 退出菜单 '
+        self.menu_advert_text = ': Ctrl + x 打开菜单, q 退出菜单 '
         self.initialize_menus()
 
     
@@ -66,6 +66,7 @@ class MainForm(npyscreen.FormBaseNewWithMenus):
         # import config settings
         config = configparser.ConfigParser()
         # load and parse config 
+        msg_buffer = 5000
 
         # window size
         y, x = self.useable_space()
@@ -79,12 +80,12 @@ class MainForm(npyscreen.FormBaseNewWithMenus):
         self.nextrely = ny
         self.nextrelx = nx + 28
         x_half = int((x - 28) / 2 -5)
-        self.statusInfoBoxObj = self.add(statusInfoBox.statusBox, name="状态", footer='正在运行作业主机数:0', values=['状态临时信息1', '状态临时信息2'], max_height=5, max_width=x_half, scroll_exit=True)
+        self.statusInfoBoxObj = self.add(statusInfoBox.statusBox, name="状态", footer='正在运行作业主机数:0', values=['状态临时信息1', '状态临时信息2', '状态临时信息3'], max_height=5, max_width=x_half, contained_widget_arguments={'maxlen':3}, exit_left=True, exit_right=True, scroll_exit=True, editable=False)
         self.nextrely = ny
         self.nextrelx = nx + 28 + x_half
-        self.statusInfoBoxObj2 = self.add(statusInfoBox.statusBox, name="负载", footer='命令行模式: 本地shell', values=['主机负载1 xx xx xx ', '主机负载2 xx xx xx '], max_height=5, scroll_exit=True)
+        self.statusInfoBoxObj2 = self.add(statusInfoBox.statusBox, name="负载", footer='命令行模式: 本地shell', values=['主机负载1 xx xx xx ', '主机负载2 xx xx xx ', '主机负载3 xx xx xx'], max_height=5, contained_widget_arguments={'maxlen':3}, exit_left=True, exit_right=True, scroll_exit=True, editable=False)
         self.nextrelx = nx + 28
-        self.msgInfoBoxObj = self.add(msgInfoBox.InfoBox, name="滚动消息", max_height=-5, footer=' l 搜索并高亮显示, L 取消高亮显示')
+        self.msgInfoBoxObj = self.add(msgInfoBox.InfoBox, name="滚动消息", max_height=-5, footer=' l 搜索并高亮显示, L 取消高亮显示') #, contained_widget_arguments={'maxlen':msg_buffer})
         self.inputBoxObj = self.add(inputBox.InputBox, name="输入", footer='Tab/鼠标 切换窗口, Alt + Enter 换行', scroll_exit=False)
 
         # 添加部分示例数据到主机列表
@@ -112,6 +113,10 @@ class MainForm(npyscreen.FormBaseNewWithMenus):
             "^T": self.test_func,
         }
         self.add_handlers(new_handlers)
+
+
+    #def while_editing(self,*args, **keywords):
+    #    self.msgInfoBoxObj.display()
 
     # events
     def event_target_select(self, event):
@@ -216,7 +221,8 @@ class MainForm(npyscreen.FormBaseNewWithMenus):
         #    self.msgInfoBoxObj.append_msg(str(i))
         self.msgInfoBoxObj.append_msg(self.inputBoxObj.entry_widget.parent.name)
         self._debug_msg()
-        self.msgInfoBoxObj.display()
+        self.msgInfoBoxObj.append_msg(self._widgets__)
+        #self.msgInfoBoxObj.display()
 
     # update loop
     def while_waiting(self):

@@ -269,7 +269,7 @@ object to be passed to the contained widget."""
         # This will prevent the program crashing if the user has changed values, and the cursor 
         # is now on the bottom line.
     #    try:
-        if self.cursor_line - self.start_display_at < len(self._my_widgets) -1 and len(self._my_widgets):
+        if self.cursor_line - self.start_display_at < len(self._my_widgets) and len(self._my_widgets):
     #            #
             if (self._my_widgets[self.cursor_line - self.start_display_at].task in (MORE_LABEL, "PRINTLINELASTOFSCREEN")):
                 if self.slow_scroll:
