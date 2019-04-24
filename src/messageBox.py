@@ -41,6 +41,7 @@ class MessageBox(npyscreen.BoxTitle):
 
         self.values = data
 
+        # stay at last read 
         if len(messages) > self.height - 3:
             self.entry_widget.start_display_at = len(messages) - self.height + 3
         else:

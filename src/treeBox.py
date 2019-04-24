@@ -29,7 +29,8 @@ class host_group_tree(npyscreen.MLTreeMultiSelect):
     def __init__(self, *args, **keywords):
         super(host_group_tree, self).__init__(*args, **keywords)
         # init a root tree for groups
-        self.treedata = npyscreen.TreeData(content='全部组:', selectable=True, ignore_root=False)
+        #self.treedata = npyscreen.TreeData(content='全部组:', selectable=True, ignore_root=False)
+        self.treedata = TreeData_group(content='全部组:', selectable=True, ignore_root=False)
         self.values = self.treedata
         self.show_v_lines = False
 

@@ -268,12 +268,22 @@ object to be passed to the contained widget."""
 
         # This will prevent the program crashing if the user has changed values, and the cursor 
         # is now on the bottom line.
-        if (self._my_widgets[self.cursor_line - self.start_display_at].task in (MORE_LABEL, "PRINTLINELASTOFSCREEN")):
-            if self.slow_scroll:
-                self.start_display_at += 1
-            else:
-                self.start_display_at = self.cursor_line
-            self.update(clear=clear)
+    #    try:
+        if self.cursor_line - self.start_display_at < len(self._my_widgets) -1 and len(self._my_widgets):
+    #            #
+            if (self._my_widgets[self.cursor_line - self.start_display_at].task in (MORE_LABEL, "PRINTLINELASTOFSCREEN")):
+                if self.slow_scroll:
+                    self.start_display_at += 1
+                else:
+                    self.start_display_at = self.cursor_line
+                self.update(clear=clear)
+    #    except:
+    #        c1 = 'widget   ' + str(self._my_widgets) + '\n'
+    #        c2 = 'len   ' + str(len(self._my_widgets)) + '\n'
+    #        c3 = 'cursor_line   ' + str(self.cursor_line) + '\n'
+    #        c4 = 'self.start_display_at   ' + str(self.start_display_at) + '\n'
+    #        c5 = 'index    ' +  str(self.cursor_line - self.start_display_at) + '\n'
+    #        raise IndexError(c1 + c2 + c3 + c4 + c5)
 
     def _before_print_lines(self):
         # Provide a function for the Tree classes to override.
@@ -458,6 +468,7 @@ object to be passed to the contained widget."""
         if self.allow_filtering:
             self.handlers.update({
                 ord('l'): self.h_set_filter,
+                ord('L'): self.h_clear_filter,
                 ord('L'): self.h_clear_filter,
                 ord('n'): self.move_next_filtered,
                 ord('N'): self.move_previous_filtered,
