@@ -12,12 +12,15 @@ class tail_MultiLine(npyscreen.MultiLine):
         #self._post_edit()
         #self.h_exit_escape()
 
-        self.start_display_at = len(self.values) - len(self._my_widgets)
-        #self.self.highlight = self.start_display_at - self.height + 3
-        self.cursor_line = self.start_display_at
-        #self.h_show_end()
-        #self.update()
-        #self.display()
+        if len(self.values) - len(self._my_widgets) < 0:
+            pass 
+        else:
+            self.start_display_at = len(self.values) - len(self._my_widgets)
+            #self.self.highlight = self.start_display_at - self.height + 3
+            self.cursor_line = self.start_display_at
+            #self.h_show_end()
+            #self.update()
+            #self.display()
 
         #self.parent.editing = False
         #self.parent.how_exited = True
@@ -46,26 +49,49 @@ class InfoBox(npyscreen.BoxTitle):
     # self.height
     # self.width
     # datetime 
+    def stamp_add(self, slice_tx):
+        self.values.append(str_timestamp() + ': ' + str(slice_tx))
+        self.entry_widget.cursor_line += 1
+
+    def slice_add(self, slice_tx):
+        self.values.append( 19 * ' ' + '  ' + str(slice_tx))
+        self.entry_widget.cursor_line += 1
+
+    # add single_line_tx 
+    def add_and_break_line(self, single_line_tx, with_stamp=False):
+        # timestamp ': ' border 
+        w = self.width -26
+        # slice 
+        l_tx = [single_line_tx[i:i + w] for i in range(0, len(single_line_tx), w)]
+
+        if len(single_line_tx) > w:
+            if with_stamp:
+                self.stamp_add(l_tx[0])
+                for i in l_tx[1:]:
+                    self.slice_add(' ' + i)
+            else:
+                for i in l_tx:
+                    self.slice_add(' ' + i)
+        else:
+            if with_stamp:
+                self.stamp_add(single_line_tx)
+            else:
+                self.slice_add(single_line_tx)
 
     def append_msg(self, msgs):
         # single line 
         if isinstance(msgs, str):
-            self.values.append(str_timestamp() + ': ' + str(msgs))
-            self.entry_widget.cursor_line += 1
-        # multiline 
+            self.add_and_break_line(msgs, with_stamp=True)
+            # multiline 
         elif isinstance(msgs, list):
             if len(msgs) :
-                self.values.append(str_timestamp() + ': ' + str(msgs[0]))
+                self.add_and_break_line(str(msgs[0]), with_stamp=True)
                 for i in msgs[1:]:
-                    self.values.append( 19 * ' ' + '  ' + str(i))
-                self.entry_widget.cursor_line += len(msgs)
+                    self.add_and_break_line(i)
             else:
-                self.values.append(str_timestamp() + ': 收到消息, 内容为空' + str(msgs))
+                self.add_and_break_line('收到消息, 内容为空' + str(msgs), with_stamp=True)
         else:
-            self.values.append(str_timestamp() + ': 收到消息, 格式错误' + str(type(msgs)))
-            self.entry_widget.cursor_line += 1
-
-
+            self.add_and_break_line('收到消息, 格式错误' + str(type(msgs)), with_stamp=True)
         
         # try to refresh widget 
         #try:

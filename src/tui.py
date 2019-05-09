@@ -14,7 +14,8 @@ class App(npyscreen.StandardApp):
         self.MainForm = self.addForm("MAIN", MainForm)
         self.HelpForm = self.addForm("HelpForm", HelpForm)
         # new isinstance each time 
-        self.HostGroupForm = self.addFormClass('HostGroupForm', HostGroupForm)
+        #self.HostGroupForm = self.addFormClass('HostGroupForm', HostGroupForm)
+        self.HostGroupForm = self.addForm('HostGroupForm', HostGroupForm)
         #self.SendFileForm = self.addForm("SEND_FILE", SendFileForm, lines=15)
 
 

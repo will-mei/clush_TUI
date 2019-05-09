@@ -50,7 +50,10 @@ class message_sender(npyscreen.MultiLineEdit):
     def h_cancel_input(self, _input):
         if self.value:
             self.value = '# ' + self.value + ' ^C  #取消编辑'
-            self.parent.send_command(_input)
+            #self.parent.send_command(_input)
+            #self.value = str(self.parent)
+            self.parent.msgInfoBoxObj.append_msg(self.value)
+            self.value = ""
 
     #def unset_handler(self, key2del):
     #    try:

@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
 from src.tui import App
 
+import signal
+
 ClusterJobsTUI = App()
+signal.signal(signal.SIGINT, ClusterJobsTUI._cancel_action)
 ClusterJobsTUI.run()
+

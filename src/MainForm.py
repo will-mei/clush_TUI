@@ -9,11 +9,28 @@ from src import treeBox
 from src import msgInfoBox
 from src import statusInfoBox
 from src import inputBox
+from src import bash_cli
+from src import paramiko_tools
 
 # just some example test ip list
 ip_list1 = [ '192.168.100.' + str(x)  for x in range(201, 206)]
 ip_list2 = [ '192.168.100.' + str(x)  for x in range(206, 211)]
-ip_list3 = [ '192.168.100.' + str(x)  for x in range(211, 216)]
+ip_list3 = [ '192.168.59.11' ]
+host_key = '~/.ssh/id_rsa'
+_ssh_info1 = {
+            'prot':     10000,
+            'user':     'secure',
+            'password': None,
+            'timeout':  30,
+            'hostkey':  host_key
+        }
+_ssh_info2 = {
+            'port':     22,
+            'user':     None,
+            'password': None,
+            'timeout':  10,
+            'hostkey': host_key,
+}
 
 class MainForm(npyscreen.FormBaseNewWithMenus):
 
@@ -34,7 +51,6 @@ class MainForm(npyscreen.FormBaseNewWithMenus):
         self.menu_advert_text = ': Ctrl + x 打开菜单, q 退出菜单 '
         self.initialize_menus()
 
-    
     #def draw_form(self):
     #    super(npyscreen.FormBaseNewWithMenus, self).draw_form()
     #    super().draw_form()
@@ -57,9 +73,7 @@ class MainForm(npyscreen.FormBaseNewWithMenus):
             ('添加新的主机组',  self.add_grp,       "^A"),
             ('显示帮助页面',    self.show_help,     "^H"),
             ('切换命令行模式',  self.mode_switch,   "^N"),
-            #('临时debug消息',   self._debug_msg,    "^D"),
-            ('中断任务并退出',  self.confirm_abort, "^I"),
-            ('正常关闭退出',    self.safe_exit,     "^Q")
+            ('正常关闭退出',    self.exit_func,     "^Q")
         ])
         # Events
 
@@ -74,7 +88,7 @@ class MainForm(npyscreen.FormBaseNewWithMenus):
         # create ui form
         ny = self.nextrely
         nx = self.nextrelx
-        self.GroupTreeBoxObj = self.add(treeBox.HostGroupTreeBox, name="主机组", max_width=28, scroll_exit=True) #, value=0, relx=1, max_width=x // 5, rely=2,
+        self.GroupTreeBoxObj = self.add(treeBox.HostGroupTreeBox, name="主机组", max_width=28, scroll_exit=False) #, value=0, relx=1, max_width=x // 5, rely=2,
 
         # top , 28 right 
         self.nextrely = ny
@@ -91,29 +105,32 @@ class MainForm(npyscreen.FormBaseNewWithMenus):
         # 添加部分示例数据到主机列表
         npyscreen.notify('添加示例主机组', title='测试消息')
         time.sleep(0.5)
-        self.GroupTreeBoxObj.add_grp(name='group1', nodes=ip_list1)
-        self.GroupTreeBoxObj.add_grp(name='group2', nodes=ip_list2)
-        self.GroupTreeBoxObj.add_grp(name='group3', nodes=ip_list3)
+        self.GroupTreeBoxObj.add_grp(name='group1', nodes=ip_list1, ssh_info=_ssh_info1)
+        self.GroupTreeBoxObj.add_grp(name='group2', nodes=ip_list2, ssh_info=_ssh_info1)
+        self.GroupTreeBoxObj.add_grp(name='group3', nodes=ip_list3, ssh_info=_ssh_info2)
 
         # init handlers, if no widget handle this, they will be handled here
         new_handlers = {
             # exit
-            #curses.ascii.CAN: self.exit_func, # chaos 
-            curses.ascii.BEL: self.exit_func,
-            #curses.ascii.DLE: self.exit_func, # works fine, but not needed any more 
-            curses.ascii.ESC: self.exit_func,
-            #"^C": self.exit_func, #doesn't work
-            155: self.exit_func,
+            "^Q":               self.exit_func, # doesn't work
+            #"^C":              self.exit_func, # doesn't work
+            #curses.KEY_EXIT:   self.exit_func, # doesn't work
+            #curses.ascii.ESC:  self.exit_func, # doesn't work, cause it was captured by the widgets inside 
+            #curses.ascii.CAN:  self.exit_func, # it's a chaos, so many side affects 
+            #curses.ascii.DLE:  self.exit_func, # works fine, but not needed any more 
+            155:                self.exit_func,
+            curses.ascii.BEL:   self.abort_func, # works and safe
             # send command
-            curses.ascii.CR: self.send_command,
-            curses.ascii.NL: self.send_command,
-            curses.KEY_ENTER : self.send_command,
+            curses.ascii.CR:  self.send_command,
+            curses.ascii.NL:  self.send_command,
+            curses.KEY_ENTER: self.send_command,
+            #
+            "^T":             self.test_func,
             # send file
-            #"^O": self.file_distrbution,
-            "^T": self.test_func,
+            #"^O":             self.file_distrbution,
+            #"^D":             self._debug_msg,
         }
         self.add_handlers(new_handlers)
-
 
     #def while_editing(self,*args, **keywords):
     #    self.msgInfoBoxObj.display()
@@ -122,10 +139,6 @@ class MainForm(npyscreen.FormBaseNewWithMenus):
     def event_target_select(self, event):
         target_hosts = self.chatBoxObj.value
         #client.dialogs[current_user].unread_count = 0
-
-##        self.chatBoxObj.update_chat()
-##        self.messageBoxObj.update_messages(current_user)
-##        client.read_all_messages(current_user)
 
 ##    def event_messagebox_change_cursor(self, event):
 ##        current_user = self.chatBoxObj.value
@@ -145,18 +158,55 @@ class MainForm(npyscreen.FormBaseNewWithMenus):
         self.statusInfoBoxObj2.footer = '命令行模式: ' + self.shell_mode 
         self.msgInfoBoxObj.append_msg('模式切换到:' + self.shell_mode)
 
+    def _test_ssh(self, ssh_info):
+        try:
+            _host_ssh_connection = paramiko_tools.SSHConnection(ssh_info)
+        except:
+            return ssh_info['host']
+
+    def ssh_cmd(self, cmd_list, ssh_info):
+        try:
+            _host_ssh_connection = paramiko_tools.SSHConnection(ssh_info)
+        except:
+            _result = [ ssh_info['host'] + ':' + ' unable to Connection!' ]
+            self.msgInfoBoxObj.append_msg(_result)
+            return ssh_info['host']
+        _result = [ ssh_info['host'] + ':', ]
+        if isinstance(cmd_list, list):
+            for cmd in cmd_list:
+                ret = _host_ssh_connection.exec_command(cmd)
+                _result += ret.split('\n')
+        else:
+            ret = _host_ssh_connection.exec_command(cmd_list)
+            _result += ret.split('\n')
+        self.msgInfoBoxObj.append_msg(_result)
+
+
     #def message_send(self, event):
     def send_command(self, event):
         #current_user = self.chatBoxObj.value
-        message = self.inputBoxObj.value.strip()
+        self.msgInfoBoxObj.append_msg(self.inputBoxObj.value)
+
+        if self.shell_mode == 'local':
+            message = bash_cli.ez_cmd(self.inputBoxObj.value).split('\n')
+        else:
+            _selected_nodes = list(self.GroupTreeBoxObj.get_selected_objects())
+            _offline_hosts  = list(map(lambda x : self.ssh_cmd(self.inputBoxObj.value, x.get_ssh_info()), filter(lambda x : x.marker == 'host', _selected_nodes)))
+            self.msgInfoBoxObj.append_msg('failed: ' + ' '.join(_offline_hosts) )
+            self.inputBoxObj.value = ""
+            message = ""
+            self.inputBoxObj.display()
         if message is not "":
-            #client.message_send(message, current_user)
-            #self.messageBoxObj.update_messages(current_user)
             self.msgInfoBoxObj.append_msg(message)
 
             self.inputBoxObj.value = ""
             self.inputBoxObj.display()
-            self.msgInfoBoxObj.display()
+
+    def update_host_status(self):
+        _selected_nodes = list(self.GroupTreeBoxObj.get_selected_objects())
+        _offline_hosts = list(map(lambda x : self._tset_ssh(x.get_ssh_info()), filter(lambda x : x.marker == 'host', _selected_nodes)))
+        #for host in _offline_hosts: 
+        pass 
 
     def event_update_main_form(self, event):
         self.display()
@@ -164,31 +214,37 @@ class MainForm(npyscreen.FormBaseNewWithMenus):
 
     def _debug_msg(self):
         _selected_nodes = list(self.GroupTreeBoxObj.get_selected_objects())
-
-        _selected_hosts = list(map(lambda x : str(x.get_content()) + ' ' + str(x.get_parent().get_content()), filter(lambda x : x.marker == 'host', _selected_nodes)))
+        _selected_hosts = list(map(lambda x : str(x.get_content()) + ' ' + str(x.get_parent().get_content()) + str(x.get_parent().ssh_info), filter(lambda x : x.marker == 'host', _selected_nodes)))
         self.msgInfoBoxObj.append_msg(_selected_hosts)
 
-        _selected_groups = list(map(lambda x : str(x.get_content()) + ' ' + str(x.ssh_info) , filter(lambda x : x.marker == 'group', _selected_nodes)))
-        self.msgInfoBoxObj.append_msg(_selected_groups)
+        #_selected_groups = list(map(lambda x : str(x.get_content()) + ' ' + str(x.ssh_info) , filter(lambda x : x.marker == 'group', _selected_nodes)))
+        #self.msgInfoBoxObj.append_msg(_selected_groups)
         #self.msgInfoBoxObj.append_msg(list(_selected_nodes))
 
         #_tmp_list = list(map(lambda x : x.marker ,  self.GroupTreeBoxObj.get_selected_objects() ))
         #self.msgInfoBoxObj.append_msg(_tmp_list)
         #npyscreen.notify_confirm(str(_tmp_list), title='debug notification')
 
-
-    def confirm_abort(self):
-        if npyscreen.notify_yes_no('确定要取消任务并退出吗?', title='确认终止:'):
-            # some staff of killing sessions
-            exit(0)
+    def dump_grptree(self):
+        pass
+    def dump_msginfo(self):
+        pass 
 
     def safe_exit(self):
-        if npyscreen.notify_yes_no('确定要退出吗?', title='确认退出:'):
-            # some thing to check before exit 
+        # some thing to check before exit 
+        exit(0)
+        pass
+
+    def abort_func(self, _input):
+        if npyscreen.notify_yes_no('确定要中断现有任务并退出吗?', title='终止退出:'):
+            # some staff of killing sessions
+            self.dump_grptree()
+            self.dump_msginfo()
             exit(0)
 
-    def exit_func(self, _input):
-        self.safe_exit()
+    def exit_func(self, *args):
+        if npyscreen.notify_yes_no('确定要退出吗?', title='确认退出:'):
+            self.safe_exit()
 
     def _cancel_signal(self, *args, **keywords):
         # check wdget on editing
@@ -201,12 +257,6 @@ class MainForm(npyscreen.FormBaseNewWithMenus):
     def add_grp(self):
         self.parentApp.switchForm('HostGroupForm')
 
-    #def send_command(self, _input):
-    #    pass 
-
-    def search_message(self, _input):
-        pass
-
     def file_distrbution(self):
         pass 
 
@@ -214,42 +264,11 @@ class MainForm(npyscreen.FormBaseNewWithMenus):
         pass 
 
     def test_func(self, _input):
-        #l = self.inputBoxObj.handlers
-        #for i,j in l.items():
-        #    self.msgInfoBoxObj.append_msg(str(i) + str(j))
-        #for i in dir(self.inputBoxObj):
-        #    self.msgInfoBoxObj.append_msg(str(i))
+        # check ssh 
         self.msgInfoBoxObj.append_msg(self.inputBoxObj.entry_widget.parent.name)
         self._debug_msg()
-        self.msgInfoBoxObj.append_msg(self._widgets__)
-        #self.msgInfoBoxObj.display()
 
     # update loop
     def while_waiting(self):
         pass 
 
-##        current_user = self.chatBoxObj.value
-##
-##        client.client.sync_updates()
-##        if client.need_update_message:
-##            if client.need_update_current_user == current_user:
-##                self.messageBoxObj.update_messages(current_user)
-##                client.read_all_messages(current_user)
-##                client.dialogs[current_user].unread_count = 0
-##
-##            self.chatBoxObj.update_chat()
-##            client.need_update_message = 0
-##            client.need_update_current_user = -1
-##
-##        if client.need_update_online:
-##            if client.need_update_current_user == current_user:
-##                self.messageBoxObj.update_messages(current_user)
-##            self.chatBoxObj.update_chat()
-##            client.need_update_current_user = -1
-##            client.need_update_online = 0
-##
-##        if client.need_update_read_messages:
-##            if client.need_update_current_user == current_user:
-##                self.messageBoxObj.update_messages(current_user)
-##            client.need_update_current_user = -1
-##            client.need_update_read_messages = 0

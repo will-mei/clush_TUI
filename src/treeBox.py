@@ -17,11 +17,17 @@ class TreeData_host(npyscreen.TreeData):
         super(TreeData_host, self).__init__(*args, **keywords)
         self.marker = 'host'
 
+    def get_ssh_info(self):
+        _host_ssh_info = self.get_parent().ssh_info
+        _host_ssh_info['host'] = self.get_content()
+        return _host_ssh_info 
+
 class TreeData_group(npyscreen.TreeData):
     def __init__(self, *args, **keywords):
         super(TreeData_group, self).__init__(*args, **keywords)
         self.marker = 'group'
-        self.ssh_info = {'user':'root', 'port':'22'}
+        # ssh info dict, to be changed later 
+        self.ssh_info = {}
         self.CHILDCLASS = TreeData_host 
 
 class host_group_tree(npyscreen.MLTreeMultiSelect):
@@ -35,7 +41,7 @@ class host_group_tree(npyscreen.MLTreeMultiSelect):
         self.show_v_lines = False
 
     # add ip to a new tree 
-    def add_grp(self, name='new', nodes=[]):
+    def add_grp(self, name='new', nodes=[], ssh_info={}):
         name = str(name)
         if isinstance(nodes, str):
             nodes = nodes.split()
@@ -45,6 +51,7 @@ class host_group_tree(npyscreen.MLTreeMultiSelect):
             npyscreen.notify_confirm('部分IP地址因格式不合法已经被剔除,\n请检查IP列表格式以确认内容无误!', '添加失败:')
         else:
             new_grp_treedata =  TreeData_group(content=name, selectable=True, ignore_root=False)
+            new_grp_treedata.ssh_info = ssh_info
             for ip in _valid_ip :
                 new_grp_treedata.new_child(content=ip, selectable=True, selected=False)
             # update the group to root 
@@ -75,12 +82,19 @@ if __name__ == "__main__":
     ip_list2 = [ '192.168.1.' + str(x)  for x in range(205, 214)]
     ip_list3 = [ '192.168.1.' + str(x)  for x in range(215, 235)]
 
+    ssh_info1 = {
+                 'port'    :22,
+                 'user'    :None,
+                 'password':None,
+                 'timeout' :10,
+                 'hostkey' :None
+                }
     class treeForm(npyscreen.FormBaseNewWithMenus):
         def create(self):
             self.t1 = self.add(HostGroupTreeBox, name='host groups', footer='f1', max_width=25)
-            self.t1.add_grp(name='group1', nodes=ip_list1)
-            self.t1.add_grp(name='group2', nodes=ip_list2)
-            self.t1.add_grp(name='group3', nodes=ip_list3)
+            self.t1.add_grp(name='group1', nodes=ip_list1, ssh_info=ssh_info1)
+            self.t1.add_grp(name='group2', nodes=ip_list2, ssh_info=ssh_info1)
+            self.t1.add_grp(name='group3', nodes=ip_list3, ssh_info=ssh_info1)
             #
             self.menu = self.new_menu(name='menus for host groups:')
 
