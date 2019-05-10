@@ -71,6 +71,7 @@ class MainForm(npyscreen.FormBaseNewWithMenus):
         self.main_menu = self.new_menu(name='主菜单:')
         self.main_menu.addItemsFromList([
             ('添加新的主机组',  self.add_grp,       "^A"),
+            ('配置部署ceph集群',self.deploy_ceph,   "^D"),
             ('显示帮助页面',    self.show_help,     "^H"),
             ('切换命令行模式',  self.mode_switch,   "^N"),
             ('正常关闭退出',    self.exit_func,     "^Q")
@@ -168,7 +169,7 @@ class MainForm(npyscreen.FormBaseNewWithMenus):
         try:
             _host_ssh_connection = paramiko_tools.SSHConnection(ssh_info)
         except:
-            _result = [ ssh_info['host'] + ':' + ' unable to Connection!' ]
+            _result = [ ssh_info['host'] + ':' + ' unable to init Connection!' ]
             self.msgInfoBoxObj.append_msg(_result)
             return ssh_info['host']
         _result = [ ssh_info['host'] + ':', ]
@@ -191,8 +192,19 @@ class MainForm(npyscreen.FormBaseNewWithMenus):
             message = bash_cli.ez_cmd(self.inputBoxObj.value).split('\n')
         else:
             _selected_nodes = list(self.GroupTreeBoxObj.get_selected_objects())
-            _offline_hosts  = list(map(lambda x : self.ssh_cmd(self.inputBoxObj.value, x.get_ssh_info()), filter(lambda x : x.marker == 'host', _selected_nodes)))
-            self.msgInfoBoxObj.append_msg('failed: ' + ' '.join(_offline_hosts) )
+            _offline_hosts  = list(
+                filter(
+                    lambda x: x != None,
+                    map(
+                        lambda x : self.ssh_cmd(self.inputBoxObj.value, x.get_ssh_info()),
+                        filter(lambda x : x.marker == 'host',
+                               _selected_nodes
+                              )
+                    )
+                ) 
+            )
+            if len(_offline_hosts): #>0
+                self.msgInfoBoxObj.append_msg('failed: ' + str(_offline_hosts) )
             self.inputBoxObj.value = ""
             message = ""
             self.inputBoxObj.display()
@@ -213,8 +225,14 @@ class MainForm(npyscreen.FormBaseNewWithMenus):
         self.msgInfoBoxObj.display()
 
     def _debug_msg(self):
-        _selected_nodes = list(self.GroupTreeBoxObj.get_selected_objects())
-        _selected_hosts = list(map(lambda x : str(x.get_content()) + ' ' + str(x.get_parent().get_content()) + str(x.get_parent().ssh_info), filter(lambda x : x.marker == 'host', _selected_nodes)))
+        #_selected_nodes = list(self.GroupTreeBoxObj.get_selected_objects())
+        #_selected_hosts = list(map(lambda x : str(x.get_content()) + ' ' + str(x.get_parent().get_content()) + str(x.get_parent().ssh_info), filter(lambda x : x.marker == 'host', _selected_nodes)))
+        _selected_hosts = list(
+            map(
+                lambda x : str(x.get_content()) + ' ' + str(x.get_parent().get_content()) + str(x.get_parent().ssh_info),
+                self.GroupTreeBoxObj.get_selected_objects(node_type='host')
+            )
+        )
         self.msgInfoBoxObj.append_msg(_selected_hosts)
 
         #_selected_groups = list(map(lambda x : str(x.get_content()) + ' ' + str(x.ssh_info) , filter(lambda x : x.marker == 'group', _selected_nodes)))
@@ -256,6 +274,9 @@ class MainForm(npyscreen.FormBaseNewWithMenus):
 
     def add_grp(self):
         self.parentApp.switchForm('HostGroupForm')
+
+    def deploy_ceph(self):
+        self.parentApp.switchForm('CephDeplyForm')
 
     def file_distrbution(self):
         pass 

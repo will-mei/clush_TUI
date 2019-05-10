@@ -1,6 +1,7 @@
 #!/usr/bin/python
 from . import wgwidget    as widget
 from . import npysGlobalOptions as GlobalOptions
+from . import char_width_tools
 import locale
 import sys
 import curses
@@ -126,7 +127,8 @@ class MultiLineEdit(widget.Widget):
                     break
                 if place_in_string >= len(line_to_display):
                     break
-                width_of_char_to_print = 1 # self.find_width_of_char(string_to_print[place_in_string])
+                #width_of_char_to_print = 1 # self.find_width_of_char(string_to_print[place_in_string])
+                width_of_char_to_print = char_width_tools.get_char_width(line_to_display[place_in_string])
                                            # change this when actually have a function to do this
                 if column - 1 + width_of_char_to_print > display_width:
                     break
@@ -349,18 +351,29 @@ class MultiLineEdit(widget.Widget):
         self.cursor_position += 1
 
     def h_cursor_left(self, input):
-        if self.cursor_position > 0: 
-            self.cursor_position -= 1
+        #if self.cursor_position > 0: 
+        #    self.cursor_position -= 1
+        # calculate width for current char and move. 
+        try:
+            _step = char_width_tools.get_width_of_char(self.value[self.cursor_position -1])
+        except:
+            _step = 1
+        self.cursor_position -= _step
         
 
     def h_cursor_right(self, input):
-        self.cursor_position += 1
+        #self.cursor_position += 1
+        try:
+            _step = char_width_tools.get_width_of_char(self.value[self.cursor_position +1])
+        except:
+            _step = 1
+        self.cursor_position += _step
 
     def h_delete_left(self, input):
         if self.editable and self.cursor_position > 0:
             self.value = self.value[:self.cursor_position-1] + self.value[self.cursor_position:]
         
-        self.cursor_position -= 1
+        self.cursor_position -= char_width_tools.get_width_of_char(self.value[self.cursor_position-1])
 
     def h_delete_right(self, input):
         if self.editable:

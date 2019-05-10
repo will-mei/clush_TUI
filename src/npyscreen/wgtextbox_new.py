@@ -18,6 +18,7 @@ class TextfieldBase(widget.Widget):
         invert_highlight_color=True,
         **keywords):
 
+        # need to be rewrite 
         self.char_dic_of_cursor = {0:0}
         self.multiline_text = False 
         try:
@@ -556,14 +557,22 @@ class Textfield(TextfieldBase):
 
     def h_cursor_left(self, input):
         # calculate width for current char and move right. 
-        _step = char_width_tools.get_width_of_char(self.get_value_char_under_cursor())
+        #_step = char_width_tools.get_width_of_char(self.get_value_char_under_cursor())
+        try:
+            _step = char_width_tools.get_width_of_char(self.value[self.cursor_position -1])
+        except:
+            _step = 1
 
         #self.cursor_position -= 1
         self.cursor_position -= _step
 
     def h_cursor_right(self, input):
         # calculate width for current char and move right. 
-        _step = char_width_tools.get_width_of_char(self.get_value_char_under_cursor())
+        #_step = char_width_tools.get_width_of_char(self.get_value_char_under_cursor())
+        try:
+            _step = char_width_tools.get_width_of_char(self.value[self.cursor_position +1])
+        except:
+            _step = 1
 
         #self.cursor_position += 1
         self.cursor_position += _step
@@ -617,7 +626,11 @@ class FixedText(TextfieldBase):
     
     def h_cursor_left(self, input):
         # calculate width for current char and move right. 
-        _step = char_width_tools.get_width_of_char(self.get_value_char_under_cursor())
+        #_step = char_width_tools.get_width_of_char(self.get_value_char_under_cursor())
+        try:
+            _step = char_width_tools.get_width_of_char(self.value[self.cursor_position -1])
+        except:
+            _step = 1
 
         if self.begin_at > 0:
         #    self.begin_at -= 1
@@ -625,7 +638,11 @@ class FixedText(TextfieldBase):
 
     def h_cursor_right(self, input):
         # calculate width for current char and move right. 
-        _step = char_width_tools.get_width_of_char(self.get_value_char_under_cursor())
+        #_step = char_width_tools.get_width_of_char(self.get_value_char_under_cursor())
+        try:
+            _step = char_width_tools.get_width_of_char(self.value[self.cursor_position +1])
+        except:
+            _step = 1
 
         #if len(self.value) - self.begin_at > self.maximum_content_width:
         #    self.begin_at += 1

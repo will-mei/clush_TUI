@@ -74,10 +74,10 @@ class HostGroupForm(npyscreen.ActionFormV2):
         self.conTimeout.value = 10
         self.nextrely += 1
         # recover x
-        self.grp_name = self.add(npyscreen.TitleText, begin_entry_at=15, name='主机组名称:')
-        self.grp_user = self.add(npyscreen.TitleText, begin_entry_at=15, name='ssh 用户:')
-        self.grp_port = self.add(npyscreen.TitleText, begin_entry_at=15, name='ssh 端口:')
-        self.grp_pswd = self.add(npyscreen.TitleText, begin_entry_at=18, name='ssh口令(可选):')
+        self.grp_name = self.add(npyscreen.TitleText, begin_entry_at=18, name='组名称 (必填):')
+        self.grp_user = self.add(npyscreen.TitleText, begin_entry_at=18, name='ssh 用户:')
+        self.grp_port = self.add(npyscreen.TitleText, begin_entry_at=18, name='ssh 端口(必填):')
+        self.grp_pswd = self.add(npyscreen.TitleText, begin_entry_at=18, name='ssh 口令:')
         self.nextrely += 1
         # record y
         self.nextrelx += -30

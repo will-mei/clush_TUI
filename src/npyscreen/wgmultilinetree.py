@@ -80,7 +80,7 @@ class TreeLine(textbox.TextfieldBase):
                                 self.parent.curses_pad.addch(self.rely, real_x, ' ', curses.A_NORMAL)
                                 
                         real_x +=1
-                        self.parent.curses_pad.addch(self.rely, real_x, ord(' '), curses.A_NORMAL)
+                        self.parent.curses_pad.addch(self.rely, real_x, ord('0'), curses.A_NORMAL)
                         real_x +=1
                     
                     

@@ -73,8 +73,12 @@ class HostGroupTreeBox(npyscreen.BoxTitle):
     def add_grp(self, *args, **keywords):
         self.entry_widget.add_grp(*args, **keywords)
 
-    def get_selected_objects(self, *args, **keywords):
-        return self.entry_widget.get_selected_objects(*args, **keywords)
+    def get_selected_objects(self, node_type=None, *args, **keywords):
+        if node_type: 
+            return filter(lambda x : x.marker == node_type, self.entry_widget.get_selected_objects(*args, **keywords))
+        else:
+            return self.entry_widget.get_selected_objects(*args, **keywords)
+
 
 if __name__ == "__main__":
 

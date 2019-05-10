@@ -2,6 +2,7 @@ from src import npyscreen
 from src.MainForm import MainForm
 from src.HelpForm import HelpForm
 from src.HostGroupForm import HostGroupForm
+from src.CephDeplyForm import CephDeplyForm
 
 #import signal
 import curses
@@ -16,6 +17,7 @@ class App(npyscreen.StandardApp):
         # new isinstance each time 
         #self.HostGroupForm = self.addFormClass('HostGroupForm', HostGroupForm)
         self.HostGroupForm = self.addForm('HostGroupForm', HostGroupForm)
+        self.CephDeplyForm = self.addForm('CephDeplyForm', CephDeplyForm)
         #self.SendFileForm = self.addForm("SEND_FILE", SendFileForm, lines=15)
 
 
