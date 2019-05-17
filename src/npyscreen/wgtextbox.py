@@ -99,9 +99,20 @@ class TextfieldBase(widget.Widget):
                     # use a unicode version of self.value to work out where the cursor is.
                     # not always accurate, but better than the bytes
                     value_to_use_for_calculations = self.display_value(self.value).decode(self.encoding, 'replace')
-                    _str_with = char_width_tools.get_str_width(value_to_use_for_calculations)
+                    #try:
+                    #    value_to_use_for_calculations = char_width_tools.get_printable(self.value)
+                    #except:
+                    #    raise TypeError(str(self.value))
+                    try:
+                        _str_with = char_width_tools.get_str_width(value_to_use_for_calculations)
+                    except:
+                        raise TypeError(str(value_to_use_for_calculations))
                 else:
-                    _str_with = len(value_to_use_for_calculations)
+                    #try:
+                    #    _str_with = char_width_tools.get_str_width(value_to_use_for_calculations)
+                    #except:
+                    #    raise TypeError(str(value_to_use_for_calculations))
+                    _str_with = value_to_use_for_calculations
             else:
                 _str_with = 0
             if cursor:
@@ -505,13 +516,13 @@ class Textfield(TextfieldBase):
                         ))
 
     def t_input_isprint(self, inp):
-        if self._last_get_ch_was_unicode and inp not in '\n\t\r':
-            return True
-        if curses.ascii.isprint(inp) and \
-        (chr(inp) not in '\n\t\r'): 
-            return True
-        else: 
-            return False
+        #if self._last_get_ch_was_unicode and inp not in [ x for x in '\n\t\r']:
+        #    return True
+        #if curses.ascii.isprint(inp) and (chr(inp) not in '\n\t\r'): 
+        #    return True
+        #else: 
+        #    return False
+        return char_width_tools.printable_input(inp)
         
         
     def h_addch(self, inp):
@@ -526,15 +537,14 @@ class Textfield(TextfieldBase):
                 ch_adding = inp
                 self.value = self.value.decode()
             elif self._last_get_ch_was_unicode == True:
-                ch_adding = inp
+                ch_adding = str(inp)
             else:
                 try:
                     ch_adding = chr(inp)
                 except TypeError:
                     ch_adding = input
             #self.value = self.value[:self.cursor_position] + wide_str(ch_adding) \
-            self.value = self.value[:self.cursor_position] + ch_adding \
-                + self.value[self.cursor_position:]
+            self.value = self.value[:self.cursor_position] + ch_adding + self.value[self.cursor_position:]
             self.cursor_position += char_width_tools.get_str_width(ch_adding)
 
         #    # add line break 

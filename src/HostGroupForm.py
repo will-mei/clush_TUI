@@ -182,11 +182,11 @@ class HostGroupForm(npyscreen.ActionFormV2):
         else:
             _nodes_to_add = self.ip_list.values 
 
-        if len(self.grp_user.value.strip()) == 0:
+        if not self.grp_user.value or len(self.grp_user.value.strip()) == 0:
             self.grp_user.value = None
-        if len(self.grp_pswd.value.strip()) == 0:
+        if not self.grp_pswd.value or len(self.grp_pswd.value.strip()) == 0:
             self.grp_pswd.value = None
-        if len(self.grp_key.value.strip()) == 0:
+        if not self.grp_key.value or len(self.grp_key.value.strip()) == 0:
             self.grp_key.value = None 
 
         _port_str = self.grp_port.value.strip()

@@ -3,6 +3,7 @@
 
 # python3 by default 
 
+# (lessthan, width)
 widths = [
   (126,  1), (159,  0), (687,   1), (710,  0), (711,  1),
   (727,  0), (733,  1), (879,   0), (1154, 1), (1161, 0),
@@ -33,6 +34,8 @@ def get_char_width(ch):
     return get_width(ord(_u_char))
     
 def get_str_width(tx):
+    if not isinstance(tx, str):
+        raise TypeError(str(tx) + "is not a str type")
     try:
         return sum(map(lambda x : get_width(ord(x)), tx))
     except:
@@ -43,6 +46,19 @@ def printable_char(ch):
         return False
     else:
         return True
+
+# input : unicode_index 
+def printable_input(inp):
+    global widths
+    if inp == 0xe or inp == 0xf:
+        return False
+    for num, wid in widths:
+        if inp <= num:
+            if wid == 0:
+                return False
+            else:
+                return True 
+    return False
 
 def get_printable(tx):
     return ''.join(filter(printable_char, tx))

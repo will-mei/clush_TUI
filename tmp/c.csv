@@ -1,0 +1,137 @@
+cpu_report :
+ socket , product_verdor , l1_cache , l2_cache , l3_cach3 , cores , threads 
+ CPU01 , Intel(R) Xeon(R) Gold 5118 CPU @ 2.30GHz , 768KiB , 12MiB , 16MiB , 12 , 24 
+ CPU02 , Intel(R) Xeon(R) Gold 5118 CPU @ 2.30GHz , 768KiB , 12MiB , 16MiB , 12 , 24 
+mem_report :
+ size , speed , slot , channel , vendor , product_version 
+ 32GB , 2666MT/s , DIMM000 , _Node0_Channel0_Dimm0 , Hynix , HMA84GR7AFR4N-VK 
+ 32GB , 2666MT/s , DIMM010 , _Node0_Channel1_Dimm0 , Hynix , HMA84GR7AFR4N-VK 
+ 32GB , 2666MT/s , DIMM020 , _Node0_Channel2_Dimm0 , Hynix , HMA84GR7AFR4N-VK 
+ 32GB , 2666MT/s , DIMM100 , _Node1_Channel0_Dimm0 , Hynix , HMA84GR7AFR4N-VK 
+ 32GB , 2666MT/s , DIMM110 , _Node1_Channel1_Dimm0 , Hynix , HMA84GR7AFR4N-VK 
+ 32GB , 2666MT/s , DIMM120 , _Node1_Channel2_Dimm0 , Hynix , HMA84GR7AFR4N-VK 
+nic_report :
+ ID , numa_node , interrupt_node , vendor , product_version 
+ eno3 , 0 , 0 , Intel Corporation , Ethernet Connection X722 for 1GbE 
+ eno4 , 0 , 0 , Intel Corporation , Ethernet Connection X722 for 1GbE 
+ ens3f0 , 0 , 0 , Intel Corporation , I350 Gigabit Network Connection 
+ ens3f1 , 0 , 0 , Intel Corporation , I350 Gigabit Network Connection 
+hdd_report :
+ device , type , rotabale , size , product_version 
+ sda , disk , 0 , 894.3G , SAMSUNG MZ7LH960 
+ sdb , disk , 0 , 894.3G , SAMSUNG MZ7LH960 
+ sdc , disk , 1 , 5.5T , ST6000NM0115-1YZ 
+ sdd , disk , 1 , 5.5T , ST6000NM0115-1YZ 
+ sde , disk , 1 , 5.5T , ST6000NM0115-1YZ 
+ sdf , disk , 1 , 5.5T , ST6000NM0115-1YZ 
+ sdg , disk , 1 , 5.5T , ST6000NM0115-1YZ 
+ sdh , disk , 1 , 5.5T , ST6000NM0115-1YZ 
+ sdi , disk , 1 , 5.5T , ST6000NM0115-1YZ 
+ sdj , disk , 1 , 5.5T , ST6000NM0115-1YZ 
+ sdk , disk , 1 , 5.5T , ST6000NM0115-1YZ 
+ sdl , disk , 1 , 5.5T , ST6000NM0115-1YZ 
+ sdm , disk , 1 , 5.5T , ST6000NM0115-1YZ 
+ sdn , disk , 1 , 5.5T , ST6000NM0115-1YZ 
+ nvme0n1 , disk , 0 , 1.5T , HWE56P431T6M002N 
+ nvme1n1 , disk , 0 , 1.5T , HWE56P431T6M002N 
+nvme_report :
+ device , product_version , size , vendor , life , numa_node , interrupt_node 
+ /dev/nvme0n1 , HWE56P431T6M002N , 1.60 TB , Non-Volatile memory controller: Huawei Technologies Co. Ltd. Device 0x3714 , 0% , 0 , 0 
+ /dev/nvme1n1 , HWE56P431T6M002N , 1.60 TB , Non-Volatile memory controller: Huawei Technologies Co. Ltd. Device 0x3714 , 0% , 1 , 0 
+raid_report :
+ logical_name , product_version , vendor , discription 
+ scsi0 , MegaRAIDTri-ModeSAS3508 , LSILogic/SymbiosLogic , SerialAttachedSCSIcontroller 
+
+
+ 3 host returned as No. 2
+11.107.4.36 11.107.4.35 11.107.4.39
+cpu_report :
+ socket , product_verdor , l1_cache , l2_cache , l3_cach3 , cores , threads 
+ CPU01 , Intel(R) Xeon(R) Gold 5118 CPU @ 2.30GHz , 768KiB , 12MiB , 16MiB , 12 , 24 
+ CPU02 , Intel(R) Xeon(R) Gold 5118 CPU @ 2.30GHz , 768KiB , 12MiB , 16MiB , 12 , 24 
+mem_report :
+ size , speed , slot , channel , vendor , product_version 
+ 32GB , 2666MT/s , DIMM000 , _Node0_Channel0_Dimm0 , Hynix , HMA84GR7AFR4N-VK 
+ 32GB , 2666MT/s , DIMM010 , _Node0_Channel1_Dimm0 , Hynix , HMA84GR7AFR4N-VK 
+ 32GB , 2666MT/s , DIMM020 , _Node0_Channel2_Dimm0 , Hynix , HMA84GR7AFR4N-VK 
+ 32GB , 2666MT/s , DIMM100 , _Node1_Channel0_Dimm0 , Hynix , HMA84GR7AFR4N-VK 
+ 32GB , 2666MT/s , DIMM110 , _Node1_Channel1_Dimm0 , Hynix , HMA84GR7AFR4N-VK 
+ 32GB , 2666MT/s , DIMM120 , _Node1_Channel2_Dimm0 , Hynix , HMA84GR7AFR4N-VK 
+nic_report :
+ ID , numa_node , interrupt_node , vendor , product_version 
+ eno3 , 0 , 0 , Intel Corporation , Ethernet Connection X722 for 1GbE 
+ eno4 , 0 , 0 , Intel Corporation , Ethernet Connection X722 for 1GbE 
+ ens3f0 , 0 , 0 , Intel Corporation , I350 Gigabit Network Connection 
+ ens3f1 , 0 , 0 , Intel Corporation , I350 Gigabit Network Connection 
+hdd_report :
+ device , type , rotabale , size , product_version 
+ sda , disk , 0 , 894.3G , SAMSUNG MZ7LH960 
+ sdb , disk , 0 , 894.3G , SAMSUNG MZ7LH960 
+ sdc , disk , 1 , 5.5T , HUS726060ALE610 
+ sdd , disk , 1 , 5.5T , HUS726060ALE610 
+ sde , disk , 1 , 5.5T , HUS726060ALE610 
+ sdf , disk , 1 , 5.5T , HUS726060ALE610 
+ sdg , disk , 1 , 5.5T , HUS726060ALE610 
+ sdh , disk , 1 , 5.5T , HUS726060ALE610 
+ sdi , disk , 1 , 5.5T , HUS726060ALE610 
+ sdj , disk , 1 , 5.5T , HUS726060ALE610 
+ sdk , disk , 1 , 5.5T , HUS726060ALE610 
+ sdl , disk , 1 , 5.5T , HUS726060ALE610 
+ sdm , disk , 1 , 5.5T , HUS726060ALE610 
+ sdn , disk , 1 , 5.5T , HUS726060ALE610 
+ nvme0n1 , disk , 0 , 1.5T , HWE56P431T6M002N 
+ nvme1n1 , disk , 0 , 1.5T , HWE56P431T6M002N 
+nvme_report :
+ device , product_version , size , vendor , life , numa_node , interrupt_node 
+ /dev/nvme0n1 , HWE56P431T6M002N , 1.60 TB , Non-Volatile memory controller: Huawei Technologies Co. Ltd. Device 0x3714 , 0% , 0 , 0 
+ /dev/nvme1n1 , HWE56P431T6M002N , 1.60 TB , Non-Volatile memory controller: Huawei Technologies Co. Ltd. Device 0x3714 , 0% , 1 , 0 
+raid_report :
+ logical_name , product_version , vendor , discription 
+ scsi0 , MegaRAIDTri-ModeSAS3508 , LSILogic/SymbiosLogic , SerialAttachedSCSIcontroller 
+
+
+ 3 host returned as No. 3
+11.107.4.37 11.107.4.40 11.107.4.41
+cpu_report :
+ socket , product_verdor , l1_cache , l2_cache , l3_cach3 , cores , threads 
+ CPU01 , Intel(R) Xeon(R) Gold 5118 CPU @ 2.30GHz , 768KiB , 12MiB , 16MiB , 12 , 24 
+ CPU02 , Intel(R) Xeon(R) Gold 5118 CPU @ 2.30GHz , 768KiB , 12MiB , 16MiB , 12 , 24 
+mem_report :
+ size , speed , slot , channel , vendor , product_version 
+ 32GB , 2666MT/s , DIMM000 , _Node0_Channel0_Dimm0 , Hynix , HMA84GR7AFR4N-VK 
+ 32GB , 2666MT/s , DIMM010 , _Node0_Channel1_Dimm0 , Hynix , HMA84GR7AFR4N-VK 
+ 32GB , 2666MT/s , DIMM020 , _Node0_Channel2_Dimm0 , Hynix , HMA84GR7AFR4N-VK 
+ 32GB , 2666MT/s , DIMM100 , _Node1_Channel0_Dimm0 , Hynix , HMA84GR7AFR4N-VK 
+ 32GB , 2666MT/s , DIMM110 , _Node1_Channel1_Dimm0 , Hynix , HMA84GR7AFR4N-VK 
+ 32GB , 2666MT/s , DIMM120 , _Node1_Channel2_Dimm0 , Hynix , HMA84GR7AFR4N-VK 
+nic_report :
+ ID , numa_node , interrupt_node , vendor , product_version 
+ eno3 , 0 , 0 , Intel Corporation , Ethernet Connection X722 for 1GbE 
+ eno4 , 0 , 0 , Intel Corporation , Ethernet Connection X722 for 1GbE 
+ ens3f0 , 0 , 0 , Intel Corporation , I350 Gigabit Network Connection 
+ ens3f1 , 0 , 0 , Intel Corporation , I350 Gigabit Network Connection 
+hdd_report :
+ device , type , rotabale , size , product_version 
+ sda , disk , 0 , 894.3G , SAMSUNG MZ7LH960 
+ sdb , disk , 0 , 894.3G , SAMSUNG MZ7LH960 
+ sdc , disk , 1 , 5.5T , ST6000NM0115-1YZ 
+ sdd , disk , 1 , 5.5T , ST6000NM0115-1YZ 
+ sde , disk , 1 , 5.5T , ST6000NM0115-1YZ 
+ sdf , disk , 1 , 5.5T , ST6000NM0115-1YZ 
+ sdg , disk , 1 , 5.5T , ST6000NM0115-1YZ 
+ sdh , disk , 1 , 5.5T , ST6000NM0115-1YZ 
+ sdi , disk , 1 , 5.5T , ST6000NM0115-1YZ 
+ sdj , disk , 1 , 5.5T , ST6000NM0115-1YZ 
+ sdk , disk , 1 , 5.5T , ST6000NM0115-1YZ 
+ sdl , disk , 1 , 5.5T , ST6000NM0115-1YZ 
+ sdm , disk , 1 , 5.5T , ST6000NM0115-1YZ 
+ sdn , disk , 1 , 5.5T , ST6000NM0115-1YZ 
+ nvme0n1 , disk , 0 , 1.5T , HWE56P431T6M002N 
+ nvme1n1 , disk , 0 , 1.5T , HWE56P431T6M002N 
+nvme_report :
+ device , product_version , size , vendor , life , numa_node , interrupt_node 
+ /dev/nvme0n1 , HWE56P431T6M002N , 1.60 TB , Non-Volatile memory controller: Huawei Technologies Co. Ltd. Device 0x3714 , 0% , 0 , 0 
+ /dev/nvme1n1 , HWE56P431T6M002N , 1.60 TB , Non-Volatile memory controller: Huawei Technologies Co. Ltd. Device 0x3714 , 0% , 1 , 0 
+raid_report :
+ logical_name , product_version , vendor , discription 
+ scsi0 , MegaRAIDTri-ModeSAS3508 , LSILogic/SymbiosLogic , RAIDbuscontroller 

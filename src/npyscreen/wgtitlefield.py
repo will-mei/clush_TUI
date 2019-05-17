@@ -84,27 +84,32 @@ class TitleText(widget.Widget):
         self.recalculate_size()
         
     def make_contained_widgets(self):
-        self.label_widget = textbox.Textfield(self.parent, relx=self.relx, rely=self.rely, width=char_width_tools.get_str_width(self.name)+1, value=self.name, color=self.labelColor)
+        # make title text 
+        title_width = char_width_tools.get_str_width(self.name)
+        self.label_widget = textbox.Textfield(self.parent, relx=self.relx, rely=self.rely, width=title_width+1, value=self.name, color=self.labelColor)
         if self.label_widget.on_last_line and self.use_two_lines:
             # we're in trouble here.
-            #if len(self.name) > 12: 
-            if width -1  > 12: 
-                ab_label = 12
-            else: 
-                ab_label = width -1
+            #if len(self.name) > 12:   # why 12 ???
+        #    if width -1  > 12: 
+        #        title_width = 12
+        #    else: 
+        #        title_width = width -1
+            # can not have two line, so not 
             self.use_two_lines = False
-            self.label_widget = textbox.Textfield(self.parent, relx=self.relx, rely=self.rely, width=ab_label+1, value=self.name)
+        # no need to do this  
+        #    self.label_widget = textbox.Textfield(self.parent, relx=self.relx, rely=self.rely, width=title_width+1, value=self.name)
             if self.allow_override_begin_entry_at:
-                self.text_field_begin_at = ab_label + 1
+                self.text_field_begin_at = title_width + 1
         if self.use_two_lines: 
             self._contained_rely_offset = 1
         else: 
             self._contained_rely_offset = 0
                 
         self.entry_widget = self.__class__._entry_type(self.parent, 
-                                relx=(self.relx + self.text_field_begin_at), 
-                                rely=(self.rely+self._contained_rely_offset), value = self.value,
-                                **self._passon)
+                                                       relx=(self.relx + self.text_field_begin_at), 
+                                                       rely=(self.rely + self._contained_rely_offset),
+                                                       value = self.value,
+                                                       **self._passon)
         self.entry_widget.parent_widget = weakref.proxy(self)
         self.recalculate_size()
         

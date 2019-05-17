@@ -70,11 +70,15 @@ class MainForm(npyscreen.FormBaseNewWithMenus):
         # menus 
         self.main_menu = self.new_menu(name='主菜单:')
         self.main_menu.addItemsFromList([
-            ('添加新的主机组',  self.add_grp,       "^A"),
-            ('配置部署ceph集群',self.deploy_ceph,   "^D"),
-            ('显示帮助页面',    self.show_help,     "^H"),
+            ('添加 新的主机组', self.add_grp,       "^A"),
+            ('预配置 ceph集群', self.deploy_ceph,   "^D"),
+            ('销毁重置 ceph集群(不可用)',   self.show_help,     "^H"),
+            ('预部署 ceph集群(不可用)', self.deploy_ceph,   "^H"),
+            ('部署 ceph集群(不可用)',   self.deploy_ceph,   "^H"),
+            ('配置 迭代测试(不可用)',   self.show_help,     "^H"),
             ('切换命令行模式',  self.mode_switch,   "^N"),
-            ('正常关闭退出',    self.exit_func,     "^Q")
+            ('帮助',            self.show_help,     "^H"),
+            ('退出',            self.exit_func,     "^Q"),
         ])
         # Events
 
@@ -95,10 +99,23 @@ class MainForm(npyscreen.FormBaseNewWithMenus):
         self.nextrely = ny
         self.nextrelx = nx + 28
         x_half = int((x - 28) / 2 -5)
-        self.statusInfoBoxObj = self.add(statusInfoBox.statusBox, name="状态", footer='正在运行作业主机数:0', values=['状态临时信息1', '状态临时信息2', '状态临时信息3'], max_height=5, max_width=x_half, contained_widget_arguments={'maxlen':3}, exit_left=True, exit_right=True, scroll_exit=True, editable=False)
+        self.statusInfoBoxObj = self.add(statusInfoBox.statusBox,
+                                         name="当前测试负载压力",
+                                         footer='正在运行作业主机数:0',
+                                         values=['测试负载 iops: 0000', '测试负载 吞吐: 0000(Mib/s)', '测试负载 延迟: 00.00(ms)'],
+                                         max_height=5,
+                                         max_width=x_half,
+                                         contained_widget_arguments={'maxlen':3},
+                                         exit_left=True, exit_right=True, scroll_exit=True, editable=False)
         self.nextrely = ny
         self.nextrelx = nx + 28 + x_half
-        self.statusInfoBoxObj2 = self.add(statusInfoBox.statusBox, name="负载", footer='命令行模式: 本地shell', values=['主机负载1 xx xx xx ', '主机负载2 xx xx xx ', '主机负载3 xx xx xx'], max_height=5, contained_widget_arguments={'maxlen':3}, exit_left=True, exit_right=True, scroll_exit=True, editable=False)
+        self.statusInfoBoxObj2 = self.add(statusInfoBox.statusBox,
+                                          name="状态",
+                                          footer='命令行模式: 本地shell',
+                                          values=['选中主机组: 0/0', '选中节点数: 0/0', '在线节点数: 0/0/0'], # 选中在线/所有在线/所有
+                                          max_height=5,
+                                          contained_widget_arguments={'maxlen':3},
+                                          exit_left=True, exit_right=True, scroll_exit=True, editable=False)
         self.nextrelx = nx + 28
         self.msgInfoBoxObj = self.add(msgInfoBox.InfoBox, name="滚动消息", max_height=-5, footer=' l 搜索并高亮显示, L 取消高亮显示') #, contained_widget_arguments={'maxlen':msg_buffer})
         self.inputBoxObj = self.add(inputBox.InputBox, name="输入", footer='Tab/鼠标 切换窗口, Alt + Enter 换行', scroll_exit=False)
@@ -106,8 +123,8 @@ class MainForm(npyscreen.FormBaseNewWithMenus):
         # 添加部分示例数据到主机列表
         npyscreen.notify('添加示例主机组', title='测试消息')
         time.sleep(0.5)
-        self.GroupTreeBoxObj.add_grp(name='group1', nodes=ip_list1, ssh_info=_ssh_info1)
-        self.GroupTreeBoxObj.add_grp(name='group2', nodes=ip_list2, ssh_info=_ssh_info1)
+        #self.GroupTreeBoxObj.add_grp(name='group1', nodes=ip_list1, ssh_info=_ssh_info1)
+        #self.GroupTreeBoxObj.add_grp(name='group2', nodes=ip_list2, ssh_info=_ssh_info1)
         self.GroupTreeBoxObj.add_grp(name='group3', nodes=ip_list3, ssh_info=_ssh_info2)
 
         # init handlers, if no widget handle this, they will be handled here
@@ -122,14 +139,14 @@ class MainForm(npyscreen.FormBaseNewWithMenus):
             155:                self.exit_func,
             curses.ascii.BEL:   self.abort_func, # works and safe
             # send command
-            curses.ascii.CR:  self.send_command,
-            curses.ascii.NL:  self.send_command,
-            curses.KEY_ENTER: self.send_command,
+            curses.ascii.CR:    self.send_command,
+            curses.ascii.NL:    self.send_command,
+            curses.KEY_ENTER:   self.send_command,
             #
-            "^T":             self.test_func,
+            "^T":               self.test_func,
             # send file
-            #"^O":             self.file_distrbution,
-            #"^D":             self._debug_msg,
+            #"^O":              self.file_distrbution,
+            #"^D":              self._debug_msg,
         }
         self.add_handlers(new_handlers)
 
@@ -185,18 +202,21 @@ class MainForm(npyscreen.FormBaseNewWithMenus):
 
     #def message_send(self, event):
     def send_command(self, event):
+        _cmd_str = self.inputBoxObj.value 
+        self.inputBoxObj.value = ""
+        self.inputBoxObj.display()
         #current_user = self.chatBoxObj.value
-        self.msgInfoBoxObj.append_msg(self.inputBoxObj.value)
+        self.msgInfoBoxObj.append_msg(_cmd_str)
 
         if self.shell_mode == 'local':
-            message = bash_cli.ez_cmd(self.inputBoxObj.value).split('\n')
+            _return_str = bash_cli.ez_cmd(_cmd_str).split('\n')
         else:
             _selected_nodes = list(self.GroupTreeBoxObj.get_selected_objects())
             _offline_hosts  = list(
                 filter(
                     lambda x: x != None,
                     map(
-                        lambda x : self.ssh_cmd(self.inputBoxObj.value, x.get_ssh_info()),
+                        lambda x : self.ssh_cmd(_cmd_str, x.get_ssh_info()),
                         filter(lambda x : x.marker == 'host',
                                _selected_nodes
                               )
@@ -205,13 +225,10 @@ class MainForm(npyscreen.FormBaseNewWithMenus):
             )
             if len(_offline_hosts): #>0
                 self.msgInfoBoxObj.append_msg('failed: ' + str(_offline_hosts) )
-            self.inputBoxObj.value = ""
-            message = ""
+            _return_str = ""
             self.inputBoxObj.display()
-        if message is not "":
-            self.msgInfoBoxObj.append_msg(message)
-
-            self.inputBoxObj.value = ""
+        if _return_str :
+            self.msgInfoBoxObj.append_msg(_return_str)
             self.inputBoxObj.display()
 
     def update_host_status(self):
