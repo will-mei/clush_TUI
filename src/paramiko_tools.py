@@ -4,6 +4,7 @@
 import os
 import sys 
 import paramiko
+import datetime
 try:
     from src import bash_cli
 except:
@@ -15,34 +16,85 @@ warnings.filterwarnings('ignore')
 #import logging
 # temporarily no log func , nothing will be loged to logfile or db
 
+#import asyncio 
+
 class SSHConnection(object):
     def __init__(self, ssh_info):
-        self.fqdn           = ssh_info['host'][0]
-        self.ipaddr         = ssh_info['host'][1]
-        self._host          = self.ipaddr 
-        self._port          = ssh_info['port']
-        self._username      = ssh_info['user']
-        self._password      = ssh_info['password']
-        self._timeout       = ssh_info['timeout']
-        self._key_filename  = ssh_info['hostkey'].replace('~', os.path.expanduser('~'))
+        self._ssh_info      = ssh_info
+        self.update_ssh_info()
         # ssh socket
-        self._transport = None
-        self._sftp = None
-        self._client = None
+        self._transport     = None
+        self._sftp          = None
+        self._client        = None
+        self._init_con_fn   = self._init_fn()
         self._connect()  # 建立连接
 
-    def _connect(self):
-        self._client = paramiko.SSHClient()
-        self._client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        self._client.connect(
-                             self._host,
-                             username=self._username,
-                             password=self._password,
-                             key_filename=self._key_filename
-                            )
+    def update_ssh_info(self):
+        self.fqdn           = self._ssh_info['host'][0]
+        self.ipaddr         = self._ssh_info['host'][1]
+        self._host          = self.ipaddr 
+        self._port          = self._ssh_info['port']
+        self._username      = self._ssh_info['user']
+        self._password      = self._ssh_info['password']
+        self._timeout       = self._ssh_info['timeout']
+        self._key_filename  = self._ssh_info['hostkey'].replace('~', os.path.expanduser('~'))
+
+    # closure with connection info stored 
+    def _init_fn(self):
+        h = self._host
+        u = username=self._username
+        p = password=self._password
+        k = key_filename=self._key_filename
+        _client = paramiko.SSHClient()
+        _client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        def _client_connect_fn():
+            try:
+                _client.connect(h,
+                                username = u,
+                                password = p,
+                                key_filename = k,
+                                )
+            except:
+                pass
+            return _client
+        return _client_connect_fn
+
+    def _connect(self, mode='init'):
+        if not self._client:
+            self._client = self._init_con_fn()
+        elif mode == 'reconnect':
+            self._client = self._init_con_fn()
         self._transport = self._client._transport
         self._transport.setName(self._host)
 
+    # connect with the ssh info which were used at the very begining of its creation
+    def reconnect(self):
+        if self._client:
+            self._connect(mode='reconnect')
+        else:
+            self._connect()
+
+    # connect with current ssh info
+    def update_connection(self):
+        self._client = paramiko.SSHClient()
+        self._client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        try:
+            self._client.connect(self._host,
+                                username=self._username,
+                                password=self._password,
+                                key_filename=self._key_filename
+                                )
+        except:
+            self._client = None
+            pass
+
+    #def update_status(status):
+    #    if      status == 'reconnect':
+    #        self._connect(mode='reconnect')
+    #    elif    status == 'update':
+    #        self.update_connection()
+    #    elif    status == 'close':
+    #        self.close()
 
     def get_sync(self, remotepath, localpath):
 #        print('get: ', remotepath, 'to: ', localpath)
@@ -180,6 +232,7 @@ class SSHConnection(object):
                 self.output_data,
                 self.output_err,
                 self.output_ret,
+                datetime.datetime.now(),
                 self._host
                )
 
@@ -191,12 +244,7 @@ class SSHConnection(object):
         self.exec_command('chmod +x ' + _tmp_file_name)
         _tmp_out_tuple = self.exec_command(_tmp_file_name)
         self.exec_command('rm -f ' + _tmp_file_name)
-        return (script_file,
-                _tmp_out_tuple[1],
-                _tmp_out_tuple[2],
-                _tmp_out_tuple[3],
-                _tmp_out_tuple[4],
-               )
+        return tuple( [script_file] + list(_tmp_out_tuple[1:]) )
 
     def exec_script(self, script_file):
         return self.copy_run(script_file)
@@ -216,6 +264,12 @@ class SSHConnection(object):
             self._client.close()
         #print('closed')
 
+    def __str__(self):
+        if not self._username:
+            u = 'default'
+        else:
+            u = self._username
+        return u + '@' + self.ipaddr + ':' + str(self._port)
 
 class ssh_to:
     def __init__(self, ssh_info):
@@ -247,7 +301,7 @@ if __name__ == "__main__":
 #    #con_test.get('aa/', './aaxx')
 #    con_test.close()
     with ssh_to(h) as con:
-        out = con.exec_command(c)
+        out1 = con.exec_command(c)
         out2 = con.exec_command('echo $HOSTNAME')
         out3 = con.exec_command('ls notexistfile')
     # output
@@ -255,9 +309,17 @@ if __name__ == "__main__":
     # 1: stdout
     # 2: stderr 
     # 3: return_status
-    # 4: hostname
-    list(map(print, out[1]))
+    # 4: return_time 
+    # 5: hostname
+    list(map(print, out1[1]))
+    print(out1)
     print(out2)
     print(out3)
+    # try reconnect 
+    print(str(con.fqdn))
+    con.reconnect()
+    out4 = con.exec_command('ls aa')
+    con.close()
+    print(out4)
 
 
