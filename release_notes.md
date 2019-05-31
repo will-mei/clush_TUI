@@ -91,3 +91,14 @@
 * 消息接口  发送端配置异步函数,发送后等待任务确认并完成通讯.
 * 消息接口  信息分片与组包,length:总长度,no:编号,slice:分片内容
 
+### 2019/5/28-29
+#### 安全加固
+
+### 2019/5/30
+#### connection group
+* api_server        v1 base line done
+* api_client        v1 base line done
+
+### 2019/5/31
+#### connection group
+* 消息接口          基本测试完成
