@@ -49,6 +49,9 @@ class api_server():
         self._socket.listen(self._con_max)
         print("waiting for connection ..")
 
+    def perform_task(self, _data):
+        pass 
+
     def _check_msg(self, _stream_bytes):
         print('\n')
         print(b'check json pkg:' + _stream_bytes)
@@ -89,6 +92,8 @@ class api_server():
             # reply 
             reply   = ('task %s  recived and confirmed' % _tid ).encode('utf-8')
             print('reply:', reply)
+            # exec task 
+            self.perform_task(_data)
         else:
             reply   = ('task %s hash failed, task invalid' % _tid).encode('utf-8')
             print(
@@ -180,7 +185,7 @@ class api_server():
         sock.close()
         print('Connection from %s:%s closed.' % addr)
 
-    def run(self):
+    def run_forever(self):
         i = 0
         while i<2 :
             sock, addr = self._socket.accept()
@@ -201,6 +206,6 @@ if __name__ == "__main__":
         'msg_timeout':15,
     }
     s   = api_server(server_info)
-    s.run()
+    s.run_forever()
 
 

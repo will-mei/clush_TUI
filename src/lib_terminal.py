@@ -4,7 +4,8 @@
 # save log
 import logging
 logging.basicConfig(
-    filename= '/var/log/messages',
+    #filename= '/var/log/messages',
+    filename= '../log/messages',
     level   = logging.INFO,
     format  = '%(asctime)s %(name)s %(process)d - %(thread)d:%(threadName)s - %(levelname)s - %(pathname)s %(funcName)s line: %(lineno)d - %(message)s',
     datefmt = '%Y/%m/%d %I:%M:%S %p'
@@ -390,8 +391,8 @@ if __name__ == "__main__":
         'server_id':_id,
         'server_ip':'127.0.0.1',
         'server_port':60000,
-        'workers':3,
         'con_max':128,
+        #'workers':3,
     }
     # init info for a connection group 
     # if you have an ip without knowing its fqdn, use the ip as fqdn
