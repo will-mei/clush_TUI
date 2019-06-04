@@ -1,6 +1,12 @@
 #!/usr/bin/env python
 # coding=utf-8
 
+
+try:
+    from src.lib_api_server import api_server
+except:
+    import lib_api_server import api_server 
+
 # save log
 import logging
 logging.basicConfig(
@@ -30,9 +36,9 @@ import time
 import hashlib
 
 try:
-    from src import lib_ssh_paramiko
+    from src.lib_ssh_paramiko import SSHConnection
 except:
-    import lib_ssh_paramiko
+    from lib_ssh_paramiko import SSHConnection
 
 
 # check ip format 
@@ -53,13 +59,13 @@ def valid_ip(ip):
 
 
 # a wharfage with a watchdog to keep a group of ssh connection alive, and status info maintainable 
-class host_con_group:
+class ConnectionGroup:
 
     # all hosts in a same group share the same login user and ssh port 
     def __init__(self, grp_info, admin_terminal):
         self.grp_info   = grp_info 
         self.grp_name   = grp_info['grp_name'] 
-        self.terminal   = admin_terminal
+        self.term_id    = admin_terminal
         # host:connection 
         self._connections = {}
         #
@@ -82,7 +88,7 @@ class host_con_group:
 
         if mode == 'init':
             try:
-                self._connections[hostname] = lib_ssh_paramiko.SSHConnection(_host_ssh_info)
+                self._connections[hostname] = SSHConnection(_host_ssh_info)
                 print(hostname, 'ssh success')
             except:
                 self._connections[hostname] = None
@@ -208,64 +214,23 @@ class host_con_group:
 
 # communicate wiht other app 
 # here defines what you can do to a group 
-class cluster_ssh_terminal:
+class ClusterTerminal(api_server):
 
-    def __init__(self, server_info):
-
-        self._server_info   = server_info 
-        # an array hold connection groups obj and its name 
-        self._groups        = {}
-        self._init_server()
-
-    def _init_server(self):
-        # tcp socket 
-        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.socket.bind(
-            (self._server_info['server_ip'],
-             self._server_info['server_port'])
-        )
-        self.listen(
-            self._server_info['con_max']
-        )
-        pass
-
-    def close(self):
-        pass
-
-    def _union_hash(self, msg):
-        _prefix = self._server_info['server_id'].encode('utf-8')
-
-        if isinstance(msg, str):
-            _msg = msg.encode('utf-8')
-        elif isinstance(msg, bytes):
-            pass
+    def perform_task(self, _data):
+        if _data['tid'] == 'ClusterTerminalTask':
+            self.update(_data['msg'])
         else:
-            _msg = str(msg).encode('utf-8')
-
-        return hashlib.sha512(_prefix + _msg).hexdigest()
-
-    def _valid_msg(self, msg, _sum):
-        return _sum == self._union_hash(msg)
-
-    # the server info cannot be changed without token?
-    @property
-    def server_id(self):
-        return self._server_id
-    @server_id.setter 
-    def server_id(self):
-        self._server_id = self._union_hash('id')
-
-    #def __add__(self, terminal2):
-        #map(lambda grp : grp.admin = self.name, terminal2.con_groups)
-        #return self 
-        #pass
+            self.brodcast_cmd(_data['msg'])
+        pass 
 
     # run command list on all groups 
     def brodcast_cmd(self, cmd_list):
         pass 
 
-    def run(self):
-        pass
+    #def __add__(self, terminal2):
+        #map(lambda grp : grp.admin = self.name, terminal2.con_groups)
+        #return self 
+        #pass
 
 #    def __class__(self):
 #        pass
@@ -384,16 +349,16 @@ class cluster_ssh_terminal:
 if __name__ == "__main__":
     # local settings
 
-    # there will be a hash str send to terminal alone with the cmd 
-    # all commands will be hashed with it 
-    _id = 'hash_keyword'
     # init info for a terminal server 
-    t = {
-        'server_id':_id,
-        'server_ip':'127.0.0.1',
-        'server_port':60000,
-        'con_max':128,
-        #'workers':3,
+    # there will be a hash str send to terminal alone with the cmd, all commands will be hashed with it 
+    server_info = {
+        'server_id'     :b'test_user_id',
+        'server_ip'     :'192.168.59.252',
+        'server_port'   :9999,
+        'msg_trans_unit':512,
+        'connection_max':32,
+        'socket_timeout':5,
+        'msg_timeout'   :15,
     }
 
     # init info for a connection group 
@@ -419,7 +384,7 @@ if __name__ == "__main__":
         #'grp_ip_array': {'host' + str(x) : '192.168.59.' + str(x) for x in range(10, 30)}
     }
 
-    grp_con = host_con_group(g, t)
+    grp_con = ConnectionGroup(g, t['server_id'])
     #print(grp_con._connections)
 
     if grp_con.is_alive():
