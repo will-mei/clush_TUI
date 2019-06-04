@@ -6,9 +6,9 @@ import sys
 import paramiko
 import datetime
 try:
-    from src import bash_cli
+    from src import lib_cli_bash
 except:
-    import bash_cli
+    import lib_cli_bash
 import  warnings
 
 warnings.filterwarnings('ignore')
@@ -169,7 +169,7 @@ class SSHConnection(object):
     def put_dir(self, localpath, remotepath):
         remotepath = (remotepath + '/').replace('//', '/')
         if os.path.isdir(localpath):
-            file_list = list(filter(lambda x : len(x) > 0, bash_cli.ez_cmd('find ' + localpath + '*').split('\n')))
+            file_list = list(filter(lambda x : len(x) > 0, lib_cli_bash.ez_cmd('find ' + localpath + '*').split('\n')))
             #print('dir info: ', file_list, remotepath)
             #list(map(lambda x : print(x , remotepath + x.lstrip(localpath) ), file_list))
             list(map(lambda x : self.put_sync(x , remotepath + x.lstrip(localpath) ), file_list))
@@ -295,7 +295,7 @@ if __name__ == "__main__":
 #    tx = con_test.exec_command('lsblk')
 #    print(tx)
 #    #con_test.put('../tmp/a/', 'aa')
-#    #con_test.put('bash_cli.py', 'b')
+#    #con_test.put('lib_cli_bash.py', 'b')
 #    con_test.exec_command('ls -hl')
 #    con_test.exec_command('ls abcde')
 #    #con_test.get('aa/', './aaxx')

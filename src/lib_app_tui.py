@@ -1,8 +1,8 @@
 from src import npyscreen
-from src.MainForm import MainForm
-from src.HelpForm import HelpForm
-from src.HostGroupForm import HostGroupForm
-from src.CephDeplyForm import CephDeplyForm
+from src.form_main import MainForm
+from src.form_help import HelpForm
+from src.form_HostGroup import HostGroupForm
+from src.form_CephDeply import CephDeplyForm
 
 #import signal
 import curses

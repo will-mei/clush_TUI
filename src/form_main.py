@@ -5,12 +5,12 @@ import configparser
 from datetime import timedelta
 
 from src import npyscreen as npyscreen
-from src import treeBox
-from src import msgInfoBox
-from src import statusInfoBox
-from src import inputBox
-from src import bash_cli
-from src import paramiko_tools
+from src import box_grouptree
+from src import box_messages
+from src import box_status
+from src import box_input
+from src import lib_cli_bash
+from src import lib_ssh_paramiko
 
 # just some example test ip list
 ip_list1 = [ '192.168.100.' + str(x)  for x in range(201, 206)]
@@ -93,13 +93,13 @@ class MainForm(npyscreen.FormBaseNewWithMenus):
         # create ui form
         ny = self.nextrely
         nx = self.nextrelx
-        self.GroupTreeBoxObj = self.add(treeBox.HostGroupTreeBox, name="主机组", max_width=28, scroll_exit=False) #, value=0, relx=1, max_width=x // 5, rely=2,
+        self.GroupTreeBoxObj = self.add(box_grouptree.HostGroupTreeBox, name="主机组", max_width=28, scroll_exit=False) #, value=0, relx=1, max_width=x // 5, rely=2,
 
         # top , 28 right 
         self.nextrely = ny
         self.nextrelx = nx + 28
         x_half = int((x - 28) / 2 -5)
-        self.statusInfoBoxObj = self.add(statusInfoBox.statusBox,
+        self.statusInfoBoxObj = self.add(box_status.statusBox,
                                          name="当前测试负载压力",
                                          footer='正在运行作业主机数:0',
                                          values=['测试负载 iops: 0000', '测试负载 吞吐: 0000(Mib/s)', '测试负载 延迟: 00.00(ms)'],
@@ -109,7 +109,7 @@ class MainForm(npyscreen.FormBaseNewWithMenus):
                                          exit_left=True, exit_right=True, scroll_exit=True, editable=False)
         self.nextrely = ny
         self.nextrelx = nx + 28 + x_half
-        self.statusInfoBoxObj2 = self.add(statusInfoBox.statusBox,
+        self.statusInfoBoxObj2 = self.add(box_status.statusBox,
                                           name="状态",
                                           footer='命令行模式: 本地shell',
                                           values=['选中主机组: 0/0', '选中节点数: 0/0', '在线节点数: 0/0/0'], # 选中在线/所有在线/所有
@@ -117,8 +117,8 @@ class MainForm(npyscreen.FormBaseNewWithMenus):
                                           contained_widget_arguments={'maxlen':3},
                                           exit_left=True, exit_right=True, scroll_exit=True, editable=False)
         self.nextrelx = nx + 28
-        self.msgInfoBoxObj = self.add(msgInfoBox.InfoBox, name="滚动消息", max_height=-5, footer=' l 搜索并高亮显示, L 取消高亮显示') #, contained_widget_arguments={'maxlen':msg_buffer})
-        self.inputBoxObj = self.add(inputBox.InputBox, name="输入", footer='Tab/鼠标 切换窗口, Alt + Enter 换行', scroll_exit=False)
+        self.msgInfoBoxObj = self.add(box_messages.InfoBox, name="滚动消息", max_height=-5, footer=' l 搜索并高亮显示, L 取消高亮显示') #, contained_widget_arguments={'maxlen':msg_buffer})
+        self.inputBoxObj = self.add(box_input.InputBox, name="输入", footer='Tab/鼠标 切换窗口, Alt + Enter 换行', scroll_exit=False)
 
         # 添加部分示例数据到主机列表
         npyscreen.notify('添加示例主机组', title='测试消息')
@@ -178,13 +178,13 @@ class MainForm(npyscreen.FormBaseNewWithMenus):
 
     def _test_ssh(self, ssh_info):
         try:
-            _host_ssh_connection = paramiko_tools.SSHConnection(ssh_info)
+            _host_ssh_connection = lib_ssh_paramiko.SSHConnection(ssh_info)
         except:
             return ssh_info['host']
 
     def ssh_cmd(self, cmd_list, ssh_info):
         try:
-            _host_ssh_connection = paramiko_tools.SSHConnection(ssh_info)
+            _host_ssh_connection = lib_ssh_paramiko.SSHConnection(ssh_info)
         except:
             _result = [ ssh_info['host'] + ':' + ' unable to init Connection!' ]
             self.msgInfoBoxObj.append_msg(_result)
@@ -209,7 +209,7 @@ class MainForm(npyscreen.FormBaseNewWithMenus):
         self.msgInfoBoxObj.append_msg(_cmd_str)
 
         if self.shell_mode == 'local':
-            _return_str = bash_cli.ez_cmd(_cmd_str).split('\n')
+            _return_str = lib_cli_bash.ez_cmd(_cmd_str).split('\n')
         else:
             _selected_nodes = list(self.GroupTreeBoxObj.get_selected_objects())
             _offline_hosts  = list(

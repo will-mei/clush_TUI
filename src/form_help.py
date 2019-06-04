@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding=utf-8
 import curses
-from . import npyscreen
+from src import npyscreen
 
 
 help_info = {

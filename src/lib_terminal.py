@@ -30,9 +30,9 @@ import time
 import hashlib
 
 try:
-    from src import paramiko_tools
+    from src import lib_ssh_paramiko
 except:
-    import paramiko_tools
+    import lib_ssh_paramiko
 
 
 # check ip format 
@@ -82,7 +82,7 @@ class host_con_group:
 
         if mode == 'init':
             try:
-                self._connections[hostname] = paramiko_tools.SSHConnection(_host_ssh_info)
+                self._connections[hostname] = lib_ssh_paramiko.SSHConnection(_host_ssh_info)
                 print(hostname, 'ssh success')
             except:
                 self._connections[hostname] = None
@@ -383,8 +383,9 @@ class cluster_ssh_terminal:
 
 if __name__ == "__main__":
     # local settings
-    # all commands will be hashed with it 
+
     # there will be a hash str send to terminal alone with the cmd 
+    # all commands will be hashed with it 
     _id = 'hash_keyword'
     # init info for a terminal server 
     t = {
@@ -394,6 +395,7 @@ if __name__ == "__main__":
         'con_max':128,
         #'workers':3,
     }
+
     # init info for a connection group 
     # if you have an ip without knowing its fqdn, use the ip as fqdn
     g = {
