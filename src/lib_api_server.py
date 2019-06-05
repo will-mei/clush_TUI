@@ -7,14 +7,18 @@ import threading
 import json
 import hashlib
 
-#import logging 
-#logging.basicConfig(
-#    #filename= '/var/log/messages',
-#    #level   = logging.INFO,
-#    level   = logging.DEBUG,
-#    format  = '%(asctime)s %(name)s %(process)d - %(thread)d:%(threadName)s - %(levelname)s - %(pathname)s %(funcName)s line: %(lineno)d - %(message)s',
-#    datefmt = '%Y/%m/%d %I:%M:%S %p'
-#)
+import logging 
+logging.basicConfig(
+    #filename= '/var/log/messages',
+    filename= '../log/server_socket.log',
+    #level   = logging.INFO,
+    level   = logging.DEBUG,
+    format  = '%(asctime)s %(name)s %(process)d - %(thread)d:%(threadName)s - %(levelname)s - %(pathname)s %(funcName)s line: %(lineno)d - %(message)s',
+    datefmt = '%Y/%m/%d %I:%M:%S %p'
+)
+
+def _join(*args):
+    return ' '.join(map(str, args))
 
 #return_code = {
 #    000:'success',
@@ -48,22 +52,23 @@ class api_server():
         )
         self._socket.listen(self._con_max)
         self.status         = 'on'
-        print("waiting for connection ..")
+        logging.debug(_join(
+                self._server_ip, self._server_port, "waiting for connection .."
+            ))
 
     def perform_task(self, _data):
         pass 
 
     def _check_msg(self, _stream_bytes):
-        print('\n')
-        print(b'check json pkg:' + _stream_bytes)
+        logging.debug(_join(b'try to load msg form json pkg:',  _stream_bytes))
         try:
             _data   = json.loads(_stream_bytes)
             _stat   = True
-            print('check ok')
+            logging.debug('json msg loading success')
         except:
             _data   = None
             _stat   = False 
-            print('check fail')
+            logging.warn('json msg format abnormal, load failed')
         return (_data, _stat)
 
     def parse_msg(self, _data):
@@ -74,48 +79,54 @@ class api_server():
             _tid    = _data['tid']
             _time_stamp = _tid.split('_')[0]
             _time   = time.mktime(time.strptime(_time_stamp, "%Y/%m/%d-%H:%M:%S")) 
-            print(
-                '\nsum:', _sum,
-                '\nmsg:', _msg,
-                '\ntid:', _tid,
-                '\ntime:', _time_stamp,
-            )
+            _tag    = _tid.split('_')[1]
+            logging.debug(_join(
+                'msg info:',
+                '\nmsg sum:', _sum,
+                '\nmsg tid:', _tid,
+                '\nmsg tag:', _tag,
+                '\nmsg sent time:', _time_stamp,
+                '\nmsg content:', _msg,
+            ))
         except:
-            print('fail to parse:', _stream_bytes)
+            logging.warn(_join(b'fail to parse msg content:', _stream_bytes))
             reply   = b'info status: wrong format, droped'
             return reply
 
         # task_id existence status check (sqlite)
 
         # hash validation
-        _sum_confirm = hashlib.sha256(self._prefix + _msg.encode('utf-8') + str(_tid).encode('utf-8') ).hexdigest()
-        if _sum == _sum:
+        _sum_confirm = hashlib.sha256(self._prefix + _msg.encode('utf-8') + _tid.encode('utf-8') ).hexdigest()
+        if _sum_confirm == _sum:
             # reply 
             reply   = ('task %s  recived and confirmed' % _tid ).encode('utf-8')
-            print('reply:', reply)
+            logging.info(_join('reply:', reply))
             # exec task 
             self.perform_task(_data)
         else:
             reply   = ('task %s hash failed, task invalid' % _tid).encode('utf-8')
-            print(
-                '\nsum:', _sum,
+            logging.warn(_join(
+                'hash info:',
+                '\nprefix:', self._prefix,
+                '\ntid:', _tid.encode('utf-8'),
+                '\nsum origin:', _sum,
                 '\nsum confirm:', _sum_confirm,
-            )
-            print('reply:', reply)
+                '\nmsg content:', _msg.encode('utf-8')
+            ))
+            logging.debug(_join('reply:', reply))
 
         # msg timeout
         _time_now = time.time()
         if _time_now - _time > self._mtimeout:
             reply   = ('task %s recived and abandent, cause the timestamp is out of date' % _tid).encode('utf-8')
-            print('reply:', reply)
+            logging.debug(_join('reply:', reply))
             return reply
-        print('\n')
 
         return reply
 
     def thread_tcplink(self, sock, addr):
         # welcome
-        print("Accept new connection from %s:%s..." % addr)
+        logging.debug("Accept new connection from %s:%s..." % addr)
 
         #sock.send(b'Welcom!')
         _slice_dict = {}
@@ -131,17 +142,17 @@ class api_server():
 
             # confirmed stop 
             if _stream_bytes == b'f'*16:
-                print('\nconfirm stop recive', '\nseq_max', _slice_max, '\n')
+                logging.debug(_join('confirm stop reciving slices:\n', 'seq_max:', _slice_max))
                 # check every slice of data pkg 
                 i = 0 
                 _data_pkg = b''
                 # check and splicing sequnces
                 while i <= int(_slice_max.lstrip(b'f'), 16):
-                    print('check slice num %s' % i)
+                    logging.debug('check slice num %s' % i)
                     try:
                         _data_pkg += _slice_dict[i]
                     except:
-                        print('slice number %s is missing, Retransmission error!' % i)
+                        logging.debug('slice number %s is missing, Retransmission error!' % i)
                         _data_pkg = None
                         break
                     i = i+1
@@ -150,7 +161,7 @@ class api_server():
                 _task_data_pkg  = _task_data_info[0]
                 _task_data_stat = _task_data_info[1]
                 if _task_data_stat:
-                    print('complete msg:', _task_data_pkg)
+                    logging.debug(_join('the complete msg data:\n', _task_data_pkg))
                     reply = self.parse_msg(_task_data_pkg)
                     sock.send(reply)
                 else:
@@ -162,21 +173,22 @@ class api_server():
                 _sum    = _stream_bytes[16:80]
                 _slice  = _stream_bytes[80:].rstrip()
                 _sum_confirm  = hashlib.sha256(_seq + _slice).hexdigest().encode('utf-8')
-                print(
-                    '\nseq:', _seq,
-                    '\nmax:', _max,
-                    '\nsum:', _sum,
-                    '\nsum confirm:', _sum_confirm,
-                    '\nslice',_slice,
-                )
+                logging.debug(_join(
+                    'recived slice info:'
+                    '\nslice seq num:', str(_seq),
+                    '\nslice seq max:', str(_max),
+                    '\nslice sum origin:', str(_sum),
+                    '\nslice sum confirm:', str(_sum_confirm),
+                    '\nslice content:', str(_slice),
+                ))
                 # check individual data package
                 if _sum_confirm == _sum :
                     _slice_max = _max
                     index = int(_seq.lstrip(b'f'), 16)
                     if not index in _slice_dict:
-                        print('\nadd data num %s' % index)
+                        logging.debug('store slice data num %s to buffer dict:\n' % index)
                         _slice_dict[index] = _slice
-                        print(_slice_dict)
+                        logging.debug(_join('buffer dict:\n', _slice_dict))
                     # confirm
                     sock.send(_sum)
                 else:
@@ -184,7 +196,7 @@ class api_server():
                     sock.send(b'01') 
         # end 
         sock.close()
-        print('Connection from %s:%s closed.' % addr)
+        logging.debug('Connection from %s:%s closed.' % addr)
 
     def run_forever(self):
         #i = 0

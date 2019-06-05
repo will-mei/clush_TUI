@@ -1,0 +1,79 @@
+2019/06/05 05:31:50 PM root 20165 - 139955959473984:MainThread - DEBUG - /root/Cluster_jobs_TUI/src/lib_api_server.py __init__ line: 56 - 192.168.59.252 9999 waiting for connection ..
+2019/06/05 05:32:36 PM root 20165 - 139955729159936:Thread-1 - DEBUG - /root/Cluster_jobs_TUI/src/lib_api_server.py thread_tcplink line: 129 - Accept new connection from 192.168.59.252:33448...
+2019/06/05 05:32:36 PM root 20165 - 139955729159936:Thread-1 - DEBUG - /root/Cluster_jobs_TUI/src/lib_api_server.py thread_tcplink line: 182 - recived slice info:
+slice seq num: b'fffff0x0' 
+slice seq max: b'fffff0x0' 
+slice sum origin: b'a0a0cd74972cf20da5054d2297bb872a9a6d692603912f1da15fefb3fe9bae1d' 
+slice sum confirm: b'a0a0cd74972cf20da5054d2297bb872a9a6d692603912f1da15fefb3fe9bae1d' 
+slice content: b'{"sum": "a11ef78b622b16bed25dd9a072d3219d9ac0452fec812652b6d8835df2b6de20", "tid": "2019/06/05-17:32:36_0X39089", "msg": "lsblk -ps |grep sda"}'
+2019/06/05 05:32:36 PM root 20165 - 139955729159936:Thread-1 - DEBUG - /root/Cluster_jobs_TUI/src/lib_api_server.py thread_tcplink line: 189 - store slice data num 0 to buffer dict:
+
+2019/06/05 05:32:36 PM root 20165 - 139955729159936:Thread-1 - DEBUG - /root/Cluster_jobs_TUI/src/lib_api_server.py thread_tcplink line: 191 - buffer dict:
+ {0: b'{"sum": "a11ef78b622b16bed25dd9a072d3219d9ac0452fec812652b6d8835df2b6de20", "tid": "2019/06/05-17:32:36_0X39089", "msg": "lsblk -ps |grep sda"}'}
+2019/06/05 05:32:36 PM root 20165 - 139955729159936:Thread-1 - DEBUG - /root/Cluster_jobs_TUI/src/lib_api_server.py thread_tcplink line: 145 - confirm stop reciving slices:
+ seq_max: b'fffff0x0'
+2019/06/05 05:32:36 PM root 20165 - 139955729159936:Thread-1 - DEBUG - /root/Cluster_jobs_TUI/src/lib_api_server.py thread_tcplink line: 151 - check slice num 0
+2019/06/05 05:32:36 PM root 20165 - 139955729159936:Thread-1 - DEBUG - /root/Cluster_jobs_TUI/src/lib_api_server.py _check_msg line: 63 - b'try to load msg form json pkg:' b'{"sum": "a11ef78b622b16bed25dd9a072d3219d9ac0452fec812652b6d8835df2b6de20", "tid": "2019/06/05-17:32:36_0X39089", "msg": "lsblk -ps |grep sda"}'
+2019/06/05 05:32:36 PM root 20165 - 139955729159936:Thread-1 - DEBUG - /root/Cluster_jobs_TUI/src/lib_api_server.py _check_msg line: 67 - json msg loading success
+2019/06/05 05:32:36 PM root 20165 - 139955729159936:Thread-1 - DEBUG - /root/Cluster_jobs_TUI/src/lib_api_server.py thread_tcplink line: 164 - the complete msg data:
+ {'sum': 'a11ef78b622b16bed25dd9a072d3219d9ac0452fec812652b6d8835df2b6de20', 'tid': '2019/06/05-17:32:36_0X39089', 'msg': 'lsblk -ps |grep sda'}
+2019/06/05 05:32:36 PM root 20165 - 139955729159936:Thread-1 - DEBUG - /root/Cluster_jobs_TUI/src/lib_api_server.py parse_msg line: 89 - msg info: 
+msg sum: a11ef78b622b16bed25dd9a072d3219d9ac0452fec812652b6d8835df2b6de20 
+msg tid: 2019/06/05-17:32:36_0X39089 
+msg tag: 0X39089 
+msg sent time: 2019/06/05-17:32:36 
+msg content: lsblk -ps |grep sda
+2019/06/05 05:32:36 PM root 20165 - 139955729159936:Thread-1 - INFO - /root/Cluster_jobs_TUI/src/lib_api_server.py parse_msg line: 103 - reply: b'task 2019/06/05-17:32:36_0X39089  recived and confirmed'
+2019/06/05 05:32:36 PM root 20165 - 139955729159936:Thread-1 - DEBUG - /root/Cluster_jobs_TUI/src/lib_api_server.py thread_tcplink line: 199 - Connection from 192.168.59.252:33448 closed.
+2019/06/05 05:33:18 PM root 20165 - 139955729159936:Thread-2 - DEBUG - /root/Cluster_jobs_TUI/src/lib_api_server.py thread_tcplink line: 129 - Accept new connection from 192.168.59.252:33450...
+2019/06/05 05:33:18 PM root 20165 - 139955729159936:Thread-2 - DEBUG - /root/Cluster_jobs_TUI/src/lib_api_server.py thread_tcplink line: 182 - recived slice info:
+slice seq num: b'fffff0x0' 
+slice seq max: b'fffff0x0' 
+slice sum origin: b'dbf1f6e4cdd2600efc9556706a4707f5ea764566c39a081126f1d8b73b43986f' 
+slice sum confirm: b'dbf1f6e4cdd2600efc9556706a4707f5ea764566c39a081126f1d8b73b43986f' 
+slice content: b'{"sum": "aa24000cf420c63d9ac85faacc51eddc2823f6d79ecb768bfbf76b251273f1b3", "tid": "2019/06/05-17:33:18_0X2CA559", "msg": "lsblk -ps |grep sda"}'
+2019/06/05 05:33:18 PM root 20165 - 139955729159936:Thread-2 - DEBUG - /root/Cluster_jobs_TUI/src/lib_api_server.py thread_tcplink line: 189 - store slice data num 0 to buffer dict:
+
+2019/06/05 05:33:18 PM root 20165 - 139955729159936:Thread-2 - DEBUG - /root/Cluster_jobs_TUI/src/lib_api_server.py thread_tcplink line: 191 - buffer dict:
+ {0: b'{"sum": "aa24000cf420c63d9ac85faacc51eddc2823f6d79ecb768bfbf76b251273f1b3", "tid": "2019/06/05-17:33:18_0X2CA559", "msg": "lsblk -ps |grep sda"}'}
+2019/06/05 05:33:18 PM root 20165 - 139955729159936:Thread-2 - DEBUG - /root/Cluster_jobs_TUI/src/lib_api_server.py thread_tcplink line: 145 - confirm stop reciving slices:
+ seq_max: b'fffff0x0'
+2019/06/05 05:33:18 PM root 20165 - 139955729159936:Thread-2 - DEBUG - /root/Cluster_jobs_TUI/src/lib_api_server.py thread_tcplink line: 151 - check slice num 0
+2019/06/05 05:33:18 PM root 20165 - 139955729159936:Thread-2 - DEBUG - /root/Cluster_jobs_TUI/src/lib_api_server.py _check_msg line: 63 - b'try to load msg form json pkg:' b'{"sum": "aa24000cf420c63d9ac85faacc51eddc2823f6d79ecb768bfbf76b251273f1b3", "tid": "2019/06/05-17:33:18_0X2CA559", "msg": "lsblk -ps |grep sda"}'
+2019/06/05 05:33:18 PM root 20165 - 139955729159936:Thread-2 - DEBUG - /root/Cluster_jobs_TUI/src/lib_api_server.py _check_msg line: 67 - json msg loading success
+2019/06/05 05:33:18 PM root 20165 - 139955729159936:Thread-2 - DEBUG - /root/Cluster_jobs_TUI/src/lib_api_server.py thread_tcplink line: 164 - the complete msg data:
+ {'sum': 'aa24000cf420c63d9ac85faacc51eddc2823f6d79ecb768bfbf76b251273f1b3', 'tid': '2019/06/05-17:33:18_0X2CA559', 'msg': 'lsblk -ps |grep sda'}
+2019/06/05 05:33:18 PM root 20165 - 139955729159936:Thread-2 - DEBUG - /root/Cluster_jobs_TUI/src/lib_api_server.py parse_msg line: 89 - msg info: 
+msg sum: aa24000cf420c63d9ac85faacc51eddc2823f6d79ecb768bfbf76b251273f1b3 
+msg tid: 2019/06/05-17:33:18_0X2CA559 
+msg tag: 0X2CA559 
+msg sent time: 2019/06/05-17:33:18 
+msg content: lsblk -ps |grep sda
+2019/06/05 05:33:18 PM root 20165 - 139955729159936:Thread-2 - INFO - /root/Cluster_jobs_TUI/src/lib_api_server.py parse_msg line: 103 - reply: b'task 2019/06/05-17:33:18_0X2CA559  recived and confirmed'
+2019/06/05 05:33:18 PM root 20165 - 139955729159936:Thread-2 - DEBUG - /root/Cluster_jobs_TUI/src/lib_api_server.py thread_tcplink line: 199 - Connection from 192.168.59.252:33450 closed.
+2019/06/05 05:33:47 PM root 20165 - 139955729159936:Thread-3 - DEBUG - /root/Cluster_jobs_TUI/src/lib_api_server.py thread_tcplink line: 129 - Accept new connection from 192.168.59.252:33452...
+2019/06/05 05:33:47 PM root 20165 - 139955729159936:Thread-3 - DEBUG - /root/Cluster_jobs_TUI/src/lib_api_server.py thread_tcplink line: 182 - recived slice info:
+slice seq num: b'fffff0x0' 
+slice seq max: b'fffff0x0' 
+slice sum origin: b'b3516eba58a43f27ba5c982f54a7477826c2d2c02fc04b2aca7737673a6b8b20' 
+slice sum confirm: b'b3516eba58a43f27ba5c982f54a7477826c2d2c02fc04b2aca7737673a6b8b20' 
+slice content: b'{"sum": "96408424a0da6722791d3e6ac13e4e0c83b9895c13676cf8577f6398c3fab4f1", "tid": "2019/06/05-17:33:47_0X6EB714", "msg": "lsblk -ps |grep sda"}'
+2019/06/05 05:33:47 PM root 20165 - 139955729159936:Thread-3 - DEBUG - /root/Cluster_jobs_TUI/src/lib_api_server.py thread_tcplink line: 189 - store slice data num 0 to buffer dict:
+
+2019/06/05 05:33:47 PM root 20165 - 139955729159936:Thread-3 - DEBUG - /root/Cluster_jobs_TUI/src/lib_api_server.py thread_tcplink line: 191 - buffer dict:
+ {0: b'{"sum": "96408424a0da6722791d3e6ac13e4e0c83b9895c13676cf8577f6398c3fab4f1", "tid": "2019/06/05-17:33:47_0X6EB714", "msg": "lsblk -ps |grep sda"}'}
+2019/06/05 05:33:47 PM root 20165 - 139955729159936:Thread-3 - DEBUG - /root/Cluster_jobs_TUI/src/lib_api_server.py thread_tcplink line: 145 - confirm stop reciving slices:
+ seq_max: b'fffff0x0'
+2019/06/05 05:33:47 PM root 20165 - 139955729159936:Thread-3 - DEBUG - /root/Cluster_jobs_TUI/src/lib_api_server.py thread_tcplink line: 151 - check slice num 0
+2019/06/05 05:33:47 PM root 20165 - 139955729159936:Thread-3 - DEBUG - /root/Cluster_jobs_TUI/src/lib_api_server.py _check_msg line: 63 - b'try to load msg form json pkg:' b'{"sum": "96408424a0da6722791d3e6ac13e4e0c83b9895c13676cf8577f6398c3fab4f1", "tid": "2019/06/05-17:33:47_0X6EB714", "msg": "lsblk -ps |grep sda"}'
+2019/06/05 05:33:47 PM root 20165 - 139955729159936:Thread-3 - DEBUG - /root/Cluster_jobs_TUI/src/lib_api_server.py _check_msg line: 67 - json msg loading success
+2019/06/05 05:33:47 PM root 20165 - 139955729159936:Thread-3 - DEBUG - /root/Cluster_jobs_TUI/src/lib_api_server.py thread_tcplink line: 164 - the complete msg data:
+ {'sum': '96408424a0da6722791d3e6ac13e4e0c83b9895c13676cf8577f6398c3fab4f1', 'tid': '2019/06/05-17:33:47_0X6EB714', 'msg': 'lsblk -ps |grep sda'}
+2019/06/05 05:33:47 PM root 20165 - 139955729159936:Thread-3 - DEBUG - /root/Cluster_jobs_TUI/src/lib_api_server.py parse_msg line: 89 - msg info: 
+msg sum: 96408424a0da6722791d3e6ac13e4e0c83b9895c13676cf8577f6398c3fab4f1 
+msg tid: 2019/06/05-17:33:47_0X6EB714 
+msg tag: 0X6EB714 
+msg sent time: 2019/06/05-17:33:47 
+msg content: lsblk -ps |grep sda
+2019/06/05 05:33:47 PM root 20165 - 139955729159936:Thread-3 - INFO - /root/Cluster_jobs_TUI/src/lib_api_server.py parse_msg line: 103 - reply: b'task 2019/06/05-17:33:47_0X6EB714  recived and confirmed'
+2019/06/05 05:33:47 PM root 20165 - 139955729159936:Thread-3 - DEBUG - /root/Cluster_jobs_TUI/src/lib_api_server.py thread_tcplink line: 199 - Connection from 192.168.59.252:33452 closed.

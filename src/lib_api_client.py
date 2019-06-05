@@ -9,6 +9,19 @@ import hashlib
 #import string
 #import random
 
+import logging 
+logging.basicConfig(
+    #filename= '/var/log/messages',
+    filename= '../log/client_socket.log',
+    #level   = logging.INFO,
+    level   = logging.DEBUG,
+    format  = '%(asctime)s %(name)s %(process)d - %(thread)d:%(threadName)s - %(levelname)s - %(pathname)s %(funcName)s line: %(lineno)d - %(message)s',
+    datefmt = '%Y/%m/%d %I:%M:%S %p'
+)
+
+def _join(*args):
+    return ' '.join(map(str, args))
+
 
 def _get_slice_list(_list, slice_size):
     return [_list[i:i + slice_size] for i in range(0, len(_list), slice_size)]
@@ -26,9 +39,9 @@ def _get_time_stamp(_tag=None):
         return _time_tx + _float_tx
 # len timestamp 27
 
-def _get_sum(msg_tx, prefix=b'', _encoding='utf-8'):
-    _tid = _get_time_stamp().encode(_encoding)
+def _get_sum(msg_tx, tid_tx, prefix=b'', _encoding='utf-8'):
     _msg = msg_tx.encode(_encoding)
+    _tid = tid_tx.encode(_encoding)
     if isinstance(prefix, str):
         prefix = prefix.encode(_encoding)
     return hashlib.sha256(prefix + _msg + _tid).hexdigest()
@@ -50,12 +63,18 @@ class api_client():
         # task id
         _tid        = _get_time_stamp()
         # hash with token & time
-        _sum        = _get_sum(_msg, prefix=self._prefix) 
+        _sum        = _get_sum(_msg, _tid, prefix=self._prefix) 
         # head 64+27+9 = 100
         _data   = {'sum': _sum, #64
                    'tid': _tid, #27
                    'msg': _msg,
                   }
+        logging.debug(_join(
+            'msg info:',
+            '\nsum:', _sum,
+            '\ntid:', _tid,
+            '\nmsg:', _msg,
+        ))
         return _data
 
     def _send_pkg(self, _socket_obj, _data_pkg):
@@ -79,13 +98,14 @@ class api_client():
                     _status = 'success'
                 else:
                     _status = 'failed'
-                print(
-                    '\nseq:', _seq, len(_seq),
-                    '\nmax:', _max, len(_max),
-                    '\nsum:', _sum, len(_sum),
-                    '\nslice:', _slice, len(_slice),
-                    '\nstatus:', _status,
-                )
+                logging.warn(_join(
+                    'slice info:',
+                    '\nslice seq:', _seq, len(_seq),
+                    '\nslice max:', _max, len(_max),
+                    '\nslice sum:', _sum, len(_sum),
+                    '\nslice content:', _slice, len(_slice),
+                    '\nslice status:', _status,
+                ))
                 index = index + 1
         else:
             _slice  = _data_pkg.ljust(self._len_max - 80, b' ') 
@@ -98,13 +118,14 @@ class api_client():
                 _status = 'success'
             else:
                 _status = 'failed'
-            print(
-                '\nseq:', _seq,
-                '\nmax:', _max,
-                '\nsum:', _sum,
-                '\nslice:', _data_pkg,
-                '\nstatus:', _status,
-            )
+            logging.warn(_join(
+                'slice info:',
+                '\nslice seq:', _seq, len(_seq),
+                '\nslice max:', _max, len(_max),
+                '\nslice sum:', _sum, len(_sum),
+                '\nslice content:', _data_pkg, len(_data_pkg),
+                '\nslice status:', _status,
+            ))
 
         # confirm data transport stop
         _socket_obj.send(b'f'*16)
@@ -122,16 +143,18 @@ class api_client():
             # the serer replies only confirm status info 
             reply   = _socket.recv(self._len_max).decode('utf-8')
             if reply == _data_pkg['sum']:
-                print(_data_pkg, 'send success')
+                logging.debug(_join(
+                    _data_pkg, 'send success'
+                ))
             else:
-                print('reply:', reply)
+                logging.debug(_join('reply:', reply))
         #except:
         #    print('send failed')
         finally:
             # close socket
             _socket.send(b'exit')
             _socket.close()
-            print('connection closed')
+            logging.debug('connection closed')
 
 if __name__ == "__main__":
     # define a connection 

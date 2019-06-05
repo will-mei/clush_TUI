@@ -1,0 +1,36 @@
+2019/06/05 05:32:36 PM root 20176 - 139811158316864:MainThread - DEBUG - lib_api_client.py _format_msg line: 76 - msg info: 
+sum: a11ef78b622b16bed25dd9a072d3219d9ac0452fec812652b6d8835df2b6de20 
+tid: 2019/06/05-17:32:36_0X39089 
+msg: lsblk -ps |grep sda
+2019/06/05 05:32:36 PM root 20176 - 139811158316864:MainThread - WARNING - lib_api_client.py _send_pkg line: 127 - slice info: 
+slice seq: b'fffff0x0' 8 
+slice max: b'fffff0x0' 8 
+slice sum: b'a0a0cd74972cf20da5054d2297bb872a9a6d692603912f1da15fefb3fe9bae1d' 64 
+slice content: b'{"sum": "a11ef78b622b16bed25dd9a072d3219d9ac0452fec812652b6d8835df2b6de20", "tid": "2019/06/05-17:32:36_0X39089", "msg": "lsblk -ps |grep sda"}' 143 
+slice status: success
+2019/06/05 05:32:36 PM root 20176 - 139811158316864:MainThread - DEBUG - lib_api_client.py _send_msg line: 150 - reply: task 2019/06/05-17:32:36_0X39089  recived and confirmed
+2019/06/05 05:32:36 PM root 20176 - 139811158316864:MainThread - DEBUG - lib_api_client.py _send_msg line: 157 - connection closed
+2019/06/05 05:33:18 PM root 20186 - 139955067320128:MainThread - DEBUG - lib_api_client.py _format_msg line: 76 - msg info: 
+sum: aa24000cf420c63d9ac85faacc51eddc2823f6d79ecb768bfbf76b251273f1b3 
+tid: 2019/06/05-17:33:18_0X2CA559 
+msg: lsblk -ps |grep sda
+2019/06/05 05:33:18 PM root 20186 - 139955067320128:MainThread - WARNING - lib_api_client.py _send_pkg line: 127 - slice info: 
+slice seq: b'fffff0x0' 8 
+slice max: b'fffff0x0' 8 
+slice sum: b'dbf1f6e4cdd2600efc9556706a4707f5ea764566c39a081126f1d8b73b43986f' 64 
+slice content: b'{"sum": "aa24000cf420c63d9ac85faacc51eddc2823f6d79ecb768bfbf76b251273f1b3", "tid": "2019/06/05-17:33:18_0X2CA559", "msg": "lsblk -ps |grep sda"}' 144 
+slice status: success
+2019/06/05 05:33:18 PM root 20186 - 139955067320128:MainThread - DEBUG - lib_api_client.py _send_msg line: 150 - reply: task 2019/06/05-17:33:18_0X2CA559  recived and confirmed
+2019/06/05 05:33:18 PM root 20186 - 139955067320128:MainThread - DEBUG - lib_api_client.py _send_msg line: 157 - connection closed
+2019/06/05 05:33:47 PM root 20189 - 140683073824576:MainThread - DEBUG - lib_api_client.py _format_msg line: 76 - msg info: 
+sum: 96408424a0da6722791d3e6ac13e4e0c83b9895c13676cf8577f6398c3fab4f1 
+tid: 2019/06/05-17:33:47_0X6EB714 
+msg: lsblk -ps |grep sda
+2019/06/05 05:33:47 PM root 20189 - 140683073824576:MainThread - WARNING - lib_api_client.py _send_pkg line: 127 - slice info: 
+slice seq: b'fffff0x0' 8 
+slice max: b'fffff0x0' 8 
+slice sum: b'b3516eba58a43f27ba5c982f54a7477826c2d2c02fc04b2aca7737673a6b8b20' 64 
+slice content: b'{"sum": "96408424a0da6722791d3e6ac13e4e0c83b9895c13676cf8577f6398c3fab4f1", "tid": "2019/06/05-17:33:47_0X6EB714", "msg": "lsblk -ps |grep sda"}' 144 
+slice status: success
+2019/06/05 05:33:47 PM root 20189 - 140683073824576:MainThread - DEBUG - lib_api_client.py _send_msg line: 150 - reply: task 2019/06/05-17:33:47_0X6EB714  recived and confirmed
+2019/06/05 05:33:47 PM root 20189 - 140683073824576:MainThread - DEBUG - lib_api_client.py _send_msg line: 157 - connection closed

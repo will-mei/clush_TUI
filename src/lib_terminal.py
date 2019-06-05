@@ -5,7 +5,7 @@
 try:
     from src.lib_api_server import api_server
 except:
-    import lib_api_server import api_server 
+    from lib_api_server import api_server 
 
 # save log
 import logging
@@ -225,6 +225,7 @@ class ClusterTerminal(api_server):
 
     # run command list on all groups 
     def brodcast_cmd(self, cmd_list):
+        print('broadcast cmd:', cmd_list)
         pass 
 
     #def __add__(self, terminal2):
@@ -234,24 +235,24 @@ class ClusterTerminal(api_server):
 
 #    def __class__(self):
 #        pass
-
-    def __contains__(self, grp_name):
-        return self.has_grp(grp_name)
-    def has_key(self, grp_name):
-        return self.has_grp(grp_name)
-    def has_grp(self, grp_name):
-        return self._host_group_array.__contains__(grp_name)
-
+#
+#    def __contains__(self, grp_name):
+#        return self.has_grp(grp_name)
+#    def has_key(self, grp_name):
+#        return self.has_grp(grp_name)
+#    def has_grp(self, grp_name):
+#        return self._host_group_array.__contains__(grp_name)
+#
 #    def __delattr__(self):
 #        pass
-
-    def __delitem__(self):
-        # remove name and info
-        del self.host_group_list_array[key]
-        # close all connections on that group
-        map(lambda con : con.close(), self.group_connection_dict[key].connections())
-        pass
-
+#
+#    def __delitem__(self):
+#        # remove name and info
+#        del self.host_group_list_array[key]
+#        # close all connections on that group
+#        map(lambda con : con.close(), self.group_connection_dict[key].connections())
+#        pass
+#
 #    def __dir__(self):
 #        pass
 #    def __doc__(self):
@@ -264,8 +265,8 @@ class ClusterTerminal(api_server):
 #        pass
 #    def __getattribute__(self):
 #        pass
-    def __getitem__(self):
-        pass
+#    def __getitem__(self):
+#        pass
 #    def __gt__(self):
 #        pass
 #    def __hash__(self):
@@ -278,8 +279,8 @@ class ClusterTerminal(api_server):
 #        pass
 #    def __le__(self):
 #        pass
-    def __len__(self):
-        pass
+#    def __len__(self):
+#        pass
 #    def __lt__(self):
 #        pass
 #    def __ne__(self):
@@ -297,22 +298,22 @@ class ClusterTerminal(api_server):
 #
     # key: grp_name
     # value: grp_connections
-    def __setitem__(self, grp, grp_con):
-        self._host_group_array[grp] = grp_con
-        pass
+#    def __setitem__(self, grp, grp_con):
+#        self._host_group_array[grp] = grp_con
+#        pass
 #    def __sizeof__(self):
 #        pass
 
-    def __str__(self):
-        return list(map(lambda grp : grp.name, self.con_groups))
-        pass
+#    def __str__(self):
+#        return list(map(lambda grp : grp.name, self.con_groups))
+#        pass
 
 #    def __subclasshook__(self):
 #        pass
 
-    def clear(self):
-        map(lambda con_grp : con_grp.close(self.name), self.con_groups)
-        self._host_group_array.clear()
+#    def clear(self):
+#        map(lambda con_grp : con_grp.close(self.name), self.con_groups)
+#        self._host_group_array.clear()
 
 #    def copy(self):
 #        pass
@@ -321,30 +322,30 @@ class ClusterTerminal(api_server):
 #    def get(self):
 #        pass
 
-    def items(self):
-        pass
-
-    def keys(self):
-        return self.groups()
-    def groups(self):
-        pass
-
-    def pop(self):
-        pass
-
-    def popitem(self):
-        pass
-
+#    def items(self):
+#        pass
+#
+#    def keys(self):
+#        return self.groups()
+#    def groups(self):
+#        pass
+#
+#    def pop(self):
+#        pass
+#
+#    def popitem(self):
+#        pass
+#
 #    def setdefault(self):
 #        pass
 
 #    def update(self):
-    def update_connection(self):
-        pass 
-    def values(self):
-        return self.connections()
-    def connections(self):
-        pass
+#    def update_connection(self):
+#        pass 
+#    def values(self):
+#        return self.connections()
+#    def connections(self):
+#        pass
 
 if __name__ == "__main__":
     # local settings
