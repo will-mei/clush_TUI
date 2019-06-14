@@ -17,6 +17,8 @@ logging.basicConfig(
     datefmt = '%Y/%m/%d %I:%M:%S %p'
 )
 
+import pickle
+
 def _join(*args):
     return ' '.join(map(str, args))
 
@@ -26,8 +28,8 @@ def _join(*args):
 #    002:'hash fail',
 #    003:'data incomplete',
 #    004:'data incorrect',
-#    005:'msg format error',
-#    006:'msg hash failed',
+#    005:'pkg format error',
+#    006:'pkg hash failed',
 #    007:'msg out of date',
 #    008:'broken pipe'
 #    009:'server failure',
@@ -37,6 +39,8 @@ def _join(*args):
 
 class api_server():
     def __init__(self, con_info):
+        self.hex_max    = 8
+        self.sum_length = 64
         self._prefix        = con_info['server_id']
         self._server_ip     = con_info['server_ip']
         self._server_port   = con_info['server_port']
@@ -55,72 +59,89 @@ class api_server():
         logging.debug(_join(
                 self._server_ip, self._server_port, "waiting for connection .."
             ))
+        self.create()
 
-    def perform_task(self, _data):
+    # subclass
+    def create(self):
+        pass
+
+    def parse_call(self, _final_pkg):
         pass 
 
+    #def perform_task(self, _data):
+    #    pass 
+
     def _check_msg(self, _stream_bytes):
-        logging.debug(_join(b'try to load msg form json pkg:',  _stream_bytes))
+        logging.debug(_join(b'try to load data form pkg:',  _stream_bytes))
         try:
-            _data   = json.loads(_stream_bytes)
+            _data   = pickle.loads(_stream_bytes)
             _stat   = True
-            logging.debug('json msg loading success')
+            logging.debug('data loading success')
         except:
             _data   = None
             _stat   = False 
-            logging.warn('json msg format abnormal, load failed')
+            logging.warn('data pkg format abnormal, load failed')
         return (_data, _stat)
 
-    def parse_msg(self, _data):
-        # parse msg
+    def parse_client_data(self, _data):
+        # parse msg format 
         try:
-            _sum    = _data['sum']
-            _msg    = _data['msg']
-            _tid    = _data['tid']
-            _time_stamp = _tid.split('_')[0]
-            _time   = time.mktime(time.strptime(_time_stamp, "%Y/%m/%d-%H:%M:%S")) 
-            _tag    = _tid.split('_')[1]
+            _sum        = _data['sum']
+            _bin_id     = _data['bin_id']
+            _bin_data   = _data['bin_data']
+            # 
+            _time_stamp = _bin_id.split(b'_')[0]
+            _form_tag   = _bin_id.split(b'_')[1]
+            _sent_time  = time.mktime(time.strptime(_time_stamp.decode('utf-8'), "%Y/%m/%d-%H:%M:%S")) 
             logging.debug(_join(
-                'msg info:',
-                '\nmsg sum:', _sum,
-                '\nmsg tid:', _tid,
-                '\nmsg tag:', _tag,
-                '\nmsg sent time:', _time_stamp,
-                '\nmsg content:', _msg,
+                'data info:',
+                '\ndata sum:',      _sum,
+                '\ndata id:',       _bin_id,
+                '\ndata tag:',      _form_tag,
+                '\ndata sent time:',_time_stamp,
+                '\ndata content:',  _bin_data,
             ))
         except:
-            logging.warn(_join(b'fail to parse msg content:', _stream_bytes))
+            logging.warn(_join(b'fail to parse msg content:', _data))
             reply   = b'info status: wrong format, droped'
+            return reply
+
+        # msg timeout
+        _time_now = time.time()
+        if _time_now - _sent_time > self._mtimeout:
+            reply   = ('task %s recived and abandent, cause the timestamp is out of date' % _tid).encode('utf-8')
+            logging.debug(_join('reply:', reply))
             return reply
 
         # task_id existence status check (sqlite)
 
         # hash validation
-        _sum_confirm = hashlib.sha256(self._prefix + _msg.encode('utf-8') + _tid.encode('utf-8') ).hexdigest()
+        _sum_confirm = hashlib.sha256(self._prefix + _bin_data + _bin_id).hexdigest()
         if _sum_confirm == _sum:
             # reply 
-            reply   = ('task %s  recived and confirmed' % _tid ).encode('utf-8')
+            reply   = ('data %s  recived and confirmed' % _bin_id.decode('utf-8')).encode('utf-8')
             logging.info(_join('reply:', reply))
-            # exec task 
-            self.perform_task(_data)
+
+            # add tag into data and exec task 
+            _data['id']         = _data['bin_id'].decode('utf-8')
+            _tag = _data['tag'] = _form_tag.decode('utf-8') 
+            if _tag in ['msg', 'json']:
+                _data['data']   = _data['bin_data'].decode('utf-8')
+            else:
+                _data['data']   = pickle.loads(_data['bin_data'])
+            self.parse_call(_data)
+            #self.perform_task(_data)
         else:
-            reply   = ('task %s hash failed, task invalid' % _tid).encode('utf-8')
+            reply   = ('task %s hash failed, task invalid' % _bin_id.decode('utf-8')).encode('utf-8')
             logging.warn(_join(
                 'hash info:',
-                '\nprefix:', self._prefix,
-                '\ntid:', _tid.encode('utf-8'),
-                '\nsum origin:', _sum,
-                '\nsum confirm:', _sum_confirm,
-                '\nmsg content:', _msg.encode('utf-8')
+                '\nprefix:',        self._prefix,
+                '\ndata id:',       _bin_id,
+                '\nsum origin:',    _sum,
+                '\nsum confirm:',   _sum_confirm,
+                '\ndat content:',   _bin_data,
             ))
             logging.debug(_join('reply:', reply))
-
-        # msg timeout
-        _time_now = time.time()
-        if _time_now - _time > self._mtimeout:
-            reply   = ('task %s recived and abandent, cause the timestamp is out of date' % _tid).encode('utf-8')
-            logging.debug(_join('reply:', reply))
-            return reply
 
         return reply
 
@@ -136,17 +157,17 @@ class api_server():
             time.sleep(0)
             
             # end and exit 
-            if not _stream_bytes or _stream_bytes.decode('utf-8') == 'exit':
+            if not _stream_bytes or _stream_bytes == b'exit':
                 break
             #sock.send(('Hello,%s!' % _stream_bytes.decode('utf-8')).encode('utf-8'))
 
             # confirmed stop 
-            if _stream_bytes == b'f'*16:
+            if _stream_bytes == b'f'* self.hex_max*2:
                 logging.debug(_join('confirm stop reciving slices:\n', 'seq_max:', _slice_max))
                 # check every slice of data pkg 
                 i = 0 
                 _data_pkg = b''
-                # check and splicing sequnces
+                # check and splicing sequnces, seq num base 16
                 while i <= int(_slice_max.lstrip(b'f'), 16):
                     logging.debug('check slice num %s' % i)
                     try:
@@ -156,22 +177,30 @@ class api_server():
                         _data_pkg = None
                         break
                     i = i+1
+
                 # check msg and confirm
-                _task_data_info = self._check_msg(_data_pkg)
-                _task_data_pkg  = _task_data_info[0]
-                _task_data_stat = _task_data_info[1]
-                if _task_data_stat:
-                    logging.debug(_join('the complete msg data:\n', _task_data_pkg))
-                    reply = self.parse_msg(_task_data_pkg)
+                _client_data_info = self._check_msg(_data_pkg) # pkg content, stat 
+                _client_data_pkg  = _client_data_info[0]
+                _client_data_stat = _client_data_info[1]
+                if _client_data_stat:
+                    logging.debug(_join('the complete msg data:\n', _client_data_pkg))
+                    # reply transportation result info to client 
+                    reply = self.parse_client_data(_client_data_pkg)
                     sock.send(reply)
                 else:
                     sock.send(b'data incorrect,  transportation failed')
+
             # continue recive the rest 
             else:
-                _seq    = _stream_bytes[:8]
-                _max    = _stream_bytes[8:16]
-                _sum    = _stream_bytes[16:80]
-                _slice  = _stream_bytes[80:].rstrip()
+                _seq    = _stream_bytes[:self.hex_max]
+                _max    = _stream_bytes[self.hex_max:self.hex_max*2]
+                _sum    = _stream_bytes[self.hex_max*2:(self.hex_max*2+self.sum_length)]
+                if _seq == _max:
+                    _slice  = _stream_bytes[(self.hex_max*2+self.sum_length):self._len_max].rstrip()[:-1]
+                else:
+                    _slice  = _stream_bytes[(self.hex_max*2+self.sum_length):self._len_max][:-1]
+
+                # hash result 
                 _sum_confirm  = hashlib.sha256(_seq + _slice).hexdigest().encode('utf-8')
                 logging.debug(_join(
                     'recived slice info:'
@@ -184,7 +213,7 @@ class api_server():
                 # check individual data package
                 if _sum_confirm == _sum :
                     _slice_max = _max
-                    index = int(_seq.lstrip(b'f'), 16)
+                    index = int(_seq.lstrip(b'f'), self.hex_max*2)
                     if not index in _slice_dict:
                         logging.debug('store slice data num %s to buffer dict:\n' % index)
                         _slice_dict[index] = _slice
@@ -192,7 +221,7 @@ class api_server():
                     # confirm
                     sock.send(_sum)
                 else:
-                    # check fail
+                    # send return code error for checking sum info failed
                     sock.send(b'01') 
         # end 
         sock.close()

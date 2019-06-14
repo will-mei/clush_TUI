@@ -40,6 +40,21 @@ try:
 except:
     from lib_ssh_paramiko import SSHConnection
 
+#from peewee import *
+#import datetime
+#
+#cluster_db = SqliteDatabase('../db/cluster_database.db')
+#
+#class BaseModel(Model):
+#    class Meta:
+#        database = cluster_db
+
+cluster_db
+task_db
+device_db
+io_test_db
+outut_db
+
 
 # check ip format 
 def valid_ip(ip):
@@ -216,26 +231,26 @@ class ConnectionGroup:
 # here defines what you can do to a group 
 class ClusterTerminal(api_server):
 
-    def perform_task(self, _data):
-        if _data['tid'] == 'ClusterTerminalTask':
-            self.update(_data['msg'])
+    def create(self):
+        self._groups  = {}
+
+    def parse_call(self, _data):
+        if _data['tag'] == 'msg':
+            self.parse_msg(_data['data'])
         else:
-            self.brodcast_cmd(_data['msg'])
-        pass 
+            self.perform_task(_data)
+
+    def perform_task(self, _data):
+        print('call with tag:', _data['tag'])
+        print('data content:', _data['data'])
+
+    def parse_msg(self, _msg):
+        print('recived msg:', _msg)
 
     # run command list on all groups 
     def brodcast_cmd(self, cmd_list):
         print('broadcast cmd:', cmd_list)
-        pass 
 
-    #def __add__(self, terminal2):
-        #map(lambda grp : grp.admin = self.name, terminal2.con_groups)
-        #return self 
-        #pass
-
-#    def __class__(self):
-#        pass
-#
 #    def __contains__(self, grp_name):
 #        return self.has_grp(grp_name)
 #    def has_key(self, grp_name):
@@ -243,84 +258,31 @@ class ClusterTerminal(api_server):
 #    def has_grp(self, grp_name):
 #        return self._host_group_array.__contains__(grp_name)
 #
-#    def __delattr__(self):
-#        pass
-#
-#    def __delitem__(self):
-#        # remove name and info
-#        del self.host_group_list_array[key]
-#        # close all connections on that group
-#        map(lambda con : con.close(), self.group_connection_dict[key].connections())
-#        pass
-#
-#    def __dir__(self):
-#        pass
-#    def __doc__(self):
-#        pass
-#    def __eq__(self):
-#        pass
-#    def __format__(self):
-#        pass
-#    def __ge__(self):
-#        pass
-#    def __getattribute__(self):
-#        pass
-#    def __getitem__(self):
-#        pass
-#    def __gt__(self):
-#        pass
-#    def __hash__(self):
-#        pass
-#    def __init__(self):
-#        pass
-#    def __init_subclass__(self):
-#        pass
-#    def __iter__(self):
-#        pass
-#    def __le__(self):
-#        pass
+    def __getitem__(self):
+        pass
+
+    def __delitem__(self):
+        # close all connections on that group
+        map(lambda con : con.close(), self._groups[key].connections())
+        # remove name and info
+        del self._groups[key]
+
 #    def __len__(self):
 #        pass
-#    def __lt__(self):
-#        pass
-#    def __ne__(self):
-#        pass
-#    def __new__(self):
-#        pass
-#    def __reduce__(self):
-#        pass
-#    def __reduce_ex__(self):
-#        pass
-#    def __repr__(self):
-#        pass
-#    def __setattr__(self):
-#        pass
-#
+
     # key: grp_name
     # value: grp_connections
 #    def __setitem__(self, grp, grp_con):
 #        self._host_group_array[grp] = grp_con
-#        pass
-#    def __sizeof__(self):
 #        pass
 
 #    def __str__(self):
 #        return list(map(lambda grp : grp.name, self.con_groups))
 #        pass
 
-#    def __subclasshook__(self):
-#        pass
-
 #    def clear(self):
 #        map(lambda con_grp : con_grp.close(self.name), self.con_groups)
 #        self._host_group_array.clear()
-
-#    def copy(self):
-#        pass
-#    def fromkeys(self):
-#        pass
-#    def get(self):
-#        pass
 
 #    def items(self):
 #        pass
@@ -385,7 +347,7 @@ if __name__ == "__main__":
         #'grp_ip_array': {'host' + str(x) : '192.168.59.' + str(x) for x in range(10, 30)}
     }
 
-    grp_con = ConnectionGroup(g, t['server_id'])
+    grp_con = ConnectionGroup(g, server_info['server_id'])
     #print(grp_con._connections)
 
     if grp_con.is_alive():

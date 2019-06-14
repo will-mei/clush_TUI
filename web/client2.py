@@ -23,7 +23,7 @@ def _get_time_stamp():
     return _time_tx + _float_tx  
 # len timestamp 27
 
-def _get_sum(prefix='', msg_tx, _encoding='utf-8'):
+def _get_sum(msg_tx, prefix='', _encoding='utf-8'):
     if isinstance(prefix, str):
         _content = (prefix 
                     + msg_tx + _get_time_stamp()).encode(_encoding)
@@ -51,14 +51,14 @@ def _send_msg(con_info, _msg):
     _len_max    = con_info['msg_trans_unit']
 
     _socket     = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    _socket.connect((server_ip, server_port))
+    _socket.connect((_server_ip, _server_port))
     # welcome
     #print(_socket.recv(_len_max).decode('utf-8'))
 
     # task id
     _tid        = _get_time_stamp()
     # hash with token & time
-    _sum        = _get_sum(prefix=_prefix, _msg) 
+    _sum        = _get_sum(_msg, prefix=_prefix) 
 
     # slice and make header
     _size       = len(_data_pkg)
