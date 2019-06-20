@@ -150,9 +150,6 @@ class MainForm(npyscreen.FormBaseNewWithMenus):
         }
         self.add_handlers(new_handlers)
 
-    #def while_editing(self,*args, **keywords):
-    #    self.msgInfoBoxObj.display()
-
     # events
     def event_target_select(self, event):
         target_hosts = self.chatBoxObj.value
@@ -212,20 +209,28 @@ class MainForm(npyscreen.FormBaseNewWithMenus):
             _return_str = lib_cli_bash.ez_cmd(_cmd_str).split('\n')
         else:
             _selected_nodes = list(self.GroupTreeBoxObj.get_selected_objects())
-            _offline_hosts  = list(
+            _selected_hosts = list(
                 filter(
-                    lambda x: x != None,
-                    map(
-                        lambda x : self.ssh_cmd(_cmd_str, x.get_ssh_info()),
-                        filter(lambda x : x.marker == 'host',
-                               _selected_nodes
-                              )
-                    )
-                ) 
+                    lambda x : x.marker == 'host',
+                    _selected_nodes
+                )
             )
-            if len(_offline_hosts): #>0
-                self.msgInfoBoxObj.append_msg('failed: ' + str(_offline_hosts) )
-            _return_str = ""
+            if _selected_hosts:
+                #
+                _offline_hosts  = list(
+                    filter(
+                        lambda x: x != None,
+                        map(
+                            lambda x : self.ssh_cmd(_cmd_str, x.get_ssh_info()),
+                            _selected_hosts
+                        )
+                    ) 
+                )
+                if len(_offline_hosts): #>0
+                    self.msgInfoBoxObj.append_msg('failed: ' + str(_offline_hosts) )
+                _return_str = ""
+            else:
+                _return_str = '没有目标主机'
             self.inputBoxObj.display()
         if _return_str :
             self.msgInfoBoxObj.append_msg(_return_str)
@@ -309,4 +314,7 @@ class MainForm(npyscreen.FormBaseNewWithMenus):
     # update loop
     def while_waiting(self):
         pass 
+
+    #def while_editing(self,*args, **keywords):
+    #    self.msgInfoBoxObj.display()
 

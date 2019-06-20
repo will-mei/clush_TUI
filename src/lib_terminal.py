@@ -49,11 +49,21 @@ except:
 #    class Meta:
 #        database = cluster_db
 
-cluster_db
-task_db
-device_db
-io_test_db
-outut_db
+#terminal.db
+#   groups 
+#   hosts 
+#   device 
+#   
+#task.db
+#   exec source 
+#   target
+#
+#outut_db
+#   task
+#   test
+#   cmd
+#
+##io_test_db
 
 
 # check ip format 
