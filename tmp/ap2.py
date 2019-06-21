@@ -13,6 +13,7 @@ class myEmployeeForm(npyscreen.Form):
         self.myName       = self.add(npyscreen.TitleText, name='Name of a lone iterm', begin_entry_at=32)
         #self.myDepartment = self.add(npyscreen.TitleText, name='Department')
         self.myDate       = self.add(npyscreen.TitleDateCombo, name='Date Employed')
+        self.test1      = self.add(npyscreen.Checkbox, name='选框1', value=True)
         self.myDepartment = self.add(npyscreen.TitleSelectOne, max_height=4, 
                                      name='Department',
                                      values = ['Department_A', 'Department_B', 'Department_C'],

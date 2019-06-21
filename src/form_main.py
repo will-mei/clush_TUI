@@ -70,15 +70,17 @@ class MainForm(npyscreen.FormBaseNewWithMenus):
         # menus 
         self.main_menu = self.new_menu(name='主菜单:')
         self.main_menu.addItemsFromList([
-            ('添加 新的主机组', self.add_grp,       "^A"),
-            ('预配置 ceph集群', self.deploy_ceph,   "^D"),
-            ('销毁重置 ceph集群(不可用)',   self.show_help,     "^H"),
-            ('预部署 ceph集群(不可用)', self.deploy_ceph,   "^H"),
-            ('部署 ceph集群(不可用)',   self.deploy_ceph,   "^H"),
-            ('配置 迭代测试(不可用)',   self.show_help,     "^H"),
-            ('切换命令行模式',  self.mode_switch,   "^N"),
-            ('帮助',            self.show_help,     "^H"),
-            ('退出',            self.exit_func,     "^Q"),
+            ('切换命令行模式',          self.switch_cli_mode,   "^N"),
+            ('发起IO测试(添加中)',      self.launch_IO_test,    "^I"),
+            ('开启任务流(添加中)',      self.turn_on_taskflow,  "^R"),
+            ('管理任务流(添加中)',      self.manage_taskflow,   "^M"),
+            ('添加 新任务',             self.add_task,          "^A"),
+            ('添加 新主机(组)',         self.add_group,         "^G"),
+            ('部署 ceph集群',           self.deploy_ceph,       "^D"),
+            ('配置 ceph集群(不可用)',   self.config_ceph,       "^O"),
+            ('销毁 ceph集群(不可用)',   self.purge_ceph,        "^P"),
+            ('帮助',                    self.show_help,         "^H"),
+            ('退出',                    self.exit_func,         "^Q"),
         ])
         # Events
 
@@ -93,32 +95,59 @@ class MainForm(npyscreen.FormBaseNewWithMenus):
         # create ui form
         ny = self.nextrely
         nx = self.nextrelx
-        self.GroupTreeBoxObj = self.add(box_grouptree.HostGroupTreeBox, name="主机组", max_width=28, scroll_exit=False) #, value=0, relx=1, max_width=x // 5, rely=2,
+        self.GroupTreeBoxObj = self.add(
+            box_grouptree.HostGroupTreeBox,
+            name="主机组",
+            max_width=28,
+            scroll_exit=False) #, value=0, relx=1, max_width=x // 5, rely=2,
 
         # top , 28 right 
         self.nextrely = ny
         self.nextrelx = nx + 28
         x_half = int((x - 28) / 2 -5)
-        self.statusInfoBoxObj = self.add(box_status.statusBox,
-                                         name="当前测试负载压力",
-                                         footer='正在运行作业主机数:0',
-                                         values=['测试负载 iops: 0000', '测试负载 吞吐: 0000(Mib/s)', '测试负载 延迟: 00.00(ms)'],
-                                         max_height=5,
-                                         max_width=x_half,
-                                         contained_widget_arguments={'maxlen':3},
-                                         exit_left=True, exit_right=True, scroll_exit=True, editable=False)
+        self.taskflowInfoBoxObj = self.add(
+            box_status.statusBox,
+            #name="当前测试负载压力",
+            #footer='正在运行作业主机数:0',
+            #values=['测试负载 iops: 0000', '测试负载 吞吐: 0000(Mib/s)', '测试负载 延迟: 00.00(ms)'],
+            name = "任务状态",
+            footer = '运行中任务数: 0',
+            values = ['队列任务数: 0', '已完成任务: 0'],
+            max_height=5,
+            max_width=x_half,
+            contained_widget_arguments={'maxlen':3},
+            exit_left=True,
+            exit_right=True,
+            scroll_exit=True,
+            editable=False
+        )
         self.nextrely = ny
         self.nextrelx = nx + 28 + x_half
-        self.statusInfoBoxObj2 = self.add(box_status.statusBox,
-                                          name="状态",
-                                          footer='命令行模式: 本地shell',
-                                          values=['选中主机组: 0/0', '选中节点数: 0/0', '在线节点数: 0/0/0'], # 选中在线/所有在线/所有
-                                          max_height=5,
-                                          contained_widget_arguments={'maxlen':3},
-                                          exit_left=True, exit_right=True, scroll_exit=True, editable=False)
+        self.groupstatusInfoBoxObj = self.add(
+            box_status.statusBox,
+            name="主机状态",
+            footer='运行中主机数: 0',
+            values=['选中主机组: 0/0', '选中节点数: 0/0', '在线节点数: 0/0/0'], # 选中在线/所有在线/所有
+            max_height=5,
+            contained_widget_arguments={'maxlen':3},
+            exit_left=True,
+            exit_right=True,
+            scroll_exit=True,
+            editable=False
+        )
         self.nextrelx = nx + 28
-        self.msgInfoBoxObj = self.add(box_messages.InfoBox, name="滚动消息", max_height=-5, footer=' l 搜索并高亮显示, L 取消高亮显示') #, contained_widget_arguments={'maxlen':msg_buffer})
-        self.inputBoxObj = self.add(box_input.InputBox, name="输入", footer='Tab/鼠标 切换窗口, Alt + Enter 换行', scroll_exit=False)
+        self.msgInfoBoxObj = self.add(
+            box_messages.InfoBox,
+            name="滚动消息",
+            max_height=-5,
+            footer=' l 搜索并高亮显示, L 取消高亮显示'
+        ) #, contained_widget_arguments={'maxlen':msg_buffer})
+        self.inputBoxObj = self.add(
+            box_input.InputBox,
+            name="非交互命令行模式: local shell",
+            footer='Tab/鼠标 切换窗口, Alt + Enter 换行',
+            scroll_exit=False
+        )
 
         # 添加部分示例数据到主机列表
         npyscreen.notify('添加示例主机组', title='测试消息')
@@ -139,9 +168,9 @@ class MainForm(npyscreen.FormBaseNewWithMenus):
             155:                self.exit_func,
             curses.ascii.BEL:   self.abort_func, # works and safe
             # send command
-            curses.ascii.CR:    self.send_command,
-            curses.ascii.NL:    self.send_command,
-            curses.KEY_ENTER:   self.send_command,
+            curses.ascii.CR:    self.send_user_commands,
+            curses.ascii.NL:    self.send_user_commands,
+            curses.KEY_ENTER:   self.send_user_commands,
             #
             "^T":               self.test_func,
             # send file
@@ -150,28 +179,38 @@ class MainForm(npyscreen.FormBaseNewWithMenus):
         }
         self.add_handlers(new_handlers)
 
-    # events
-    def event_target_select(self, event):
-        target_hosts = self.chatBoxObj.value
-        #client.dialogs[current_user].unread_count = 0
+#####################################################
+# common functions
+#####################################################
+    def update_host_status(self):
+        _selected_nodes = list(self.GroupTreeBoxObj.get_selected_objects())
+        _offline_hosts = list(map(lambda x : self._tset_ssh(x.get_ssh_info()), filter(lambda x : x.marker == 'host', _selected_nodes)))
+        #for host in _offline_hosts: 
+        pass 
 
-##    def event_messagebox_change_cursor(self, event):
-##        current_user = self.chatBoxObj.value
-##        messages = self.messageBoxObj.get_messages_info(current_user)
-##        date = messages[len(messages) - 1 - self.messageBoxObj.entry_widget.cursor_line].date
-##
-##        self.messageBoxObj.footer = str(date + (timedelta(self.timezone) // 24))
-##        self.messageBoxObj.update()
+    def _debug_msg(self):
+        #_selected_nodes = list(self.GroupTreeBoxObj.get_selected_objects())
+        #_selected_hosts = list(map(lambda x : str(x.get_content()) + ' ' + str(x.get_parent().get_content()) + str(x.get_parent().ssh_info), filter(lambda x : x.marker == 'host', _selected_nodes)))
+        _selected_hosts = list(
+            map(
+                lambda x : str(x.get_content()) + ' ' + str(x.get_parent().get_content()) + str(x.get_parent().ssh_info),
+                self.GroupTreeBoxObj.get_selected_objects(node_type='host')
+            )
+        )
+        self.msgInfoBoxObj.append_msg(_selected_hosts)
 
-    # handling methods
-    def mode_switch(self):
-        if self.shell_mode == 'local':
-            self.shell_mode = 'cluster'
-        else:
-            self.shell_mode = 'local'
+        #_selected_groups = list(map(lambda x : str(x.get_content()) + ' ' + str(x.ssh_info) , filter(lambda x : x.marker == 'group', _selected_nodes)))
+        #self.msgInfoBoxObj.append_msg(_selected_groups)
+        #self.msgInfoBoxObj.append_msg(list(_selected_nodes))
 
-        self.statusInfoBoxObj2.footer = '命令行模式: ' + self.shell_mode 
-        self.msgInfoBoxObj.append_msg('模式切换到:' + self.shell_mode)
+        #_tmp_list = list(map(lambda x : x.marker ,  self.GroupTreeBoxObj.get_selected_objects() ))
+        #self.msgInfoBoxObj.append_msg(_tmp_list)
+        #npyscreen.notify_confirm(str(_tmp_list), title='debug notification')
+
+    def test_func(self, _input):
+        # check ssh 
+        self.msgInfoBoxObj.append_msg(self.inputBoxObj.entry_widget.parent.name)
+        self._debug_msg()
 
     def _test_ssh(self, ssh_info):
         try:
@@ -196,9 +235,24 @@ class MainForm(npyscreen.FormBaseNewWithMenus):
             _result += ret.split('\n')
         self.msgInfoBoxObj.append_msg(_result)
 
+#####################################################
+# func for events
+#####################################################
+    def event_target_select(self, event):
+        target_hosts = self.chatBoxObj.value
+        #client.dialogs[current_user].unread_count = 0
 
-    #def message_send(self, event):
-    def send_command(self, event):
+##    def event_messagebox_change_cursor(self, event):
+##        current_user = self.chatBoxObj.value
+##        messages = self.messageBoxObj.get_messages_info(current_user)
+##        date = messages[len(messages) - 1 - self.messageBoxObj.entry_widget.cursor_line].date
+##
+##        self.messageBoxObj.footer = str(date + (timedelta(self.timezone) // 24))
+##        self.messageBoxObj.update()
+
+    # handling methods
+
+    def send_user_commands(self, event):
         _cmd_str = self.inputBoxObj.value 
         self.inputBoxObj.value = ""
         self.inputBoxObj.display()
@@ -236,44 +290,52 @@ class MainForm(npyscreen.FormBaseNewWithMenus):
             self.msgInfoBoxObj.append_msg(_return_str)
             self.inputBoxObj.display()
 
-    def update_host_status(self):
-        _selected_nodes = list(self.GroupTreeBoxObj.get_selected_objects())
-        _offline_hosts = list(map(lambda x : self._tset_ssh(x.get_ssh_info()), filter(lambda x : x.marker == 'host', _selected_nodes)))
-        #for host in _offline_hosts: 
-        pass 
-
     def event_update_main_form(self, event):
         self.display()
         self.msgInfoBoxObj.display()
 
-    def _debug_msg(self):
-        #_selected_nodes = list(self.GroupTreeBoxObj.get_selected_objects())
-        #_selected_hosts = list(map(lambda x : str(x.get_content()) + ' ' + str(x.get_parent().get_content()) + str(x.get_parent().ssh_info), filter(lambda x : x.marker == 'host', _selected_nodes)))
-        _selected_hosts = list(
-            map(
-                lambda x : str(x.get_content()) + ' ' + str(x.get_parent().get_content()) + str(x.get_parent().ssh_info),
-                self.GroupTreeBoxObj.get_selected_objects(node_type='host')
-            )
-        )
-        self.msgInfoBoxObj.append_msg(_selected_hosts)
+#####################################################
+# menu functions
+#####################################################
+    def switch_cli_mode(self):
+        if self.shell_mode == 'local':
+            self.shell_mode = 'cluster'
+        else:
+            self.shell_mode = 'local'
 
-        #_selected_groups = list(map(lambda x : str(x.get_content()) + ' ' + str(x.ssh_info) , filter(lambda x : x.marker == 'group', _selected_nodes)))
-        #self.msgInfoBoxObj.append_msg(_selected_groups)
-        #self.msgInfoBoxObj.append_msg(list(_selected_nodes))
+        self.inputBoxObj.name = '非交互命令行模式: ' + self.shell_mode + ' shell'
+        self.msgInfoBoxObj.append_msg('非交互命令行模式已切换到:' + self.shell_mode + ' shell')
 
-        #_tmp_list = list(map(lambda x : x.marker ,  self.GroupTreeBoxObj.get_selected_objects() ))
-        #self.msgInfoBoxObj.append_msg(_tmp_list)
-        #npyscreen.notify_confirm(str(_tmp_list), title='debug notification')
-
-    def dump_grptree(self):
+    def launch_IO_test(self):
         pass
-    def dump_msginfo(self):
-        pass 
-
-    def safe_exit(self):
-        # some thing to check before exit 
-        exit(0)
+    
+    def turn_on_taskflow(self):
         pass
+
+    def manage_taskflow(self):
+        pass
+
+    def add_task(self):
+        pass
+
+    def add_group(self):
+        self.parentApp.switchForm('AddHostGroupForm')
+
+    def deploy_ceph(self):
+        self.parentApp.switchForm('CephDeplyForm')
+
+    def config_ceph(self):
+        pass
+
+    def purge_ceph(self):
+        pass
+
+    def show_help(self):
+        self.parentApp.switchForm('HelpForm')
+
+    def exit_func(self, *args):
+        if npyscreen.notify_yes_no('确定要退出吗?', title='确认退出:'):
+            self.safe_exit()
 
     def abort_func(self, _input):
         if npyscreen.notify_yes_no('确定要中断现有任务并退出吗?', title='终止退出:'):
@@ -282,23 +344,15 @@ class MainForm(npyscreen.FormBaseNewWithMenus):
             self.dump_msginfo()
             exit(0)
 
-    def exit_func(self, *args):
-        if npyscreen.notify_yes_no('确定要退出吗?', title='确认退出:'):
-            self.safe_exit()
-
     def _cancel_signal(self, *args, **keywords):
         # check wdget on editing
         # abort 
         self.safe_exit()
 
-    def show_help(self):
-        self.parentApp.switchForm('HelpForm')
-
-    def add_grp(self):
-        self.parentApp.switchForm('HostGroupForm')
-
-    def deploy_ceph(self):
-        self.parentApp.switchForm('CephDeplyForm')
+    def safe_exit(self):
+        # some thing to check before exit 
+        exit(0)
+        pass
 
     def file_distrbution(self):
         pass 
@@ -306,11 +360,9 @@ class MainForm(npyscreen.FormBaseNewWithMenus):
     def file_collection(self):
         pass 
 
-    def test_func(self, _input):
-        # check ssh 
-        self.msgInfoBoxObj.append_msg(self.inputBoxObj.entry_widget.parent.name)
-        self._debug_msg()
-
+#####################################################
+# update main window 
+#####################################################
     # update loop
     def while_waiting(self):
         pass 

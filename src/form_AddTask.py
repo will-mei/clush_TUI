@@ -39,11 +39,6 @@ def load_conf_content(file_name):
     _conf_content = list(map(get_line_content, filter(line_available, _conf_lines)))
     return _conf_content
 
-def ip_reachable(_ipaddr):
-    #    cmd = 'ping -c1 ' + ip + '&>/dev/null'
-    #    cmd_stat = os.system(cmd)
-    #    if cmd_stat == 0:
-    return True 
 
 #MultiLineEditableBoxed
 
@@ -52,48 +47,35 @@ def ip_reachable(_ipaddr):
 #    def add_tx(self, text):
 #        self.entry_widget.value = text
 
-class HostGroupForm(npyscreen.ActionFormV2):
+class AddTaskForm(npyscreen.ActionFormV2):
     def create(self):
-        self.name = '配置并添加新的主机组:'
-        # record y
-        self.ny = self.nextrely
-        self.add_mode = self.add(npyscreen.TitleMultiSelect, begin_entry_at=15, name='添加选项', max_height=4, field_width=40,
-                                 value=[0,1,2,3,],
-                                 values=["从文件加载 ip  列表", "从文件加载 磁盘列表", "指定ssh连接私钥文件", "执行 网络连接预检测"],
-                                 value_changed_callback=self.value_changed_callback,
-                                 exit_right=True,
-                                 scroll_exit=True)
-        # recover y, move right: + x
-        self.nextrely = self.ny
-        self.nextrelx += 45
-        self.grp_conf = self.add(npyscreen.TitleFilenameCombo,  begin_entry_at=15, name="grp_conf:", exit_left=True)
-        self.blk_conf = self.add(npyscreen.TitleFilenameCombo,  begin_entry_at=15, name="blk_conf:", exit_left=True)
-        self.grp_key  = self.add(npyscreen.TitleFilenameCombo,  begin_entry_at=15, name="Identity:", exit_left=True)
-        # pre check 
-        self.conTimeout = self.add(npyscreen.TitleSlider, field_width=55, begin_entry_at=15, lowest=10, out_of=90, step=10, name="超时时间:", exit_left=True)
-        self.conTimeout.value = 10
-        self.nextrely += 1
-        # recover x
-        self.grp_name = self.add(npyscreen.TitleText, begin_entry_at=18, name='组名称 (必填):')
-        self.grp_user = self.add(npyscreen.TitleText, begin_entry_at=18, name='ssh 用户:')
-        self.grp_port = self.add(npyscreen.TitleText, begin_entry_at=18, name='ssh 端口(必填):')
-        self.grp_pswd = self.add(npyscreen.TitleText, begin_entry_at=18, name='ssh 口令:')
-        self.nextrely += 1
+        self.name = '添加并配置新的任务:'
+        # task infomation
+        # 
+        self.task_name  = self.add(npyscreen.TitleText, begin_entry_at=18, name='任务名称:')
+        self.task_type  = self.add(npyscreen.TitleCombo, name='任务类型', max_width=40, values=['主线任务', '分支任务', '附属任务'], value=0)
+        self.exec_type  = self.add(npyscreen.TitleCombo, name='动作类型', max_width=40, values=['递送收集', '递送分发', '检查动作', '修改动作', '回滚动作'], value=3)
+        self.rollbackable = self.add(npyscreen.TitleText, begin_entry_at=18, name='无法回滚错误')
+        self.auth_level = self.add(npyscreen.TitleText, begin_entry_at=18, name='ssh 用户:')
+        self.grp_port   = self.add(npyscreen.TitleText, begin_entry_at=18, name='ssh 端口(必填):')
+        self.grp_pswd   = self.add(npyscreen.TitleText, begin_entry_at=18, name='ssh 口令:')
+        self.blk_conf   = self.add(npyscreen.TitleFilenameCombo,  begin_entry_at=15, name="blk_conf:", exit_left=True)
+        self.nextrely   += 1
         # record y
         self.nextrelx += -30
         self.ny = self.nextrely
-        self.ip_list   = self.add(npyscreen.MultiLineEditableBoxed, max_width=40,
+        self.ip_list   = self.add(npyscreen.MultiLineEditableBoxed, #max_width=40,
                                   name='主机IP列表:',
                                   values=['0.0.0.0'],
                                   footer='按下 i 或 o 开始编辑')
         #self.ip_list.add_tx('你可以在此手动粘贴 IP 列表,\n使用 ^R 查看格式化结果,\n添加前请务必删除此处注释文本.\n')
-        self.nextrely  = self.ny
-        self.nextrelx += 45
-        self.blk_list  = self.add(npyscreen.MultiLineEditableBoxed, max_width=40, 
-                                  name='块设备列表:',
-                                  values=['/dev/sdx', '/dev/sdy','/dev/sdz'],
-                                  footer='使用tab切换到其他控件')
-        #self.blk_list.add_tx('你可以在此手动编辑磁盘列表,\n使用 ^R 查看格式化结果,添加前请务必删除此处注释文本.\n')
+#        self.nextrely  = self.ny
+#        self.nextrelx += 45
+#        self.blk_list  = self.add(npyscreen.MultiLineEditableBoxed, max_width=40, 
+#                                  name='块设备列表:',
+#                                  values=['/dev/sdx', '/dev/sdy','/dev/sdz'],
+#                                  footer='使用tab切换到其他控件')
+#        #self.blk_list.add_tx('你可以在此手动编辑磁盘列表,\n使用 ^R 查看格式化结果,添加前请务必删除此处注释文本.\n')
 
         self._conf_refreshed = None
         self._loadable_conf_status = {

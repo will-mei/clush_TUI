@@ -44,7 +44,7 @@ class message_sender(npyscreen.MultiLineEdit):
                     # (self.t_is_cu, self.h_erase_left),
                         ))
     def h_pesky(self, _input):
-        self.parent.send_command(_input)
+        self.parent.send_user_commands(_input)
         pass
 
     def h_cancel_input(self, _input):

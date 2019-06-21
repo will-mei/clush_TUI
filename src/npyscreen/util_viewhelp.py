@@ -8,6 +8,8 @@ def view_help(message, title="Message", form_color="STANDOUT", scroll_exit=False
     mlw = F.add(wgmultiline.Pager, scroll_exit=True, autowrap=autowrap)
     mlw_width = mlw.width-1
     
+    print(message)
+    message = message.value
     message_lines = []
     for line in message.splitlines():
         line = textwrap.wrap(line, mlw_width)
