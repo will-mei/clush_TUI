@@ -2,21 +2,10 @@
 # coding=utf-8
 
 import os
-import re 
 import time
 import curses
 from src import npyscreen
 
-def conf_loadable(file_name=None):
-    if file_name:
-        cmd = 'file ' + file_name + ' |grep text -q'
-        ret = os.system(cmd)
-        if ret == 0:
-            return True
-        else:
-            return False
-    else:
-        raise NameError
 
  # ('./abc', 'def', '.h')
 def get_file_name(_path_filename):
@@ -24,66 +13,73 @@ def get_file_name(_path_filename):
     (shortname,extension)  = os.path.splitext(tmpfilename)
     return filepath,shortname,extension
 
-def line_available(line_in_conf):
-    if line_in_conf.strip()[0] == '#':
-        return False
-    else:
-        return True 
-
-def get_line_content(line_in_conf):
-    return re.split(',|#', line_in_conf.strip().split()[0])[0]
-
-def load_conf_content(file_name):
-    with open(file_name) as _conf_file:
-        _conf_lines = _conf_file.readlines()
-    _conf_content = list(map(get_line_content, filter(line_available, _conf_lines)))
-    return _conf_content
-
-
 #MultiLineEditableBoxed
-
-#class TitleEditBox(npyscreen.BoxTitle):
-#    _contained_widget = npyscreen.MultiLineEdit
-#    def add_tx(self, text):
-#        self.entry_widget.value = text
+class TitleEditBox(npyscreen.BoxTitle):
+    _contained_widget = npyscreen.MultiLineEdit
+    def set_tx(self, text):
+        self.entry_widget.value = text
 
 class AddTaskForm(npyscreen.ActionFormV2):
     def create(self):
         self.name = '添加并配置新的任务:'
-        # task infomation
-        # 
-        self.task_name  = self.add(npyscreen.TitleText, begin_entry_at=18, name='任务名称:')
-        self.task_type  = self.add(npyscreen.TitleCombo, name='任务类型', max_width=40, values=['主线任务', '分支任务', '附属任务'], value=0)
-        self.exec_type  = self.add(npyscreen.TitleCombo, name='动作类型', max_width=40, values=['递送收集', '递送分发', '检查动作', '修改动作', '回滚动作'], value=3)
-        self.rollbackable = self.add(npyscreen.TitleText, begin_entry_at=18, name='无法回滚错误')
-        self.auth_level = self.add(npyscreen.TitleText, begin_entry_at=18, name='ssh 用户:')
-        self.grp_port   = self.add(npyscreen.TitleText, begin_entry_at=18, name='ssh 端口(必填):')
-        self.grp_pswd   = self.add(npyscreen.TitleText, begin_entry_at=18, name='ssh 口令:')
-        self.blk_conf   = self.add(npyscreen.TitleFilenameCombo,  begin_entry_at=15, name="blk_conf:", exit_left=True)
+
+        self.help2                      = self.add(npyscreen.TitleText, name='任务准备', value='文件分发与文件收集', editable=False)
         self.nextrely   += 1
-        # record y
-        self.nextrelx += -30
         self.ny = self.nextrely
-        self.ip_list   = self.add(npyscreen.MultiLineEditableBoxed, #max_width=40,
-                                  name='主机IP列表:',
-                                  values=['0.0.0.0'],
-                                  footer='按下 i 或 o 开始编辑')
-        #self.ip_list.add_tx('你可以在此手动粘贴 IP 列表,\n使用 ^R 查看格式化结果,\n添加前请务必删除此处注释文本.\n')
-#        self.nextrely  = self.ny
-#        self.nextrelx += 45
-#        self.blk_list  = self.add(npyscreen.MultiLineEditableBoxed, max_width=40, 
-#                                  name='块设备列表:',
-#                                  values=['/dev/sdx', '/dev/sdy','/dev/sdz'],
-#                                  footer='使用tab切换到其他控件')
-#        #self.blk_list.add_tx('你可以在此手动编辑磁盘列表,\n使用 ^R 查看格式化结果,添加前请务必删除此处注释文本.\n')
+        self.nx = self.nextrelx
+        self.transport_local_source     = self.add(npyscreen.TitleFilename, name='本地 源文件/目录:', begin_entry_at=22, max_width=45)
+        self.transport_remote_target    = self.add(npyscreen.TitleText, name='远端 目标文件/目录:', begin_entry_at=22, max_width=45)
+
+        self.nextrely  = self.ny
+        self.nextrelx += 45
+        self.transport_local_target     = self.add(npyscreen.TitleText, name='远端 源文件/目录:', begin_entry_at=22)
+        self.transport_remote_source    = self.add(npyscreen.TitleFilename, name='本地 目标文件/目录:', begin_entry_at=22)
+
+        # task infomation
+        self.nextrely   += 1
+        self.ny = self.nextrely
+        self.nextrelx  = self.nx
+        self.help1          = self.add(npyscreen.TitleText, name='基本信息', begin_entry_at=16, max_width=20, editable=False)
+        self.nextrely  = self.ny
+        self.nextrelx += 16
+        self.rollbackable   = self.add(npyscreen.Checkbox, name='不可回滚', max_width=20, value=True)
+        self.nextrelx -= 16
+
+        self.task_name          = self.add(npyscreen.TitleText, name='任务名称:', max_width=40)
+        self.exec_type          = self.add(npyscreen.TitleCombo, name='动作类型', values=['批量shell命令', '批量运行程序', '批量文件同步', '自定义任务'], value=1, max_width=40)
+        self.exec_source_type   = self.add(npyscreen.TitleCombo, name='文件来源', values=['网络地址', '本地路径'], value=1, max_width=40)
+        self.exec_file_name     = self.add(npyscreen.TitleText, name='启动文件:', max_width=40)
+        self.task_tag       = self.add(npyscreen.TitleText, name='任务标签:', max_width=40)
+        self.task_note      = self.add(npyscreen.TitleText, name='任务备注:', max_width=40)
+
+        # transportation
+        self.nextrely  = self.ny
+        self.nextrelx += 45
+        self.help3  = self.add(npyscreen.TitleText, name='管理信息', value='执行动作类型与权限', editable=False)
+        self.nextrely   += 1
+        self.task_content_type  = self.add(npyscreen.TitleCombo, name='内容标签', values=['收集文件', '分发文件', '执行检查', '发起变更', '执行回滚'], value=3)
+        self.exec_file_local    = self.add(npyscreen.TitleFilename, name="路径地址:")
+        self.exec_file_type     = self.add(npyscreen.TitleCombo, name='文件类型', values=['shell 脚本', 'ansible playbook(添加中)', '其他可执行文件'], value=0)
+        self.auth_level         = self.add(npyscreen.TitleCombo, name='权限等级', values=[str(x) for x in range(1,6)], value=0)
+        self.notify_level       = self.add(npyscreen.TitleCombo, name='通知等级', values=[str(x) for x in range(1,6)], value=0)
+        #self.shell_command_text = self.add(TitleEditBox, name='命令文本编辑区', max_height=20)
+
+        self.nextrely   += 1
+        self.nextrelx  = self.nx
+        self.shell_command_text = self.add(
+            TitleEditBox,
+            name='命令文本编辑区',
+            #npyscreen.MultiLineEditableBoxed,
+            #max_width=40, 
+            footer='使用上下键切换到其他控件',
+            exit_left=True
+        )
 
         self._conf_refreshed = None
         self._loadable_conf_status = {
-            'grp':self.grp_conf.value,
-            'blk':self.blk_conf.value,
+            'file_local':self.exec_file_local.value,
         }
         self.add_handlers({
-            #curses.ascii.ESC: self.exit_func,
             "^Q":             self.exit_func,
             155:              self.exit_func,
             curses.ascii.BEL: self.exit_func2,
@@ -93,150 +89,56 @@ class AddTaskForm(npyscreen.ActionFormV2):
         self.on_cancel()
 
     def exit_func2(self,  _input):
-        if npyscreen.notify_yes_no('程序需要先退回主界面才能完全退出,\n确定要放弃添加新组并退回主界面吗?', title='任务中断:'):
+        if npyscreen.notify_yes_no('程序需要先退回主界面才能完全退出,\n确定要放弃并退回主界面吗?', title='任务中断:'):
             self.on_cancel()
 
-    def value_changed_callback(self, widget=None):
-        if widget:
-            _target_widget = widget
-        else:
-            return 
-
-        # hidden grp_conf 
-        _target_value = _target_widget.value 
-        if 0 in _target_value :
-            self.grp_conf.hidden = False
-        else:
-            self.grp_conf.hidden = True
-        # hidden blk_conf 
-        if 1 in _target_value :
-            self.blk_conf.hidden = False
-        else:
-            self.blk_conf.hidden = True
-        if 2 in _target_value :
-            self.grp_key.hidden = False
-        else:
-            self.grp_key.hidden = True
-        # hidden conTimeout 
-        if 3 in _target_value :
-            self.conTimeout.hidden = False
-        else:
-            self.conTimeout.hidden = True
-
     def check_loadable_conf_status(self):
-        if self.grp_conf.value != self._loadable_conf_status['grp']:
-            self._loadable_conf_status['grp'] = self.grp_conf.value
-            self._conf_refreshed = True
-        if self.blk_conf.value != self._loadable_conf_status['blk']:
-            self._loadable_conf_status['blk'] = self.blk_conf.value 
+        if self.exec_file_local.value != self._loadable_conf_status['file_local']:
+            self._loadable_conf_status['file_local'] = self.exec_file_local.value
             self._conf_refreshed = True
 
     def when_conf_refreshed(self):
-        #load config file
-        if self.grp_conf.value :
-            if conf_loadable(self.grp_conf.value):
-                self.ip_list.values = load_conf_content(self.grp_conf.value)
-                self.grp_name.value =get_file_name(self.grp_conf.value)[1]
-        if self.blk_conf.value:
-            if conf_loadable(self.blk_conf.value):
-                self.blk_list.values = load_conf_content(self.blk_conf.value)
+        if self.exec_file_local.value :
+            self.exec_file_name.value =get_file_name(self.exec_file_local.value)[1]
 
-    #def while_editing(self, z):
     def adjust_widgets(self):
         self.check_loadable_conf_status()
-    # the value somehow will be uneditable any more  
-    # the will be reload everytime a key was pressed!!
-    # don't load conf here. 
         if self._conf_refreshed:
             self.when_conf_refreshed()
             self._conf_refreshed = None
 
-    def check_grp_value(self):
+    def check_task_value(self):
+        # format
+        self.task_name.value            = self.task_name.value.strip()
+        self.shell_command_text.value   = self.shell_command_text.value.strip()
+        self.exec_file_name.value       = self.exec_file_name.value.strip()
 
-        self.grp_name.value = str(self.grp_name.value).strip().replace(' ', '_')
-
-        # ip list 
-        if isinstance(self.ip_list.value, str):
-            # to be changed  when  new contained widget is ready  
-            self.ip_list.values = _nodes_to_add = self.ip_list.values.split()
-            if not npyscreen.notify_yes_no('请注意IP地址使用换行符进行分割, 请确认格式化结果!' + '\n'.join(_nodes_to_add), title='IP格式异常:'):
-                return False
-        else:
-            _nodes_to_add = self.ip_list.values 
-
-        if not self.grp_user.value or len(self.grp_user.value.strip()) == 0:
-            self.grp_user.value = None
-        if not self.grp_pswd.value or len(self.grp_pswd.value.strip()) == 0:
-            self.grp_pswd.value = None
-        if not self.grp_key.value or len(self.grp_key.value.strip()) == 0:
-            self.grp_key.value = None 
-
-        _port_str = self.grp_port.value.strip()
-        if len(_port_str) == 0 or not _port_str.isdigit() or int(_port_str) >65535 :
-            npyscreen.notify_confirm("无效的端口号信息,请重新填写端口号", title="端口号无效:")
-            return False 
-
-        # group name 
-        if not self.grp_name.value:
-            npyscreen.notify_confirm('请填写组名!', title='组名无效:')
-            return False 
-
-        # ip list 
-        if not _nodes_to_add:
-            npyscreen.notify_confirm('请填写主机IP!', title='IP无效:')
+        if not self.task_name.value or not len(self.task_name.value.strip()):
+            npyscreen.notify_confirm('请填写任务名称!', title='信息不全:')
             return False
+        if not self.exec_file_name.value or not len(self.exec_file_name.value.strip()):
+            if not self.shell_command_text.value or not len(self.shell_command_text.value.strip()):
+                npyscreen.notify_confirm('请指定执行文件名, 或编辑可运行的shell命令!', title='信息不全:')
+                return False 
 
-        # ip ping / ssh check 
-        if 2 in self.add_mode.value:
-            _valid_ip_list = list(filter(ip_reachable, _nodes_to_add))
-        else:
-            _valid_ip_list = _nodes_to_add 
+        # confirm task info after check 
+        return True
 
-        # after check 
-        if _valid_ip_list:
-            if len(_valid_ip_list) == len(_nodes_to_add) :
-                if 2 in self.add_mode.value:
-                    npyscreen.notify('IP 正常', title='检查完成')
-                    time.sleep(0.5)
-                return True
-            else:
-                if not npyscreen.notify_yes_no( '\n'.join(_nodes_to_add), title='确认IP 检查结果:'):
-                    return False 
-        else:
-            if 2 in self.add_mode.value:
-                npyscreen.notify_confirm('没有可用的IP地址!\n请注意检查网络.', title='无法添加:')
-            else:
-                npyscreen.notify_confirm('没有可用的IP地址!\n请注意检查格式.', title='无法添加:')
-            return False
-
-    def auto_add_grp(self):
+    def auto_add_task(self):
         npyscreen.notify('正在检查信息', title='正在添加:')
-        time.sleep(0.5)
-        if self.check_grp_value():
-            _ssh_info = {
-                'prot':     int(self.grp_port.value),
-                'user':     self.grp_user.value,
-                'password': self.grp_pswd.value,
-                'timeout':  int(self.conTimeout.value),
-                'hostkey':  self.grp_key.value
-            }
-            self.parentApp.MainForm.GroupTreeBoxObj.add_grp(name=self.grp_name.value, nodes=self.ip_list.values, ssh_info=_ssh_info)
+        time.sleep(0.2)
+        if self.check_task_value():
+            # add task to db
+            #
             self.parentApp.setNextForm('MAIN')
 
     def on_ok(self):
-        self.auto_add_grp()
+        self.auto_add_task()
 
     def on_cancel(self):
         self.parentApp.setNextForm('MAIN')
         self.exit_editing()
 
 
-if __name__ == "__main__":
-
-    class testApp(npyscreen.NPSAppManaged):
-        #npyscreen.ThemeManager.default_colors['LABEL'] = 'YELLOW_BLACK' 
-        def onStart(self):
-            self.MainForm = self.addForm("MAIN", HostGroupForm)
-
-    App = testApp()
-    App.run()
+#if __name__ == "__main__":
+#    print('')

@@ -5,8 +5,8 @@ from src import npyscreen
 
 
 help_info = {
-    "切换到下一控件:":'Tab', #  或  ^I (Ctrl + i)',
-    "切换到上一控件:":'Shift +Tab',
+    "切换到下一控件:":'Tab  或  下方向键  或  右方向建', #  或  ^I (Ctrl + i)',
+    "切换到上一控件:":'Shift +Tab  或  上方向键  或  左方向键',
     "刷新整个屏幕  :":'Ctrl + l',
     "退出应用程序  :":'Esc  或  Ctrl + c  或 Ctrl + g',
     "折叠主机组列表:":'<  或  [  或 h',

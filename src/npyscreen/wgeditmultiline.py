@@ -355,7 +355,7 @@ class MultiLineEdit(widget.Widget):
         #    self.cursor_position -= 1
         # calculate width for current char and move. 
         try:
-            _step = char_width_tools.get_width_of_char(self.value[self.cursor_position -1])
+            _step = char_width_tools.get_char_width(self.value[self.cursor_position -1])
         except:
             _step = 1
         self.cursor_position -= _step
@@ -364,7 +364,7 @@ class MultiLineEdit(widget.Widget):
     def h_cursor_right(self, input):
         #self.cursor_position += 1
         try:
-            _step = char_width_tools.get_width_of_char(self.value[self.cursor_position +1])
+            _step = char_width_tools.get_char_width(self.value[self.cursor_position +1])
         except:
             _step = 1
         self.cursor_position += _step
@@ -373,7 +373,7 @@ class MultiLineEdit(widget.Widget):
         if self.editable and self.cursor_position > 0:
             self.value = self.value[:self.cursor_position-1] + self.value[self.cursor_position:]
         
-        self.cursor_position -= char_width_tools.get_width_of_char(self.value[self.cursor_position-1])
+        self.cursor_position -= char_width_tools.get_char_width(self.value[self.cursor_position-1])
 
     def h_delete_right(self, input):
         if self.editable:

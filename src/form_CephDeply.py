@@ -180,6 +180,7 @@ class CephDeplyForm(npyscreen.ActionFormV2):
             except:
                 npyscreen.notify_confirm('无法加载配置文件:\n' + str(self.deploy_conf.value) + '...', title="读取失败")
         pass
+
     def when_opt_refreshed(self):
         # load host list along with load deploy config file 
         if 1 in self.add_mode.value:

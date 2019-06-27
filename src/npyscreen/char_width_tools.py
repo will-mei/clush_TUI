@@ -50,6 +50,8 @@ def printable_char(ch):
 # input : unicode_index 
 def printable_input(inp):
     global widths
+    if isinstance(inp, str):
+        inp = ord(inp)
     if inp == 0xe or inp == 0xf:
         return False
     for num, wid in widths:

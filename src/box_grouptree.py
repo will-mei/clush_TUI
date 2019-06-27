@@ -36,7 +36,7 @@ class host_group_tree(npyscreen.MLTreeMultiSelect):
         super(host_group_tree, self).__init__(*args, **keywords)
         # init a root tree for groups
         #self.treedata = npyscreen.TreeData(content='全部组:', selectable=True, ignore_root=False)
-        self.treedata = TreeData_group(content='全部组:', selectable=True, ignore_root=False)
+        self.treedata = TreeData_group(content='全部主机组:', selectable=True, ignore_root=False)
         self.values = self.treedata
         self.show_v_lines = False
 
@@ -45,23 +45,32 @@ class host_group_tree(npyscreen.MLTreeMultiSelect):
         name = str(name)
         if isinstance(nodes, str):
             nodes = nodes.split()
-        # ip format validation
-        _valid_ip = list(filter(isIP, nodes))
-        if len(_valid_ip) != len(nodes) or len(_valid_ip) == 0:
-            npyscreen.notify_confirm('部分IP地址因格式不合法已经被剔除,\n请检查IP列表格式以确认内容无误!', '添加失败:')
-        else:
-            new_grp_treedata =  TreeData_group(content=name, selectable=True, ignore_root=False)
-            new_grp_treedata.ssh_info = ssh_info
-            for ip in _valid_ip :
-                new_grp_treedata.new_child(content=ip, selectable=True, selected=False)
-            # update the group to root 
-            self.treedata._children.append(new_grp_treedata)
-            npyscreen.notify(name, '添加成功:')
-            time.sleep(0.5)
+        ## ip format validation
+        #_valid_ip = list(filter(isIP, nodes))
+        #if len(_valid_ip) != len(nodes) or len(_valid_ip) == 0:
+        #    npyscreen.notify_confirm('部分IP地址因格式不合法已经被剔除,\n请检查IP列表格式以确认内容无误!', '添加失败:')
+        #else:
+        #    new_grp_treedata =  TreeData_group(content=name, selectable=True, ignore_root=False)
+        #    new_grp_treedata.ssh_info = ssh_info
+        #    for ip in _valid_ip :
+        #        new_grp_treedata.new_child(content=ip, selectable=True, selected=False)
+        #    # update the group to root 
+        #    self.treedata._children.append(new_grp_treedata)
+        #    npyscreen.notify(name, '添加成功:')
+        #    time.sleep(0.5)
+        # use hostname instead of ip 
+        new_grp_treedata =  TreeData_group(content=name, selectable=True, ignore_root=False)
+        new_grp_treedata.ssh_info = ssh_info
+        for hostname in nodes :
+            new_grp_treedata.new_child(content=hostname, selectable=True, selected=False)
+        # update the group to root 
+        self.treedata._children.append(new_grp_treedata)
+        npyscreen.notify(name, '加载成功:')
+        time.sleep(0.1)
 
-    # give selected
-    def give_groups(self):
-        return self.get_selected_objects(return_node=False)
+    def purge_all_grp(self):
+        self.treedata = TreeData_group(content='全部主机组:', selectable=True, ignore_root=False)
+        self.values = self.treedata
 
 
 # handlers to be added
@@ -78,6 +87,9 @@ class HostGroupTreeBox(npyscreen.BoxTitle):
             return filter(lambda x : x.marker == node_type, self.entry_widget.get_selected_objects(*args, **keywords))
         else:
             return self.entry_widget.get_selected_objects(*args, **keywords)
+
+    def purge_all_grp(self):
+        self.entry_widget.purge_all_grp()
 
 
 if __name__ == "__main__":

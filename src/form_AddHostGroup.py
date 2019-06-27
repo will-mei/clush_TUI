@@ -7,6 +7,9 @@ import time
 import curses
 from src import npyscreen
 
+import sqlite3
+terminal_db = './db/terminal.db'
+
 def conf_loadable(file_name=None):
     if file_name:
         cmd = 'file ' + file_name + ' |grep text -q'
@@ -46,65 +49,83 @@ def ip_reachable(_ipaddr):
     return True 
 
 #MultiLineEditableBoxed
-
-#class TitleEditBox(npyscreen.BoxTitle):
-#    _contained_widget = npyscreen.MultiLineEdit
-#    def add_tx(self, text):
-#        self.entry_widget.value = text
+class TitleEditBox(npyscreen.BoxTitle):
+    _contained_widget = npyscreen.MultiLineEdit
+    def add_tx(self, text):
+        self.entry_widget.value = text
 
 class AddHostGroupForm(npyscreen.ActionFormV2):
     def create(self):
         self.name = '配置并添加新的主机组:'
         # record y
         self.ny = self.nextrely
-        self.add_mode = self.add(npyscreen.TitleMultiSelect, begin_entry_at=15, name='添加选项', max_height=4, field_width=40,
-                                 value=[0,1,2,3,],
-                                 values=["从文件加载 ip  列表", "从文件加载 磁盘列表", "指定ssh连接私钥文件", "执行 网络连接预检测"],
-                                 value_changed_callback=self.value_changed_callback,
-                                 exit_right=True,
-                                 scroll_exit=True)
-        # recover y, move right: + x
+        self.add_mode = self.add(
+            npyscreen.TitleMultiSelect,
+            name='添加选项',
+            begin_entry_at=15,
+            max_height=4,
+            field_width=45,
+            value=[0,1,],
+            values=[
+                "从文件加载 ip  列表",
+                "指定ssh连接私钥文件",
+                "执行 网络连接预检测",
+            ],
+            exit_right=True,
+            scroll_exit=True,
+            # add a callback for this widget when its value changed
+            value_changed_callback  =   self.add_mode_value_changed_callback
+        )
+
+        # recover y     vertically
+        # move x + 45   horizontally
         self.nextrely = self.ny
         self.nextrelx += 45
-        self.grp_conf = self.add(npyscreen.TitleFilenameCombo,  begin_entry_at=15, name="grp_conf:", exit_left=True)
-        self.blk_conf = self.add(npyscreen.TitleFilenameCombo,  begin_entry_at=15, name="blk_conf:", exit_left=True)
-        self.grp_key  = self.add(npyscreen.TitleFilenameCombo,  begin_entry_at=15, name="Identity:", exit_left=True)
+        self.grp_conf = self.add(npyscreen.TitleFilenameCombo, name="grp_conf:", exit_left=True)
+        self.ssh_key  = self.add(npyscreen.TitleFilenameCombo, name="Identity:", exit_left=True)
         # pre check 
-        self.conTimeout = self.add(npyscreen.TitleSlider, field_width=55, begin_entry_at=15, lowest=10, out_of=90, step=10, name="超时时间:", exit_left=True)
+        self.conTimeout = self.add(npyscreen.TitleSlider, name="超时时间:", exit_left=True, field_width=55, lowest=10, out_of=90, step=10)
         self.conTimeout.value = 10
+        self.conTimeout.hidden = True
+
         self.nextrely += 1
         # recover x
-        self.grp_name = self.add(npyscreen.TitleText, begin_entry_at=18, name='组名称 (必填):')
-        self.grp_user = self.add(npyscreen.TitleText, begin_entry_at=18, name='ssh 用户:')
-        self.grp_port = self.add(npyscreen.TitleText, begin_entry_at=18, name='ssh 端口(必填):')
-        self.grp_pswd = self.add(npyscreen.TitleText, begin_entry_at=18, name='ssh 口令:')
+        self.nextrelx += -30
+        self.grp_name = self.add(npyscreen.TitleText, begin_entry_at=22, name='主机组名称(必填):')
+        self.ssh_user = self.add(npyscreen.TitleText, begin_entry_at=22, name='ssh 用户:')
+        self.grp_port = self.add(npyscreen.TitleText, begin_entry_at=22, name='ssh 端口  (必填):')
+        self.ssh_pswd = self.add(npyscreen.TitleText, begin_entry_at=22, name='ssh 口令:')
+
         self.nextrely += 1
         # record y
-        self.nextrelx += -30
         self.ny = self.nextrely
-        self.ip_list   = self.add(npyscreen.MultiLineEditableBoxed, #max_width=40,
-                                  name='主机IP列表:',
-                                  values=['0.0.0.0'],
-                                  footer='按下 i 或 o 开始编辑')
-        #self.ip_list.add_tx('你可以在此手动粘贴 IP 列表,\n使用 ^R 查看格式化结果,\n添加前请务必删除此处注释文本.\n')
-#        self.nextrely  = self.ny
-#        self.nextrelx += 45
-#        self.blk_list  = self.add(npyscreen.MultiLineEditableBoxed, max_width=40, 
-#                                  name='块设备列表:',
-#                                  values=['/dev/sdx', '/dev/sdy','/dev/sdz'],
-#                                  footer='使用tab切换到其他控件')
-#        #self.blk_list.add_tx('你可以在此手动编辑磁盘列表,\n使用 ^R 查看格式化结果,添加前请务必删除此处注释文本.\n')
+        self.host_list   = self.add(
+            npyscreen.MultiLineEditableBoxed,
+            max_width=40,
+            name='主机地址预览:',
+            values=['0.0.0.0'],
+            footer='空格:修改, i:插入, o:新行'
+        )
 
+        self.nextrely  = self.ny
+        self.nextrelx += 45
+        self.host_list_tmp  = self.add(
+            TitleEditBox,
+            name='手动编辑区:',
+            footer='使用 ^r 格式化换行, ^e 预览结果')
+        self.host_list_tmp.add_tx('example-hostname1 example-hostname2 example-hostname3')
+
+        # record cof value status
         self._conf_refreshed = None
         self._loadable_conf_status = {
             'grp':self.grp_conf.value,
-            'blk':self.blk_conf.value,
         }
+        # key binding
         self.add_handlers({
-            #curses.ascii.ESC: self.exit_func,
-            "^Q":             self.exit_func,
-            155:              self.exit_func,
-            curses.ascii.BEL: self.exit_func2,
+            "^Q":               self.exit_func,
+            155:                self.exit_func,
+            curses.ascii.BEL:   self.exit_func2,
+            "^E":               self.reformat_hostname,
         })
 
     def exit_func(self,  _input):
@@ -114,7 +135,13 @@ class AddHostGroupForm(npyscreen.ActionFormV2):
         if npyscreen.notify_yes_no('程序需要先退回主界面才能完全退出,\n确定要放弃添加新组并退回主界面吗?', title='任务中断:'):
             self.on_cancel()
 
-    def value_changed_callback(self, widget=None):
+    def reformat_hostname(self, _input):
+        self.host_list_tmp.entry_widget.full_reformat()
+        self.host_list.values = self.host_list_tmp.value.split()
+        self.display()
+
+    # callback for add_mode widget 
+    def add_mode_value_changed_callback(self, widget=None):
         if widget:
             _target_widget = widget
         else:
@@ -126,40 +153,29 @@ class AddHostGroupForm(npyscreen.ActionFormV2):
             self.grp_conf.hidden = False
         else:
             self.grp_conf.hidden = True
-        # hidden blk_conf 
         if 1 in _target_value :
-            self.blk_conf.hidden = False
+            self.ssh_key.hidden = False
         else:
-            self.blk_conf.hidden = True
-        if 2 in _target_value :
-            self.grp_key.hidden = False
-        else:
-            self.grp_key.hidden = True
+            self.ssh_key.hidden = True
         # hidden conTimeout 
-        if 3 in _target_value :
+        if 2 in _target_value :
             self.conTimeout.hidden = False
         else:
             self.conTimeout.hidden = True
 
     def check_loadable_conf_status(self):
+
         if self.grp_conf.value != self._loadable_conf_status['grp']:
             self._loadable_conf_status['grp'] = self.grp_conf.value
-            self._conf_refreshed = True
-        if self.blk_conf.value != self._loadable_conf_status['blk']:
-            self._loadable_conf_status['blk'] = self.blk_conf.value 
             self._conf_refreshed = True
 
     def when_conf_refreshed(self):
         #load config file
         if self.grp_conf.value :
             if conf_loadable(self.grp_conf.value):
-                self.ip_list.values = load_conf_content(self.grp_conf.value)
+                self.host_list.values = load_conf_content(self.grp_conf.value)
                 self.grp_name.value =get_file_name(self.grp_conf.value)[1]
-        if self.blk_conf.value:
-            if conf_loadable(self.blk_conf.value):
-                self.blk_list.values = load_conf_content(self.blk_conf.value)
 
-    #def while_editing(self, z):
     def adjust_widgets(self):
         self.check_loadable_conf_status()
     # the value somehow will be uneditable any more  
@@ -169,29 +185,38 @@ class AddHostGroupForm(npyscreen.ActionFormV2):
             self.when_conf_refreshed()
             self._conf_refreshed = None
 
+    #def while_editing(self, z):
+    #    # the value suppose to be updated after edting status is false, not while editing
+    #    self.add_mode_value_changed_callback(widget=self.add_mode)
+
+
+    # check value format
     def check_grp_value(self):
 
+        # group name reformat
         self.grp_name.value = str(self.grp_name.value).strip().replace(' ', '_')
 
-        # ip list 
-        if isinstance(self.ip_list.value, str):
+        # ip/hostname list 
+        if isinstance(self.host_list.value, str):
             # to be changed  when  new contained widget is ready  
-            self.ip_list.values = _nodes_to_add = self.ip_list.values.split()
-            if not npyscreen.notify_yes_no('请注意IP地址使用换行符进行分割, 请确认格式化结果!' + '\n'.join(_nodes_to_add), title='IP格式异常:'):
+            self.host_list.values = _nodes_to_add = self.host_list.values.split()
+            if not npyscreen.notify_yes_no('请注意主机地址使用换行符进行分割, 请确认格式化结果!' + '\n'.join(_nodes_to_add), title='主机信息格式异常:'):
                 return False
         else:
-            _nodes_to_add = self.ip_list.values 
+            _nodes_to_add = self.host_list.values 
 
-        if not self.grp_user.value or len(self.grp_user.value.strip()) == 0:
-            self.grp_user.value = None
-        if not self.grp_pswd.value or len(self.grp_pswd.value.strip()) == 0:
-            self.grp_pswd.value = None
-        if not self.grp_key.value or len(self.grp_key.value.strip()) == 0:
-            self.grp_key.value = None 
+        # empty value 
+        if not self.ssh_user.value or len(self.ssh_user.value.strip()) == 0:
+            self.ssh_user.value = None
+        if not self.ssh_pswd.value or len(self.ssh_pswd.value.strip()) == 0:
+            self.ssh_pswd.value = None
+        if not self.ssh_key.value or len(self.ssh_key.value.strip()) == 0:
+            self.ssh_key.value = None 
 
+        # port value check
         _port_str = self.grp_port.value.strip()
         if len(_port_str) == 0 or not _port_str.isdigit() or int(_port_str) >65535 :
-            npyscreen.notify_confirm("无效的端口号信息,请重新填写端口号", title="端口号无效:")
+            npyscreen.notify_confirm("无效的端口号信息,请重新填写端口号", title="登录信息不全:")
             return False 
 
         # group name 
@@ -199,46 +224,67 @@ class AddHostGroupForm(npyscreen.ActionFormV2):
             npyscreen.notify_confirm('请填写组名!', title='组名无效:')
             return False 
 
-        # ip list 
+        # ip/hostname list 
         if not _nodes_to_add:
-            npyscreen.notify_confirm('请填写主机IP!', title='IP无效:')
+            npyscreen.notify_confirm('请填写主机地址!', title='地址无效:')
             return False
+
+        # id key or user+password
+        if not self.ssh_key.value:
+            if not self.ssh_user.value:
+                npyscreen.notify_confirm('请指定登录秘钥或者填写该组登录用户!', title='登录信息不全:')
+                return False
+            if not self.ssh_pswd.value:
+                npyscreen.notify_confirm('请指定登录秘钥或者填写该组登录口令!', title='登录信息不全:')
+                return False
+        else:
+            npyscreen.notify_confirm(str(self.ssh_key.value), 'ssh_key')
+
 
         # ip ping / ssh check 
         if 2 in self.add_mode.value:
-            _valid_ip_list = list(filter(ip_reachable, _nodes_to_add))
+            _valid_host_list = list(filter(ip_reachable, _nodes_to_add))
         else:
-            _valid_ip_list = _nodes_to_add 
+            _valid_host_list = _nodes_to_add 
 
         # after check 
-        if _valid_ip_list:
-            if len(_valid_ip_list) == len(_nodes_to_add) :
+        if _valid_host_list:
+            if len(_valid_host_list) == len(_nodes_to_add) :
                 if 2 in self.add_mode.value:
-                    npyscreen.notify('IP 正常', title='检查完成')
+                    npyscreen.notify('主机正常', title='检查完成')
                     time.sleep(0.5)
                 return True
             else:
-                if not npyscreen.notify_yes_no( '\n'.join(_nodes_to_add), title='确认IP 检查结果:'):
+                if not npyscreen.notify_yes_no( '\n'.join(_nodes_to_add), title='确认主机检查结果:'):
                     return False 
         else:
             if 2 in self.add_mode.value:
-                npyscreen.notify_confirm('没有可用的IP地址!\n请注意检查网络.', title='无法添加:')
+                npyscreen.notify_confirm('没有可用的主机地址!\n请注意检查网络.', title='无法添加:')
             else:
-                npyscreen.notify_confirm('没有可用的IP地址!\n请注意检查格式.', title='无法添加:')
+                npyscreen.notify_confirm('没有可用的主机地址!\n请注意检查格式.', title='无法添加:')
             return False
 
     def auto_add_grp(self):
         npyscreen.notify('正在检查信息', title='正在添加:')
         time.sleep(0.5)
         if self.check_grp_value():
-            _ssh_info = {
-                'prot':     int(self.grp_port.value),
-                'user':     self.grp_user.value,
-                'password': self.grp_pswd.value,
-                'timeout':  int(self.conTimeout.value),
-                'hostkey':  self.grp_key.value
-            }
-            self.parentApp.MainForm.GroupTreeBoxObj.add_grp(name=self.grp_name.value, nodes=self.ip_list.values, ssh_info=_ssh_info)
+            # add group info to db 
+            conn = sqlite3.connect(terminal_db)
+            cursor = conn.cursor()
+            # groups 
+            cursor.execute(
+                "INSERT INTO groups (GROUP_NAME, SSH_USER, SSH_PORT, SSH_TIMEOUT, SSH_PASSWORD, SSH_HOSTKEY) \
+                VALUES ('%s', '%s', %s, %s, '%s', '%s')" \
+                % (self.grp_name.value, self.ssh_user.value, self.grp_port.value, self.conTimeout.value, self.ssh_pswd.value, self.ssh_key.value)
+            )
+            # host 
+            for hostname in self.host_list.values:
+                #cursor.execute("INSERT INTO host (HOSTNAME, GROUP_NAME, BOARD_SN, TAG) VALUES ('%s', '%s', '%s', '%s')" % (hostname, self.grp_name.value, sn, tag))
+                cursor.execute("INSERT INTO host (HOSTNAME, GROUP_NAME) VALUES ('%s', '%s')" % (hostname, self.grp_name.value))
+            conn.commit()
+            cursor.close()
+
+            self.parentApp.MainForm.reload_group_tree()
             self.parentApp.setNextForm('MAIN')
 
     def on_ok(self):

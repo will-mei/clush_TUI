@@ -12,25 +12,29 @@ from src import box_input
 from src import lib_cli_bash
 from src import lib_ssh_paramiko
 
+import sqlite3
+
+terminal_db = './db/terminal.db'
+
 # just some example test ip list
-ip_list1 = [ '192.168.100.' + str(x)  for x in range(201, 206)]
-ip_list2 = [ '192.168.100.' + str(x)  for x in range(206, 211)]
-ip_list3 = [ '192.168.59.11' ]
-host_key = '~/.ssh/id_rsa'
-_ssh_info1 = {
-            'prot':     10000,
-            'user':     'secure',
-            'password': None,
-            'timeout':  30,
-            'hostkey':  host_key
-        }
-_ssh_info2 = {
-            'port':     22,
-            'user':     None,
-            'password': None,
-            'timeout':  10,
-            'hostkey': host_key,
-}
+#ip_list1 = [ '192.168.100.' + str(x)  for x in range(201, 206)]
+#ip_list2 = [ '192.168.100.' + str(x)  for x in range(206, 211)]
+#ip_list3 = [ '192.168.59.11' ]
+#host_key = '~/.ssh/id_rsa'
+#_ssh_info1 = {
+#            'prot':     10000,
+#            'user':     'secure',
+#            'password': None,
+#            'timeout':  30,
+#            'hostkey':  host_key
+#        }
+#_ssh_info2 = {
+#            'port':     22,
+#            'user':     None,
+#            'password': None,
+#            'timeout':  10,
+#            'hostkey': host_key,
+#}
 
 class MainForm(npyscreen.FormBaseNewWithMenus):
 
@@ -76,6 +80,7 @@ class MainForm(npyscreen.FormBaseNewWithMenus):
             ('管理任务流(添加中)',      self.manage_taskflow,   "^M"),
             ('添加 新任务',             self.add_task,          "^A"),
             ('添加 新主机(组)',         self.add_group,         "^G"),
+            ('删除 选中主机组',         self.del_group,             ),
             ('部署 ceph集群',           self.deploy_ceph,       "^D"),
             ('配置 ceph集群(不可用)',   self.config_ceph,       "^O"),
             ('销毁 ceph集群(不可用)',   self.purge_ceph,        "^P"),
@@ -149,12 +154,7 @@ class MainForm(npyscreen.FormBaseNewWithMenus):
             scroll_exit=False
         )
 
-        # 添加部分示例数据到主机列表
-        npyscreen.notify('添加示例主机组', title='测试消息')
-        time.sleep(0.5)
-        #self.GroupTreeBoxObj.add_grp(name='group1', nodes=ip_list1, ssh_info=_ssh_info1)
-        #self.GroupTreeBoxObj.add_grp(name='group2', nodes=ip_list2, ssh_info=_ssh_info1)
-        self.GroupTreeBoxObj.add_grp(name='group3', nodes=ip_list3, ssh_info=_ssh_info2)
+        self.reload_group_tree()
 
         # init handlers, if no widget handle this, they will be handled here
         new_handlers = {
@@ -179,6 +179,41 @@ class MainForm(npyscreen.FormBaseNewWithMenus):
         }
         self.add_handlers(new_handlers)
 
+    def reload_group_tree(self):
+        # get selected nodes info
+
+        # 添加部分示例数据到主机列表
+        npyscreen.notify('正在读取主机组...', title='消息')
+        time.sleep(0.25)
+        #self.GroupTreeBoxObj.add_grp(name='group1', nodes=ip_list1, ssh_info=_ssh_info1)
+        #self.GroupTreeBoxObj.add_grp(name='group2', nodes=ip_list2, ssh_info=_ssh_info1)
+        conn = sqlite3.connect(terminal_db)
+        cursorObj = conn.cursor()
+        self.GroupTreeBoxObj.purge_all_grp()
+        #_existed_grps = self.get_tree_groups()
+        for g in list(cursorObj.execute("select * from groups")):
+            _group_name = g[1]
+            #if _group_name in _existed_grps:
+            #    continue
+            _user = g[3]
+            _port = g[4]
+            _tout = g[5]
+            _pwd  = g[6]
+            _hkey = g[7]
+            _grp_ssh_info = {
+                'user':     _user,
+                'port':     _port,
+                'timeout':  _tout,
+                'password': _pwd,
+                'hostkey':  _hkey
+            }
+            _hostname_list = map(
+                lambda x: x[0],
+                cursorObj.execute("select HOSTNAME from HOST WHERE GROUP_NAME = '%s' " % _group_name)
+            )
+            self.GroupTreeBoxObj.add_grp(name=_group_name, nodes=_hostname_list, ssh_info=_grp_ssh_info)
+        cursorObj.close()
+
 #####################################################
 # common functions
 #####################################################
@@ -188,16 +223,48 @@ class MainForm(npyscreen.FormBaseNewWithMenus):
         #for host in _offline_hosts: 
         pass 
 
-    def _debug_msg(self):
-        #_selected_nodes = list(self.GroupTreeBoxObj.get_selected_objects())
-        #_selected_hosts = list(map(lambda x : str(x.get_content()) + ' ' + str(x.get_parent().get_content()) + str(x.get_parent().ssh_info), filter(lambda x : x.marker == 'host', _selected_nodes)))
-        _selected_hosts = list(
-            map(
-                lambda x : str(x.get_content()) + ' ' + str(x.get_parent().get_content()) + str(x.get_parent().ssh_info),
-                self.GroupTreeBoxObj.get_selected_objects(node_type='host')
+    def get_tree_groups(self, only_selected=False):
+        if only_selected:
+            return list(
+                map(
+                    #lambda x : str(x.get_content()) + str(x.ssh_info),
+                    lambda x : str(x.get_content()),
+                    self.GroupTreeBoxObj.get_selected_objects(node_type='group')
+                )
             )
-        )
-        self.msgInfoBoxObj.append_msg(_selected_hosts)
+        else:
+            return list(
+                map(
+                    lambda x: str(x.get_content()),
+                    filter(
+                        lambda x: x.marker == 'group',
+                        self.GroupTreeBoxObj.values
+                    )
+                )
+            )
+
+    def get_tree_hosts(self, only_selected=False):
+        if only_selected:
+            return list(
+                map(
+                    lambda x : str(x.get_content()) + ' ' + str(x.get_parent().get_content()) + str(x.get_parent().ssh_info),
+                    self.GroupTreeBoxObj.get_selected_objects(node_type='host')
+                )
+            )
+        else:
+            return list(
+                map(
+                    lambda x: str(x.get_content()),
+                    filter(
+                        lambda x: x.marker == 'host',
+                        self.GroupTreeBoxObj.values
+                    )
+                )
+            )
+
+    def _debug_msg(self):
+        self.msgInfoBoxObj.append_msg(self.get_tree_hosts(only_selected=True))
+        self.msgInfoBoxObj.append_msg(self.get_tree_groups())
 
         #_selected_groups = list(map(lambda x : str(x.get_content()) + ' ' + str(x.ssh_info) , filter(lambda x : x.marker == 'group', _selected_nodes)))
         #self.msgInfoBoxObj.append_msg(_selected_groups)
@@ -316,10 +383,22 @@ class MainForm(npyscreen.FormBaseNewWithMenus):
         pass
 
     def add_task(self):
-        pass
+        self.parentApp.switchForm('AddTaskForm')
 
     def add_group(self):
         self.parentApp.switchForm('AddHostGroupForm')
+
+    def del_group(self):
+        grp2del = self.get_tree_groups(only_selected=True)
+        if grp2del:
+            conn = sqlite3.connect(terminal_db)
+            c = conn.cursor()
+            for grp in grp2del:
+                c.execute("DELETE FROM groups WHERE GROUP_NAME = '%s';" % grp)
+                c.execute("DELETE FROM host WHERE GROUP_NAME = '%s';" % grp)
+            conn.commit()
+            c.close()
+        self.reload_group_tree()
 
     def deploy_ceph(self):
         self.parentApp.switchForm('CephDeplyForm')

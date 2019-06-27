@@ -2,6 +2,7 @@ from src import npyscreen
 from src.form_main import MainForm
 from src.form_help import HelpForm
 from src.form_AddHostGroup import AddHostGroupForm
+from src.form_AddTask import AddTaskForm
 from src.form_CephDeply import CephDeplyForm
 
 #import signal
@@ -12,12 +13,14 @@ class App(npyscreen.StandardApp):
 
     def onStart(self):
         # main screen 
-        self.MainForm = self.addForm("MAIN", MainForm)
-        self.HelpForm = self.addForm("HelpForm", HelpForm)
+        self.MainForm           = self.addForm("MAIN", MainForm)
+        self.HelpForm           = self.addForm("HelpForm", HelpForm)
+
+        self.AddTaskForm        = self.addForm('AddTaskForm', AddTaskForm)
         # new isinstance each time 
         #self.HostGroupForm = self.addFormClass('HostGroupForm', HostGroupForm)
-        self.AddHostGroupForm = self.addForm('AddHostGroupForm', AddHostGroupForm)
-        self.CephDeplyForm = self.addForm('CephDeplyForm', CephDeplyForm)
+        self.AddHostGroupForm   = self.addForm('AddHostGroupForm', AddHostGroupForm)
+        self.CephDeplyForm      = self.addForm('CephDeplyForm', CephDeplyForm)
         #self.SendFileForm = self.addForm("SEND_FILE", SendFileForm, lines=15)
 
 
