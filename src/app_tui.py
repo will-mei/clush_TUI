@@ -3,6 +3,8 @@ from src.form_main import MainForm
 from src.form_help import HelpForm
 from src.form_AddHostGroup import AddHostGroupForm
 from src.form_AddTask import AddTaskForm
+from src.form_Workflow import WorkflowForm
+from src.form_SearchTask import SearchTaskForm
 from src.form_CephDeply import CephDeplyForm
 
 #import signal
@@ -17,6 +19,8 @@ class App(npyscreen.StandardApp):
         self.HelpForm           = self.addForm("HelpForm", HelpForm)
 
         self.AddTaskForm        = self.addForm('AddTaskForm', AddTaskForm)
+        self.WorkflowForm       = self.addForm('WorkflowForm', WorkflowForm)
+        self.SearchTaskForm     = self.addForm('SearchTaskForm', SearchTaskForm)
         # new isinstance each time 
         #self.HostGroupForm = self.addFormClass('HostGroupForm', HostGroupForm)
         self.AddHostGroupForm   = self.addForm('AddHostGroupForm', AddHostGroupForm)

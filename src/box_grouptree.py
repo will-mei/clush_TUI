@@ -5,6 +5,9 @@ import time
 from src import IPy
 from src import npyscreen
 
+import sqlite3
+terminal_db = './db/terminal.db'
+
 def isIP(ip):
     try:
         IPy.IP(ip)
@@ -91,6 +94,33 @@ class HostGroupTreeBox(npyscreen.BoxTitle):
     def purge_all_grp(self):
         self.entry_widget.purge_all_grp()
 
+    def reload_group_tree(self):
+        # get selected nodes info
+        npyscreen.notify('正在读取主机组...', title='消息')
+        time.sleep(0.15)
+        conn = sqlite3.connect(terminal_db)
+        cursorObj = conn.cursor()
+        self.purge_all_grp()
+        for g in list(cursorObj.execute("select * from groups")):
+            _group_name = g[1]
+            _user = g[3]
+            _port = g[4]
+            _tout = g[5]
+            _pwd  = g[6]
+            _hkey = g[7]
+            _grp_ssh_info = {
+                'user':     _user,
+                'port':     _port,
+                'timeout':  _tout,
+                'password': _pwd,
+                'hostkey':  _hkey
+            }
+            _hostname_list = map(
+                lambda x: x[0],
+                cursorObj.execute("select HOSTNAME from HOST WHERE GROUP_NAME = '%s' " % _group_name)
+            )
+            self.add_grp(name=_group_name, nodes=_hostname_list, ssh_info=_grp_ssh_info)
+        cursorObj.close()
 
 if __name__ == "__main__":
 

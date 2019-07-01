@@ -13,28 +13,8 @@ from src import lib_cli_bash
 from src import lib_ssh_paramiko
 
 import sqlite3
-
 terminal_db = './db/terminal.db'
 
-# just some example test ip list
-#ip_list1 = [ '192.168.100.' + str(x)  for x in range(201, 206)]
-#ip_list2 = [ '192.168.100.' + str(x)  for x in range(206, 211)]
-#ip_list3 = [ '192.168.59.11' ]
-#host_key = '~/.ssh/id_rsa'
-#_ssh_info1 = {
-#            'prot':     10000,
-#            'user':     'secure',
-#            'password': None,
-#            'timeout':  30,
-#            'hostkey':  host_key
-#        }
-#_ssh_info2 = {
-#            'port':     22,
-#            'user':     None,
-#            'password': None,
-#            'timeout':  10,
-#            'hostkey': host_key,
-#}
 
 class MainForm(npyscreen.FormBaseNewWithMenus):
 
@@ -76,8 +56,8 @@ class MainForm(npyscreen.FormBaseNewWithMenus):
         self.main_menu.addItemsFromList([
             ('切换命令行模式',          self.switch_cli_mode,   "^N"),
             ('发起IO测试(添加中)',      self.launch_IO_test,    "^I"),
-            ('开启任务流(添加中)',      self.turn_on_taskflow,  "^R"),
-            ('管理任务流(添加中)',      self.manage_taskflow,   "^M"),
+            ('开启工作流(添加中)',      self.turn_on_workflow,  "^R"),
+            ('管理工作流',              self.manage_workflow,       ),
             ('添加 新任务',             self.add_task,          "^A"),
             ('添加 新主机(组)',         self.add_group,         "^G"),
             ('删除 选中主机组',         self.del_group,             ),
@@ -104,7 +84,9 @@ class MainForm(npyscreen.FormBaseNewWithMenus):
             box_grouptree.HostGroupTreeBox,
             name="主机组",
             max_width=28,
-            scroll_exit=False) #, value=0, relx=1, max_width=x // 5, rely=2,
+            scroll_exit=False
+        ) #, value=0, relx=1, max_width=x // 5, rely=2,
+        self.GroupTreeBoxObj.reload_group_tree()
 
         # top , 28 right 
         self.nextrely = ny
@@ -154,8 +136,6 @@ class MainForm(npyscreen.FormBaseNewWithMenus):
             scroll_exit=False
         )
 
-        self.reload_group_tree()
-
         # init handlers, if no widget handle this, they will be handled here
         new_handlers = {
             # exit
@@ -179,40 +159,6 @@ class MainForm(npyscreen.FormBaseNewWithMenus):
         }
         self.add_handlers(new_handlers)
 
-    def reload_group_tree(self):
-        # get selected nodes info
-
-        # 添加部分示例数据到主机列表
-        npyscreen.notify('正在读取主机组...', title='消息')
-        time.sleep(0.25)
-        #self.GroupTreeBoxObj.add_grp(name='group1', nodes=ip_list1, ssh_info=_ssh_info1)
-        #self.GroupTreeBoxObj.add_grp(name='group2', nodes=ip_list2, ssh_info=_ssh_info1)
-        conn = sqlite3.connect(terminal_db)
-        cursorObj = conn.cursor()
-        self.GroupTreeBoxObj.purge_all_grp()
-        #_existed_grps = self.get_tree_groups()
-        for g in list(cursorObj.execute("select * from groups")):
-            _group_name = g[1]
-            #if _group_name in _existed_grps:
-            #    continue
-            _user = g[3]
-            _port = g[4]
-            _tout = g[5]
-            _pwd  = g[6]
-            _hkey = g[7]
-            _grp_ssh_info = {
-                'user':     _user,
-                'port':     _port,
-                'timeout':  _tout,
-                'password': _pwd,
-                'hostkey':  _hkey
-            }
-            _hostname_list = map(
-                lambda x: x[0],
-                cursorObj.execute("select HOSTNAME from HOST WHERE GROUP_NAME = '%s' " % _group_name)
-            )
-            self.GroupTreeBoxObj.add_grp(name=_group_name, nodes=_hostname_list, ssh_info=_grp_ssh_info)
-        cursorObj.close()
 
 #####################################################
 # common functions
@@ -376,10 +322,11 @@ class MainForm(npyscreen.FormBaseNewWithMenus):
     def launch_IO_test(self):
         pass
     
-    def turn_on_taskflow(self):
+    def turn_on_workflow(self):
         pass
 
-    def manage_taskflow(self):
+    def manage_workflow(self):
+        self.parentApp.switchForm('WorkflowForm')
         pass
 
     def add_task(self):
@@ -398,7 +345,7 @@ class MainForm(npyscreen.FormBaseNewWithMenus):
                 c.execute("DELETE FROM host WHERE GROUP_NAME = '%s';" % grp)
             conn.commit()
             c.close()
-        self.reload_group_tree()
+        self.GroupTreeBoxObj.reload_group_tree()
 
     def deploy_ceph(self):
         self.parentApp.switchForm('CephDeplyForm')

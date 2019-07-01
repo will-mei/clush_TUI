@@ -373,7 +373,10 @@ class MultiLineEdit(widget.Widget):
         if self.editable and self.cursor_position > 0:
             self.value = self.value[:self.cursor_position-1] + self.value[self.cursor_position:]
         
-        self.cursor_position -= char_width_tools.get_char_width(self.value[self.cursor_position-1])
+        try:
+            self.cursor_position -= char_width_tools.get_char_width(self.value[self.cursor_position-1])
+        except:
+            pass
 
     def h_delete_right(self, input):
         if self.editable:
