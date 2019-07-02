@@ -38,7 +38,6 @@ class HelpForm(npyscreen.ActionFormMinimal):
         n = 0
         for i, j in help_info.items():
             self.help = self.add(npyscreen.TitleText, begin_entry_at=20, editable=False, name=i, value=j)
-            self.nextrely += 1
     def afterEditing(self):
         self.parentApp.setNextForm('MAIN')
 

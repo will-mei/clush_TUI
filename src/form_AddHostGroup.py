@@ -284,7 +284,7 @@ class AddHostGroupForm(npyscreen.ActionFormV2):
             conn.commit()
             cursor.close()
 
-            self.parentApp.MainForm.reload_group_tree()
+            self.parentApp.MainForm.GroupTreeBoxObj.reload_group_tree()
             self.parentApp.setNextForm('MAIN')
 
     def on_ok(self):
