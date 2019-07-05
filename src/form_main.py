@@ -55,17 +55,23 @@ class MainForm(npyscreen.FormBaseNewWithMenus):
         self.main_menu = self.new_menu(name='主菜单:')
         self.main_menu.addItemsFromList([
             ('切换命令行模式',          self.switch_cli_mode,   "^N"),
+            ('主机组 管理',             self.manage_group,          ),
+            ('工作流 管理',             self.manage_workflow,       ),
+            #
+            #('开启工作流(添加中)',      self.turn_on_workflow,  "^R"),
+            #('添加 新任务',             self.add_task,          "^A"),
+            #('添加 新主机(组)',         self.add_group,         "^G"),
+            #('删除 选中主机组',         self.del_group,             ),
+            #
             ('发起IO测试(添加中)',      self.launch_IO_test,    "^I"),
-            ('开启工作流(添加中)',      self.turn_on_workflow,  "^R"),
-            ('管理工作流',              self.manage_workflow,       ),
-            ('添加 新任务',             self.add_task,          "^A"),
-            ('添加 新主机(组)',         self.add_group,         "^G"),
-            ('删除 选中主机组',         self.del_group,             ),
             ('部署 ceph集群',           self.deploy_ceph,       "^D"),
             ('配置 ceph集群(不可用)',   self.config_ceph,       "^O"),
             ('销毁 ceph集群(不可用)',   self.purge_ceph,        "^P"),
+            #
+            ('计划任务调度',            self.manage_schedule,       ),
+            ('用户组管理',              self.manage_usergroup,      ),
             ('帮助',                    self.show_help,         "^H"),
-            ('退出',                    self.exit_func,         "^Q"),
+            ('退出登录',                self.exit_func,         "^Q"),
         ])
         # Events
 
@@ -152,7 +158,7 @@ class MainForm(npyscreen.FormBaseNewWithMenus):
             curses.ascii.NL:    self.send_user_commands,
             curses.KEY_ENTER:   self.send_user_commands,
             #
-            "^T":               self.test_func,
+            "^D":               self.debug_func,
             # send file
             #"^O":              self.file_distrbution,
             #"^D":              self._debug_msg,
@@ -220,7 +226,7 @@ class MainForm(npyscreen.FormBaseNewWithMenus):
         #self.msgInfoBoxObj.append_msg(_tmp_list)
         #npyscreen.notify_confirm(str(_tmp_list), title='debug notification')
 
-    def test_func(self, _input):
+    def debug_func(self, _input):
         # check ssh 
         self.msgInfoBoxObj.append_msg(self.inputBoxObj.entry_widget.parent.name)
         self._debug_msg()
@@ -319,43 +325,56 @@ class MainForm(npyscreen.FormBaseNewWithMenus):
         self.inputBoxObj.name = '非交互命令行模式: ' + self.shell_mode + ' shell'
         self.msgInfoBoxObj.append_msg('非交互命令行模式已切换到:' + self.shell_mode + ' shell')
 
-    def launch_IO_test(self):
-        pass
-    
-    def turn_on_workflow(self):
+    def manage_group(self):
+        self.parentApp.switchForm('HostGroupForm')
         pass
 
     def manage_workflow(self):
         self.parentApp.switchForm('WorkflowForm')
         pass
 
-    def add_task(self):
-        self.parentApp.switchForm('AddTaskForm')
+#
+    #def add_group(self):
+    #    self.parentApp.switchForm('AddHostGroupForm')
 
-    def add_group(self):
-        self.parentApp.switchForm('AddHostGroupForm')
+    #def add_task(self):
+    #    self.parentApp.switchForm('AddTaskForm')
 
-    def del_group(self):
-        grp2del = self.get_tree_groups(only_selected=True)
-        if grp2del:
-            conn = sqlite3.connect(terminal_db)
-            c = conn.cursor()
-            for grp in grp2del:
-                c.execute("DELETE FROM groups WHERE GROUP_NAME = '%s';" % grp)
-                c.execute("DELETE FROM host WHERE GROUP_NAME = '%s';" % grp)
-            conn.commit()
-            c.close()
-        self.GroupTreeBoxObj.reload_group_tree()
+    #def del_group(self):
+    #    grp2del = self.get_tree_groups(only_selected=True)
+    #    if grp2del:
+    #        conn = sqlite3.connect(terminal_db)
+    #        c = conn.cursor()
+    #        for grp in grp2del:
+    #            c.execute("DELETE FROM groups WHERE GROUP_NAME = '%s';" % grp)
+    #            c.execute("DELETE FROM host WHERE GROUP_NAME = '%s';" % grp)
+    #        conn.commit()
+    #        c.close()
+    #    self.GroupTreeBoxObj.reload_group_tree()
 
+    def launch_IO_test(self):
+        pass
+    
     def deploy_ceph(self):
-        self.parentApp.switchForm('CephDeplyForm')
+        pass
+        #self.parentApp.switchForm('CephDeplyForm')
 
     def config_ceph(self):
         pass
 
+#
     def purge_ceph(self):
         pass
 
+    def manage_schedule(self):
+        pass
+
+    def manage_usergroup(self):
+        pass
+
+#####################################################
+# basic functions
+#####################################################
     def show_help(self):
         self.parentApp.switchForm('HelpForm')
 

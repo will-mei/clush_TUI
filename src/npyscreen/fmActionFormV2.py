@@ -4,6 +4,8 @@ from . import wgwidget as widget
 from . import wgbutton
 from . import fmForm
 
+from . import char_width_tools
+
 class ActionFormV2(fmForm.FormBaseNew):
     class OK_Button(wgbutton.MiniButtonPress):
         def whenPressed(self):
@@ -29,7 +31,7 @@ class ActionFormV2(fmForm.FormBaseNew):
                         self.__class__.OKBUTTON_TYPE, 
                         self.__class__.OK_BUTTON_TEXT,
                         0 - self.__class__.OK_BUTTON_BR_OFFSET[0],
-                        0 - self.__class__.OK_BUTTON_BR_OFFSET[1] - len(self.__class__.OK_BUTTON_TEXT),
+                        0 - self.__class__.OK_BUTTON_BR_OFFSET[1] - char_width_tools.get_str_width(self.__class__.OK_BUTTON_TEXT),
                         None
                         )
                         
@@ -37,7 +39,7 @@ class ActionFormV2(fmForm.FormBaseNew):
                         self.__class__.CANCELBUTTON_TYPE, 
                         self.__class__.CANCEL_BUTTON_TEXT,
                         0 - self.__class__.CANCEL_BUTTON_BR_OFFSET[0],
-                        0 - self.__class__.CANCEL_BUTTON_BR_OFFSET[1] - len(self.__class__.CANCEL_BUTTON_TEXT),
+                        0 - self.__class__.CANCEL_BUTTON_BR_OFFSET[1] - char_width_tools.get_str_width(self.__class__.CANCEL_BUTTON_TEXT),
                         None
                         )
     
@@ -101,7 +103,7 @@ class ActionFormMinimal(ActionFormV2):
                         self.__class__.OKBUTTON_TYPE,
                         self.__class__.OK_BUTTON_TEXT,
                         0 - self.__class__.OK_BUTTON_BR_OFFSET[0],
-                        0 - self.__class__.OK_BUTTON_BR_OFFSET[1] - len(self.__class__.OK_BUTTON_TEXT),
+                        0 - self.__class__.OK_BUTTON_BR_OFFSET[1] - char_width_tools.get_str_width(self.__class__.OK_BUTTON_TEXT),
                         None
                         )
 

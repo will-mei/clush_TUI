@@ -41,7 +41,7 @@ class WorkflowForm(npyscreen.ActionFormV2):
         self.task_select_box = self.add(
             box_messages.InfoBox,
             name = "任务列表",
-            footer = 'l 搜索已选任务, L 取消搜索高亮, Ctrls + f 搜索全部任务',
+            footer = 'l 搜索已选任务, L 取消搜索高亮, Ctrl + f 从任务管理界面选择',
             values = ['asdfasdfasdf', 'asdfsadfsadf'],
             max_height = 10,
             max_width = x_half,
