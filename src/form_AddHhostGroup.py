@@ -13,13 +13,12 @@ terminal_db = './db/terminal.db'
 def conf_loadable(file_name=None):
     if file_name:
         cmd = 'file ' + file_name + ' |grep text -q'
-        ret = os.system(cmd)
-        if ret == 0:
-            return True
-        else:
+        if os.system(cmd): # return code != 0
             return False
+        else:
+            return True
     else:
-        raise NameError
+        raise TypeError('it seemed that %s is not a loadable text file' % file_name)
 
  # ('./abc', 'def', '.h')
 def get_file_name(_path_filename):
