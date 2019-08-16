@@ -78,7 +78,6 @@ class HostGroupForm(npyscreen.ActionFormV2):
             box_grouptree.HostGroupTreeBox,
             name="主机组",
             max_width=28,
-            editable=False,
             scroll_exit=False
         ) #, value=0, relx=1, max_width=x // 5, rely=2,
         self.GroupTreeBox.reload_group_tree()
@@ -92,13 +91,14 @@ class HostGroupForm(npyscreen.ActionFormV2):
             footer = 'l 搜索主机组, L 取消搜索高亮, <Ctrls + x> / <空格> 选中条目, Ctrl + r 刷新列表',
             values = self.group_list,
             max_height = 8,
-            editable=False,
             exit_left=True,
             exit_right=True,
             scroll_exit=True,
         )
-        self.help0      = self.add(npyscreen.TitleText, name='组编辑:', value='Ctrl + a 添加, Ctrl + d 删除, Ctrl + u 更新, Ctrl + s 提交编辑结果', begin_entry_at=9, editable=False)
-        self.group_id   = self.add(npyscreen.TitleText, name='组ID号:', value='-', begin_entry_at=9, editable=False)
+        self.refresh_group_list(0)
+
+        self.help0      = self.add(npyscreen.TitleText, name='编辑操作:', value='Ctrl + a 添加, Ctrl + d 删除, Ctrl + u 更新, Ctrl + s 提交编辑结果, Ctrl + w 取消编辑', begin_entry_at=12, editable=False)
+        self.group_id   = self.add(npyscreen.TitleText, name=' 组ID号:', value='-', begin_entry_at=12, editable=False)
 
         # group connection preset
         self.ny2 = self.nextrely
@@ -128,6 +128,7 @@ class HostGroupForm(npyscreen.ActionFormV2):
         self.nextrely += 1
         self.nextrelx += 25
         self.ip_list_file           = self.add(npyscreen.TitleFilenameCombo, name="grp_conf:", begin_entry_at=12, max_width=40, editable=False, exit_left=True)
+        self.ip_list_file.hidden    = True
         self.ssh_private_key_file   = self.add(npyscreen.TitleFilenameCombo, name="Identity:", begin_entry_at=12, max_width=40, editable=False, exit_left=True)
         # pre check
         self.ssh_connect_timeout    = self.add(npyscreen.TitleSlider, name="超时时间:", exit_left=True, field_width=35, lowest=10, out_of=90, step=10, max_width=40, editable=False)
@@ -140,33 +141,36 @@ class HostGroupForm(npyscreen.ActionFormV2):
         self.ny = self.nextrely
         self.grp_name = self.add(npyscreen.TitleText, name='* 组名称  :', begin_entry_at=14, max_width=40, editable=False)
         self.ssh_port = self.add(npyscreen.TitleText, name='* ssh 端口:', begin_entry_at=14, max_width=40, editable=False)
+        self.grp_status = self.add(npyscreen.TitleText, name='  组状态:', begin_entry_at=14, max_width=40, editable=False)     
 
         self.nextrely = self.ny
         self.nextrelx += 45
         self.ssh_user = self.add(npyscreen.TitleText, name='  ssh 用户:', begin_entry_at=14, max_width=40, editable=False)
         self.ssh_pswd = self.add(npyscreen.TitleText, name='  ssh 口令:', begin_entry_at=14, max_width=40, editable=False)
+        self.grp_tag    = self.add(npyscreen.TitleText, name='  组标签:', begin_entry_at=14, max_width=40, editable=False)
         self.nextrelx -= 45
 
+
         # record y
-        self.ny = self.nextrely
+        self.nextrely += 1
         self.host_list_tmp  = self.add(
             TitleEditBox,
-            name='手动编辑区:',
+            name='粘贴编辑区:',
             footer='使用 ^r 格式化换行, ^e 预览结果',
-            # host group tree 28, host list 32, margin 4 * 2
-            max_width= x -28 -32 -8,
+            # host group tree 28, host list 34, margin 4 * 2
+            max_width= x -28 -37 -8,
             editable=False,
         )
         self.host_list_tmp.set_tx('example-hostname1 example-hostname2 example-hostname3')
 
         self.nextrely  = self.ny2 +1
-        self.nextrelx = -35
+        self.nextrelx = -37
         self.host_list   = self.add(
             npyscreen.MultiLineEditableBoxed,
-            max_width=32,
+            max_width=34,
             name='主机地址:',
             values=['0.0.0.0'],
-            footer='空格:修改, i:插入, o:新行',
+            footer='预览',
             editable=False,
             scroll_exit=True,
             exit_left=True
@@ -175,8 +179,9 @@ class HostGroupForm(npyscreen.ActionFormV2):
         # record cof value status
         self._conf_refreshed = None
         self._loadable_conf_status = {
-            'grp':self.ip_list_file.value,
-            'key':self.ssh_private_key_file.value,
+            'ip_file':  self.ip_list_file.value,
+            'key_file': self.ssh_private_key_file.value,
+            'selected_group': self.group_select_box.value
         }
 
         self.add_handlers({
@@ -193,23 +198,10 @@ class HostGroupForm(npyscreen.ActionFormV2):
             "^W":               self.give_up_group_editing,
         })
 
-    def exit_func(self,  _input):
-        self.on_cancel()
-
-    def exit_func2(self,  _input):
-        if npyscreen.notify_yes_no('程序需要先退回主界面才能完全退出,\n确定要放弃并退回主界面吗?', title='任务中断:'):
-            self.on_cancel()
-
-    def refresh_group_lis(self, _input):
-        self.dump_group_list()
+    def reformat_hostname(self, _input):
+        self.host_list_tmp.entry_widget.full_reformat()
+        self.host_list.values = self.host_list_tmp.value.split()
         self.display()
-
-    def dump_group_list(self):
-        conn  = sqlite3.connect(terminal_db)
-        cur = conn.cursor()
-        self.group_list = list(cur.execute("SELECT * FROM groups ;"))
-        cur.close()
-        self.group_select_box.values = self.group_list
 
     # callback for add_mode widget 
     def add_mode_value_changed_callback(self, widget=None):
@@ -233,21 +225,50 @@ class HostGroupForm(npyscreen.ActionFormV2):
         else:
             self.ssh_connect_timeout.hidden = True
 
-    def check_loadable_conf_status(self):
+    def exit_func(self,  _input):
+        self.on_cancel()
 
-        if self.ip_list_file.value != self._loadable_conf_status['grp']:
-            self._loadable_conf_status['grp'] = self.ip_list_file.value
-            self._conf_refreshed = True
-        if self.ssh_private_key_file.value != self._loadable_conf_status['key']:
-            self._loadable_conf_status['key'] = self.ssh_private_key_file.value
-            self._conf_refreshed = True
+    def exit_func2(self,  _input):
+        if npyscreen.notify_yes_no('程序需要先退回主界面才能完全退出,\n确定要放弃并退回主界面吗?', title='任务中断:'):
+            self.on_cancel()
+
+    def refresh_group_list(self, _input):
+        self.dump_group_list()
+        #self.display()
+        self.DISPLAY()
+        npyscreen.notify('刷新成功')
+        time.sleep(0.1)
+
+    def dump_group_list(self):
+        conn  = sqlite3.connect(terminal_db)
+        cur = conn.cursor()
+        self.group_list = list(cur.execute("SELECT * FROM groups ;"))
+        cur.close()
+        self.group_select_box.values = self.group_list
+
+    def check_loadable_conf_status(self):
+        if self.edit_status == 'select':
+            # show info of selected
+            if self.group_select_box.value != self._loadable_conf_status['selected_group']:
+                self._loadable_conf_status['selected_group'] = self.group_select_box.value
+                self._conf_refreshed = True
+        else:
+            if self.ip_list_file.value != self._loadable_conf_status['ip_file']:
+                self._loadable_conf_status['ip_file'] = self.ip_list_file.value
+                self._conf_refreshed = True
+            if self.ssh_private_key_file.value != self._loadable_conf_status['key_file']:
+                self._loadable_conf_status['key_file'] = self.ssh_private_key_file.value
+                self._conf_refreshed = True
 
     def when_conf_refreshed(self):
+        if self.edit_status == 'select':
+            self.load_group_preview()
+        else:
         #load config file
-        if self.ip_list_file.value :
-            if conf_loadable(self.ip_list_file.value):
-                self.host_list.values = load_conf_content(self.grp_conf.value)
-                self.grp_name.value =get_file_name(self.grp_conf.value)[1]
+            if self.ip_list_file.value :
+                if conf_loadable(self.ip_list_file.value):
+                    self.host_list.values = load_conf_content(self.grp_conf.value)
+                    self.grp_name.value =get_file_name(self.grp_conf.value)[1]
 
     # the will be reload everytime a key was pressed!!
     # don't load conf here. 
@@ -257,31 +278,148 @@ class HostGroupForm(npyscreen.ActionFormV2):
             self.when_conf_refreshed()
             self._conf_refreshed = None
 
-    def reformat_hostname(self, _input):
-        self.host_list_tmp.entry_widget.full_reformat()
-        self.host_list.values = self.host_list_tmp.value.split()
-        self.display()
-
     def print_selected_group_index(self, _input):
         npyscreen.notify_confirm(str(self.group_select_box.value), title='current value')
 
     def load_group_preview(self):
         if self.current_group:
             current_group = self.current_group
+            current_group_hosts_list = []
         elif isinstance(self.group_select_box.value, int):
             current_group = self.group_list[self.group_select_box.value]
+            # hosts
+            conn = sqlite3.connect(terminal_db)
+            cur = conn.cursor()
+            current_group_hosts_list = list(
+                map(
+                    lambda x : str(x[0]),
+                    cur.execute("SELECT HOSTNAME FROM host WHERE GROUP_NAME = '%s' ;" % current_group[1])
+                )
+            )
         else:
             return
 
-        self.group_id.value = str(current_group[0])
-        self.grp_name.value = current_group[1]
-        # status
-        # user
-        # port
-        # timeout
-        # password
-        # host_key 
-        # tag
+        self.group_id.value     = str(current_group[0])
+        self.grp_name.value     = current_group[1]
+        self.grp_status.value   = current_group[2]
+        self.ssh_user.value     = current_group[3]
+        self.ssh_port.value     = current_group[4]
+        self.ssh_connect_timeout.value  = current_group[5]
+        self.ssh_pswd.value             = current_group[6]
+        self.ssh_private_key_file.value = current_group[7]
+        self.grp_tag.value              = current_group[8]
+
+        self.host_list.values = current_group_hosts_list
+        self.host_list_tmp.value = ' '.join(current_group_hosts_list)
+        self.display()
+
+    def enable_edit_group(self):
+        self.group_editable = True
+        #npyscreen.notify_confirm(str(self._widgets__), title='editable')
+        self.host_list.name     = '主机地址(编辑)'
+        self.host_list.footer   = '空格:修改, i:插入, o:新行'
+        self.fresh_edit_privilege()
+
+    def disable_edit_group(self):
+        self.group_editable  = False
+        self.host_list.name     = '主机地址(只读)'
+        self.host_list.footer   = '预览'
+        self.fresh_edit_privilege()
+
+    def fresh_edit_privilege(self):
+
+        e = self.group_editable
+
+        self.add_mode.editable              = e
+        self.ip_list_file.editable          = e
+        self.ssh_private_key_file.editable  = e
+        self.ssh_connect_timeout.editable   = e
+
+        self.grp_name.editable              = e
+        #self.grp_status.editable            = e
+
+        self.ssh_user.editable              = e
+        self.ssh_port.editable              = e
+        self.ssh_connect_timeout.editable   = e
+        self.ssh_pswd.editable              = e
+        self.ssh_private_key_file.editable  = e
+        self.grp_tag.editable               = e
+
+        self.host_list_tmp.editable         = e
+        self.host_list.editable             = e
+
+        #self.ctime.editable                = e
+        #self.mtime.editable                = e
+
+    def add_new_group(self, _input):
+        if self.edit_status != 'select':
+            npyscreen.notify_confirm('请先提交当前正在编辑的组信息', title='编辑冲突')
+            return
+        self.edit_status = 'insert'
+        # new empty group
+        self.initialize_empty_group()
+        self.enable_edit_group()
+
+    def give_up_group_editing(self, _input):
+        if self.edit_status == 'select':
+            npyscreen.notify_confirm('当前没有正在编辑的组', title='未发起编辑')
+            return
+        if isinstance(self.group_select_box.value, int):
+            self.refresh_group_list(0)
+        else:
+            self.initialize_empty_group()
+        self.disable_edit_group()
+        self.edit_status = 'select'
+        self.display()
+
+    def initialize_empty_group(self):
+        _empty_group = ('-', '', '', '', '22', 30, '', None, '')
+        self.current_group = _empty_group
+        self.load_group_preview()
+        self.current_group = None
+
+    def delete_selected_group(self, _input):
+        if isinstance(self.group_select_box.value, int):
+            _id     = self.group_list[self.group_select_box.value][0]
+            _name   = self.group_list[self.group_select_box.value][1]
+            _str    = '确定要删除 ID: %s 号, 名为: %s 的任务吗?' % (_id, _name)
+            if npyscreen.notify_yes_no(_str, title='确认删除'):
+                cur_cmd = "DELETE FROM groups WHERE ID = %d ;" % _id
+                conn    = sqlite3.connect(terminal_db)
+                cur     = conn.cursor()
+                cur.execute(cur_cmd)
+                conn.commit()
+                cur.close()
+            self.refresh_group_list(0)
+            self.GroupTreeBox.reload_group_tree()
+            self.parentApp.MainForm.GroupTreeBoxObj.reload_group_tree()
+        else:
+            npyscreen.notify_confirm('请先选中要删除的主机组才能进行删除操作', title='没有主机组可以删除')
+
+    def update_selected_group(self, _input):
+        if self.edit_status != 'select':
+            npyscreen.notify_confirm('请先提交当前正在进行的编辑组', title='编辑冲突')
+            return
+        if isinstance(self.group_select_box.value, int):
+            self.edit_status = 'update'
+            self.enable_edit_group()
+        else:
+            npyscreen.notify_confirm('请先选中要更新的组才能进行跟新操作', title='没有组可以更新')
+
+    def commit_modified_group(self, _input):
+        if self.edit_status == 'select':
+            npyscreen.notify_confirm('请先进入主机组添加或者修改状态再进行内容提交', title='没有内容可以提交')
+            return
+        if self.check_grp_value():
+            if self.edit_status == 'insert':
+                self.auto_add_grp()
+            elif self.edit_status == 'update':
+                self.auto_update_grp()
+            self.disable_edit_group()
+            self.edit_status    = 'select'
+            self.current_group  = None
+            self.refresh_group_list(0)
+
 
     # check value format
     def check_grp_value(self):
@@ -337,6 +475,7 @@ class HostGroupForm(npyscreen.ActionFormV2):
         # after check 
         return True
 
+
     def auto_add_grp(self):
         npyscreen.notify('正在检查信息', title='正在添加:')
         time.sleep(0.2)
@@ -345,42 +484,77 @@ class HostGroupForm(npyscreen.ActionFormV2):
             conn = sqlite3.connect(terminal_db)
             cursor = conn.cursor()
             # groups 
-            cursor.execute(
-                "INSERT INTO groups (GROUP_NAME, SSH_USER, SSH_PORT, SSH_TIMEOUT, SSH_PASSWORD, SSH_HOSTKEY) \
-                VALUES ('%s', '%s', %s, %s, '%s', '%s')" \
-                % (self.grp_name.value, self.ssh_user.value, self.ssh_port.value, self.ssh_connect_timeout.value, self.ssh_pswd.value, self.ssh_private_key_file.value)
+            _var_tuple  =  tuple(
+                map(
+                    lambda x: 'null' if not x else "'" + str(x) + "'",
+                    (self.grp_name.value, self.ssh_user.value, self.ssh_port.value, self.ssh_connect_timeout.value, self.ssh_pswd.value, self.ssh_private_key_file.value, self.grp_tag.value)
+                )
             )
+            cur_cmd = "INSERT INTO groups (GROUP_NAME, SSH_USER, SSH_PORT, SSH_TIMEOUT, SSH_PASSWORD, SSH_HOSTKEY, TAG) ;" + \
+                      " VALUES (%s, %s, %s, %s, %s, %s,  %s)" % _var_tuple
+            try:
+                cursor.execute(cur_cmd)
+            except:
+                raise TypeError(cur_cmd)
             # host 
             for hostname in self.host_list.values:
                 #cursor.execute("INSERT INTO host (HOSTNAME, GROUP_NAME, BOARD_SN, TAG) VALUES ('%s', '%s', '%s', '%s')" % (hostname, self.grp_name.value, sn, tag))
-                cursor.execute("INSERT INTO host (HOSTNAME, GROUP_NAME) VALUES ('%s', '%s')" % (hostname, self.grp_name.value))
+                cursor.execute("INSERT INTO host (HOSTNAME, GROUP_NAME) VALUES ('%s', '%s') ;" % (hostname, self.grp_name.value))
             conn.commit()
             cursor.close()
 
+            self.GroupTreeBox.reload_group_tree()
             self.parentApp.MainForm.GroupTreeBoxObj.reload_group_tree()
-            self.parentApp.setNextForm('MAIN')
+            npyscreen.notify('添加成功', title='消息')
+            time.sleep(0.2)
+            self.parentApp.setNextFormPrevious()
 
     def auto_update_grp(self):
-        npyscreen.notify('正在检查信息', title='正在更新:')
-        time.sleep(0.2)
+        _id = self.group_list[self.group_select_box.value][0]
         if self.check_grp_value():
             # add group info to db 
             conn = sqlite3.connect(terminal_db)
             cursor = conn.cursor()
             # groups 
-            cursor.execute(
-                "UPDATE groups SET GROUP_NAME = '%s', SSH_USER = '%s', SSH_PORT = '%s', SSH_TIMEOUT = %s, SSH_PASSWORD = '%s', SSH_HOSTKEY = '%s'" \
-                % (self.grp_name.value, self.ssh_user.value, self.ssh_port.value, self.ssh_connect_timeout.value, self.ssh_pswd.value, self.ssh_private_key_file.value)
+            _var_tuple  =  tuple(
+                map(
+                    lambda x: 'null' if not x else "'" + str(x) + "'",
+                    (self.grp_name.value, self.ssh_user.value, self.ssh_port.value, self.ssh_connect_timeout.value, self.ssh_pswd.value, self.ssh_private_key_file.value, self.grp_tag.value, _id)
+                )
             )
-            # host 
+            cur_cmd = "UPDATE groups SET GROUP_NAME = %s, SSH_USER = %s, SSH_PORT = %s, SSH_TIMEOUT = %s, SSH_PASSWORD = %s, SSH_HOSTKEY = %s, TAG = %s  WHERE ID = %s ;" % _var_tuple
+            try:
+                cursor.execute(cur_cmd)
+            except:
+                raise TypeError(cur_cmd)
+            # get host list of this group
+            _host_array = dict(
+                list(
+                    cursor.execute("SELECT ID, HOSTNAME FROM host WHERE GROUP_NAME = '%s' ;" % current_group[1])
+                )
+            )
+
+            current_group_hosts_list = list(_host_array.values())
+
+            # insert new
             for hostname in self.host_list.values:
-                #cursor.execute("INSERT INTO host (HOSTNAME, GROUP_NAME, BOARD_SN, TAG) VALUES ('%s', '%s', '%s', '%s')" % (hostname, self.grp_name.value, sn, tag))
-                cursor.execute("INSERT INTO host (HOSTNAME, GROUP_NAME) VALUES ('%s', '%s')" % (hostname, self.grp_name.value))
+                if hostname in current_group_hosts_list:
+                    continue
+                else:
+                    cursor.execute("INSERT INTO host (HOSTNAME, GROUP_NAME) VALUES ('%s', '%s') ;" % (hostname, self.grp_name.value))
+            # remove old 
+            for _id, hostname in _host_array.items():
+                if hostname in self.host_list.values:
+                    continue
+                else:
+                    cursor.execute("DELETE FROM host WHERE ID = %d ;" % _id)
             conn.commit()
             cursor.close()
 
+            self.GroupTreeBox.reload_group_tree()
             self.parentApp.MainForm.GroupTreeBoxObj.reload_group_tree()
-            self.parentApp.setNextForm('MAIN')
+            npyscreen.notify('更新成功', title='消息')
+            time.sleep(0.2)
 
     def on_ok(self):
         self.parentApp.setNextFormPrevious()

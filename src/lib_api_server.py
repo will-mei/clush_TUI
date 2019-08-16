@@ -36,6 +36,10 @@ def _join(*args):
 #    010:'client unreachable',
 #}
 
+# a server reciving data from other hosts
+# pass in your server_info and call the run_foreve mathod
+# to deal with the data recived in your own way
+# you can subclass it and rewrite the parse_call method
 
 class api_server():
     def __init__(self, con_info):
@@ -50,12 +54,9 @@ class api_server():
         self._con_max       = con_info['connection_max']
         # create a socket
         self._socket        = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self._socket.bind(
-            (self._server_ip, 
-             self._server_port)
-        )
+        self._socket.bind( (self._server_ip, self._server_port) )
         self._socket.listen(self._con_max)
-        self.status         = 'on'
+        self.status = 'on'
         logging.debug(_join(
                 self._server_ip, self._server_port, "waiting for connection .."
             ))
@@ -66,6 +67,9 @@ class api_server():
         pass
 
     def parse_call(self, _final_pkg):
+        if _final_pkg['data'] == 'close':
+            print(_final_pkg)
+            self.close()
         pass 
 
     #def perform_task(self, _data):
@@ -228,14 +232,11 @@ class api_server():
         logging.debug('Connection from %s:%s closed.' % addr)
 
     def run_forever(self):
-        #i = 0
-        #while i<2 :
         while self.status == 'on':
+            # waiting for new connections
             sock, addr = self._socket.accept()
             task = threading.Thread(target=self.thread_tcplink, args=(sock, addr))
             task.start()
-            #i = i+1
-            #print('socket number:', i)
             #time.sleep(0.5)
 
     def close(self):
@@ -245,7 +246,7 @@ class api_server():
 if __name__ == "__main__":
     server_info = {
         'server_id'     :b'test_user_id',
-        'server_ip'     :'192.168.59.252',
+        'server_ip'     :'192.168.59.102',
         'server_port'   :9999,
         'msg_trans_unit':512,
         'connection_max':32,

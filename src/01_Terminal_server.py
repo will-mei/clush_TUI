@@ -9,7 +9,7 @@ def test_server():
     # one server 
     server_info = {
         'server_id'     :b'test_user_id',
-        'server_ip'     :'192.168.59.252',
+        'server_ip'     :'192.168.59.102',
         'server_port'   :9999,
         'msg_trans_unit':512,
         'connection_max':32,

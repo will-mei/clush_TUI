@@ -53,12 +53,16 @@ def _get_sum(bin_data, bin_id, prefix=b'', _encoding='utf-8'):
 
 
 ###############################################################
-# input -> obj/str (msg str/json str) -> pickle bin / encode bin
+# input : obj/str (msg str/json str)
+# -> pickle bin / encode bin
 # -> [add] sum(hash) + id/timestamp + given tag -> pickle bin data 
 # -> sliced list -> [fixed length] slice -> [add] seq bin + max bin + sum bin + slice bin
-# -> send through socket/pipe
-# done
+# -> send through socket/pipe to remote server
 ###############################################################
+
+# a client send data package to remote server
+# pass in your server_info
+# send msg or data object with send_msg / send_data method
 
 class api_client():
     def __init__(self, con_info):
@@ -224,7 +228,7 @@ if __name__ == "__main__":
     connection_info = {
         # an encoded token
         'server_id'     : b'test_user_id',
-        'server_ip'     : '192.168.59.252',
+        'server_ip'     : '192.168.59.102',
         'server_port'   : 9999,
         'msg_trans_unit': 512,
         'socket_timeout': 5,

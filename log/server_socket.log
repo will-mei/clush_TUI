@@ -2503,3 +2503,499 @@ data sent time: b'2019/06/13-09:56:28'
 data content: b'\x80\x03}q\x00(X\x08\x00\x00\x00grp_nameq\x01X\x04\x00\x00\x00grp0q\x02X\x0c\x00\x00\x00grp_ssh_infoq\x03}q\x04(X\x04\x00\x00\x00portq\x05K\x16X\x04\x00\x00\x00userq\x06NX\x08\x00\x00\x00passwordq\x07NX\x07\x00\x00\x00timeoutq\x08K\x0fX\x07\x00\x00\x00hostkeyq\tX\r\x00\x00\x00~/.ssh/id_rsaq\nuX\x0c\x00\x00\x00grp_ip_arrayq\x0b}q\x0c(X\x06\x00\x00\x00host10q\rX\r\x00\x00\x00192.168.59.10q\x0eX\x06\x00\x00\x00host11q\x0fX\r\x00\x00\x00192.168.59.11q\x10X\x06\x00\x00\x00host12q\x11X\r\x00\x00\x00192.168.59.12q\x12X\x06\x00\x00\x00host13q\x13X\r\x00\x00\x00192.168.59.13q\x14X\x06\x00\x00\x00host14q\x15X\r\x00\x00\x00192.168.59.14q\x16X\x06\x00\x00\x00host15q\x17X\r\x00\x00\x00192.168.59.15q\x18X\x06\x00\x00\x00host16q\x19X\r\x00\x00\x00192.168.59.16q\x1aX\x06\x00\x00\x00host17q\x1bX\r\x00\x00\x00192.168.59.17q\x1cX\x06\x00\x00\x00host18q\x1dX\r\x00\x00\x00192.168.59.18q\x1eX\x06\x00\x00\x00host19q\x1fX\r\x00\x00\x00192.168.59.19q X\x06\x00\x00\x00host20q!X\r\x00\x00\x00192.168.59.20q"X\x06\x00\x00\x00host21q#X\r\x00\x00\x00192.168.59.21q$X\x06\x00\x00\x00host22q%X\r\x00\x00\x00192.168.59.22q&X\x06\x00\x00\x00host23q\'X\r\x00\x00\x00192.168.59.23q(X\x06\x00\x00\x00host24q)X\r\x00\x00\x00192.168.59.24q*X\x06\x00\x00\x00host25q+X\r\x00\x00\x00192.168.59.25q,X\x06\x00\x00\x00host26q-X\r\x00\x00\x00192.168.59.26q.X\x06\x00\x00\x00host27q/X\r\x00\x00\x00192.168.59.27q0X\x06\x00\x00\x00host28q1X\r\x00\x00\x00192.168.59.28q2X\x06\x00\x00\x00host29q3X\r\x00\x00\x00192.168.59.29q4uu.'
 2019/06/13 09:56:28 AM root 27258 - 140286980765440:Thread-4 - INFO - /root/Cluster_jobs_TUI/src/lib_api_server.py parse_client_data line: 123 - reply: b'data 2019/06/13-09:56:28_data  recived and confirmed'
 2019/06/13 09:56:28 AM root 27258 - 140286980765440:Thread-4 - DEBUG - /root/Cluster_jobs_TUI/src/lib_api_server.py thread_tcplink line: 228 - Connection from 192.168.59.252:39622 closed.
+2019/08/08 01:07:48 PM root 6990 - 140488599263040:MainThread - DEBUG - /root/repository/Cluster_jobs_TUI/src/lib_api_server.py __init__ line: 60 - 192.168.59.102 9999 waiting for connection ..
+2019/08/08 01:17:40 PM root 7223 - 140647921928000:MainThread - DEBUG - lib_api_server.py __init__ line: 60 - 192.168.59.102 9999 waiting for connection ..
+2019/08/08 01:17:53 PM root 7223 - 140647741048576:Thread-1 - DEBUG - lib_api_server.py thread_tcplink line: 150 - Accept new connection from 192.168.59.102:35940...
+2019/08/08 01:17:53 PM root 7223 - 140647741048576:Thread-1 - DEBUG - lib_api_server.py thread_tcplink line: 211 - recived slice info:
+slice seq num: b'fffff0x0' 
+slice seq max: b'fffff0x0' 
+slice sum origin: b'd8ccb2efd158bbbb8f6aeaf705c3ae27f5cf6bda981d2ba64b8f801efa74441b' 
+slice sum confirm: b'd8ccb2efd158bbbb8f6aeaf705c3ae27f5cf6bda981d2ba64b8f801efa74441b' 
+slice content: b'\x80\x03}q\x00(X\x03\x00\x00\x00sumq\x01X@\x00\x00\x00661d11edd88b79c9d7d1e62362fad0ff70e609b8c5174f079eff6b7ee9ea4e95q\x02X\x06\x00\x00\x00bin_idq\x03C\x172019/08/08-13:17:53_msgq\x04X\x08\x00\x00\x00bin_dataq\x05C\x04asdfq\x06u.'
+2019/08/08 01:17:53 PM root 7223 - 140647741048576:Thread-1 - DEBUG - lib_api_server.py thread_tcplink line: 218 - store slice data num 0 to buffer dict:
+
+2019/08/08 01:17:53 PM root 7223 - 140647741048576:Thread-1 - DEBUG - lib_api_server.py thread_tcplink line: 220 - buffer dict:
+ {0: b'\x80\x03}q\x00(X\x03\x00\x00\x00sumq\x01X@\x00\x00\x00661d11edd88b79c9d7d1e62362fad0ff70e609b8c5174f079eff6b7ee9ea4e95q\x02X\x06\x00\x00\x00bin_idq\x03C\x172019/08/08-13:17:53_msgq\x04X\x08\x00\x00\x00bin_dataq\x05C\x04asdfq\x06u.'}
+2019/08/08 01:17:53 PM root 7223 - 140647741048576:Thread-1 - DEBUG - lib_api_server.py thread_tcplink line: 166 - confirm stop reciving slices:
+ seq_max: b'fffff0x0'
+2019/08/08 01:17:53 PM root 7223 - 140647741048576:Thread-1 - DEBUG - lib_api_server.py thread_tcplink line: 172 - check slice num 0
+2019/08/08 01:17:53 PM root 7223 - 140647741048576:Thread-1 - DEBUG - lib_api_server.py _check_msg line: 75 - b'try to load data form pkg:' b'\x80\x03}q\x00(X\x03\x00\x00\x00sumq\x01X@\x00\x00\x00661d11edd88b79c9d7d1e62362fad0ff70e609b8c5174f079eff6b7ee9ea4e95q\x02X\x06\x00\x00\x00bin_idq\x03C\x172019/08/08-13:17:53_msgq\x04X\x08\x00\x00\x00bin_dataq\x05C\x04asdfq\x06u.'
+2019/08/08 01:17:53 PM root 7223 - 140647741048576:Thread-1 - DEBUG - lib_api_server.py _check_msg line: 79 - data loading success
+2019/08/08 01:17:53 PM root 7223 - 140647741048576:Thread-1 - DEBUG - lib_api_server.py thread_tcplink line: 186 - the complete msg data:
+ {'sum': '661d11edd88b79c9d7d1e62362fad0ff70e609b8c5174f079eff6b7ee9ea4e95', 'bin_id': b'2019/08/08-13:17:53_msg', 'bin_data': b'asdf'}
+2019/08/08 01:17:53 PM root 7223 - 140647741048576:Thread-1 - DEBUG - lib_api_server.py parse_client_data line: 102 - data info: 
+data sum: 661d11edd88b79c9d7d1e62362fad0ff70e609b8c5174f079eff6b7ee9ea4e95 
+data id: b'2019/08/08-13:17:53_msg' 
+data tag: b'msg' 
+data sent time: b'2019/08/08-13:17:53' 
+data content: b'asdf'
+2019/08/08 01:17:53 PM root 7223 - 140647741048576:Thread-1 - INFO - lib_api_server.py parse_client_data line: 123 - reply: b'data 2019/08/08-13:17:53_msg  recived and confirmed'
+2019/08/08 01:17:53 PM root 7223 - 140647741048576:Thread-1 - DEBUG - lib_api_server.py thread_tcplink line: 228 - Connection from 192.168.59.102:35940 closed.
+2019/08/08 01:18:20 PM root 7223 - 140647741048576:Thread-2 - DEBUG - lib_api_server.py thread_tcplink line: 150 - Accept new connection from 192.168.59.102:35942...
+2019/08/08 01:18:20 PM root 7223 - 140647741048576:Thread-2 - DEBUG - lib_api_server.py thread_tcplink line: 211 - recived slice info:
+slice seq num: b'fffff0x0' 
+slice seq max: b'fffff0x0' 
+slice sum origin: b'067fa410a2c9ff0f6b8ce026e5327f5cdddc62a21ca44f36e489b1c3cfc055b0' 
+slice sum confirm: b'067fa410a2c9ff0f6b8ce026e5327f5cdddc62a21ca44f36e489b1c3cfc055b0' 
+slice content: b'\x80\x03}q\x00(X\x03\x00\x00\x00sumq\x01X@\x00\x00\x00040f67360422472e1f8da609883cce35b807f8b83c9dbed54e0cbcaac56e0807q\x02X\x06\x00\x00\x00bin_idq\x03C\x172019/08/08-13:18:20_msgq\x04X\x08\x00\x00\x00bin_dataq\x05C\x0fmessage exampleq\x06u.'
+2019/08/08 01:18:20 PM root 7223 - 140647741048576:Thread-2 - DEBUG - lib_api_server.py thread_tcplink line: 218 - store slice data num 0 to buffer dict:
+
+2019/08/08 01:18:20 PM root 7223 - 140647741048576:Thread-2 - DEBUG - lib_api_server.py thread_tcplink line: 220 - buffer dict:
+ {0: b'\x80\x03}q\x00(X\x03\x00\x00\x00sumq\x01X@\x00\x00\x00040f67360422472e1f8da609883cce35b807f8b83c9dbed54e0cbcaac56e0807q\x02X\x06\x00\x00\x00bin_idq\x03C\x172019/08/08-13:18:20_msgq\x04X\x08\x00\x00\x00bin_dataq\x05C\x0fmessage exampleq\x06u.'}
+2019/08/08 01:18:20 PM root 7223 - 140647741048576:Thread-2 - DEBUG - lib_api_server.py thread_tcplink line: 166 - confirm stop reciving slices:
+ seq_max: b'fffff0x0'
+2019/08/08 01:18:20 PM root 7223 - 140647741048576:Thread-2 - DEBUG - lib_api_server.py thread_tcplink line: 172 - check slice num 0
+2019/08/08 01:18:20 PM root 7223 - 140647741048576:Thread-2 - DEBUG - lib_api_server.py _check_msg line: 75 - b'try to load data form pkg:' b'\x80\x03}q\x00(X\x03\x00\x00\x00sumq\x01X@\x00\x00\x00040f67360422472e1f8da609883cce35b807f8b83c9dbed54e0cbcaac56e0807q\x02X\x06\x00\x00\x00bin_idq\x03C\x172019/08/08-13:18:20_msgq\x04X\x08\x00\x00\x00bin_dataq\x05C\x0fmessage exampleq\x06u.'
+2019/08/08 01:18:20 PM root 7223 - 140647741048576:Thread-2 - DEBUG - lib_api_server.py _check_msg line: 79 - data loading success
+2019/08/08 01:18:20 PM root 7223 - 140647741048576:Thread-2 - DEBUG - lib_api_server.py thread_tcplink line: 186 - the complete msg data:
+ {'sum': '040f67360422472e1f8da609883cce35b807f8b83c9dbed54e0cbcaac56e0807', 'bin_id': b'2019/08/08-13:18:20_msg', 'bin_data': b'message example'}
+2019/08/08 01:18:20 PM root 7223 - 140647741048576:Thread-2 - DEBUG - lib_api_server.py parse_client_data line: 102 - data info: 
+data sum: 040f67360422472e1f8da609883cce35b807f8b83c9dbed54e0cbcaac56e0807 
+data id: b'2019/08/08-13:18:20_msg' 
+data tag: b'msg' 
+data sent time: b'2019/08/08-13:18:20' 
+data content: b'message example'
+2019/08/08 01:18:20 PM root 7223 - 140647741048576:Thread-2 - INFO - lib_api_server.py parse_client_data line: 123 - reply: b'data 2019/08/08-13:18:20_msg  recived and confirmed'
+2019/08/08 01:18:20 PM root 7223 - 140647741048576:Thread-2 - DEBUG - lib_api_server.py thread_tcplink line: 228 - Connection from 192.168.59.102:35942 closed.
+2019/08/08 01:19:20 PM root 7223 - 140647741048576:Thread-3 - DEBUG - lib_api_server.py thread_tcplink line: 150 - Accept new connection from 192.168.59.102:35944...
+2019/08/08 01:19:20 PM root 7223 - 140647741048576:Thread-3 - DEBUG - lib_api_server.py thread_tcplink line: 211 - recived slice info:
+slice seq num: b'fffff0x0' 
+slice seq max: b'fffff0x0' 
+slice sum origin: b'02b736bd2c9c7fdd4bda4981c5ff366f50cb1e3323f98bbf43ef7e9b1700de5e' 
+slice sum confirm: b'02b736bd2c9c7fdd4bda4981c5ff366f50cb1e3323f98bbf43ef7e9b1700de5e' 
+slice content: b'\x80\x03}q\x00(X\x03\x00\x00\x00sumq\x01X@\x00\x00\x00129c31382d8a7030168817ef1f33e596c1e2948f9d2af724d539637c4f6abd87q\x02X\x06\x00\x00\x00bin_idq\x03C\x172019/08/08-13:19:20_msgq\x04X\x08\x00\x00\x00bin_dataq\x05C\xe9message NAME MAJ:MIN RM SIZE RO TYPE MOUNTPOINT sda 8:0 0 8G 0 disk \xe2\x94\x9c\xe2\x94\x80sda1 8:1 0 1G 0 part /boot \xe2\x94\x94\xe2\x94\x80sda2 8:2 0 7G 0 part \xe2\x94\x9c\xe2\x94\x80centos-root 253:0 0 6.2G 0 lvm / \xe2\x94\x94\xe2\x94\x80centos-swap 253:1 0 820M 0 lvm [SWAP] sr0 11:0 1 1024M 0 romq\x06u.'
+2019/08/08 01:19:20 PM root 7223 - 140647741048576:Thread-3 - DEBUG - lib_api_server.py thread_tcplink line: 218 - store slice data num 0 to buffer dict:
+
+2019/08/08 01:19:20 PM root 7223 - 140647741048576:Thread-3 - DEBUG - lib_api_server.py thread_tcplink line: 220 - buffer dict:
+ {0: b'\x80\x03}q\x00(X\x03\x00\x00\x00sumq\x01X@\x00\x00\x00129c31382d8a7030168817ef1f33e596c1e2948f9d2af724d539637c4f6abd87q\x02X\x06\x00\x00\x00bin_idq\x03C\x172019/08/08-13:19:20_msgq\x04X\x08\x00\x00\x00bin_dataq\x05C\xe9message NAME MAJ:MIN RM SIZE RO TYPE MOUNTPOINT sda 8:0 0 8G 0 disk \xe2\x94\x9c\xe2\x94\x80sda1 8:1 0 1G 0 part /boot \xe2\x94\x94\xe2\x94\x80sda2 8:2 0 7G 0 part \xe2\x94\x9c\xe2\x94\x80centos-root 253:0 0 6.2G 0 lvm / \xe2\x94\x94\xe2\x94\x80centos-swap 253:1 0 820M 0 lvm [SWAP] sr0 11:0 1 1024M 0 romq\x06u.'}
+2019/08/08 01:19:20 PM root 7223 - 140647741048576:Thread-3 - DEBUG - lib_api_server.py thread_tcplink line: 166 - confirm stop reciving slices:
+ seq_max: b'fffff0x0'
+2019/08/08 01:19:20 PM root 7223 - 140647741048576:Thread-3 - DEBUG - lib_api_server.py thread_tcplink line: 172 - check slice num 0
+2019/08/08 01:19:20 PM root 7223 - 140647741048576:Thread-3 - DEBUG - lib_api_server.py _check_msg line: 75 - b'try to load data form pkg:' b'\x80\x03}q\x00(X\x03\x00\x00\x00sumq\x01X@\x00\x00\x00129c31382d8a7030168817ef1f33e596c1e2948f9d2af724d539637c4f6abd87q\x02X\x06\x00\x00\x00bin_idq\x03C\x172019/08/08-13:19:20_msgq\x04X\x08\x00\x00\x00bin_dataq\x05C\xe9message NAME MAJ:MIN RM SIZE RO TYPE MOUNTPOINT sda 8:0 0 8G 0 disk \xe2\x94\x9c\xe2\x94\x80sda1 8:1 0 1G 0 part /boot \xe2\x94\x94\xe2\x94\x80sda2 8:2 0 7G 0 part \xe2\x94\x9c\xe2\x94\x80centos-root 253:0 0 6.2G 0 lvm / \xe2\x94\x94\xe2\x94\x80centos-swap 253:1 0 820M 0 lvm [SWAP] sr0 11:0 1 1024M 0 romq\x06u.'
+2019/08/08 01:19:20 PM root 7223 - 140647741048576:Thread-3 - DEBUG - lib_api_server.py _check_msg line: 79 - data loading success
+2019/08/08 01:19:20 PM root 7223 - 140647741048576:Thread-3 - DEBUG - lib_api_server.py thread_tcplink line: 186 - the complete msg data:
+ {'sum': '129c31382d8a7030168817ef1f33e596c1e2948f9d2af724d539637c4f6abd87', 'bin_id': b'2019/08/08-13:19:20_msg', 'bin_data': b'message NAME MAJ:MIN RM SIZE RO TYPE MOUNTPOINT sda 8:0 0 8G 0 disk \xe2\x94\x9c\xe2\x94\x80sda1 8:1 0 1G 0 part /boot \xe2\x94\x94\xe2\x94\x80sda2 8:2 0 7G 0 part \xe2\x94\x9c\xe2\x94\x80centos-root 253:0 0 6.2G 0 lvm / \xe2\x94\x94\xe2\x94\x80centos-swap 253:1 0 820M 0 lvm [SWAP] sr0 11:0 1 1024M 0 rom'}
+2019/08/08 01:19:20 PM root 7223 - 140647741048576:Thread-3 - DEBUG - lib_api_server.py parse_client_data line: 102 - data info: 
+data sum: 129c31382d8a7030168817ef1f33e596c1e2948f9d2af724d539637c4f6abd87 
+data id: b'2019/08/08-13:19:20_msg' 
+data tag: b'msg' 
+data sent time: b'2019/08/08-13:19:20' 
+data content: b'message NAME MAJ:MIN RM SIZE RO TYPE MOUNTPOINT sda 8:0 0 8G 0 disk \xe2\x94\x9c\xe2\x94\x80sda1 8:1 0 1G 0 part /boot \xe2\x94\x94\xe2\x94\x80sda2 8:2 0 7G 0 part \xe2\x94\x9c\xe2\x94\x80centos-root 253:0 0 6.2G 0 lvm / \xe2\x94\x94\xe2\x94\x80centos-swap 253:1 0 820M 0 lvm [SWAP] sr0 11:0 1 1024M 0 rom'
+2019/08/08 01:19:20 PM root 7223 - 140647741048576:Thread-3 - INFO - lib_api_server.py parse_client_data line: 123 - reply: b'data 2019/08/08-13:19:20_msg  recived and confirmed'
+2019/08/08 01:19:20 PM root 7223 - 140647741048576:Thread-3 - DEBUG - lib_api_server.py thread_tcplink line: 228 - Connection from 192.168.59.102:35944 closed.
+2019/08/08 01:20:59 PM root 7223 - 140647741048576:Thread-4 - DEBUG - lib_api_server.py thread_tcplink line: 150 - Accept new connection from 192.168.59.102:35948...
+2019/08/08 01:20:59 PM root 7223 - 140647741048576:Thread-4 - DEBUG - lib_api_server.py thread_tcplink line: 211 - recived slice info:
+slice seq num: b'fffff0x0' 
+slice seq max: b'fffff0x2' 
+slice sum origin: b'88860d712544407cbaf524bdad10d3b8d0bdac9dcbc04172931e8d8df623b618' 
+slice sum confirm: b'88860d712544407cbaf524bdad10d3b8d0bdac9dcbc04172931e8d8df623b618' 
+slice content: b'\x80\x03}q\x00(X\x03\x00\x00\x00sumq\x01X@\x00\x00\x003571171329b2811b29f70fad677b3ca650356a01b8bee8c00f5ef08b33b1ceecq\x02X\x06\x00\x00\x00bin_idq\x03C\x182019/08/08-13:20:59_dataq\x04X\x08\x00\x00\x00bin_dataq\x05BA\x03\x00\x00\x80\x03}q\x00(X\x08\x00\x00\x00grp_nameq\x01X\x04\x00\x00\x00grp0q\x02X\x0c\x00\x00\x00grp_ssh_infoq\x03}q\x04(X\x04\x00\x00\x00portq\x05K\x16X\x04\x00\x00\x00userq\x06NX\x08\x00\x00\x00passwordq\x07NX\x07\x00\x00\x00timeoutq\x08K\x0fX\x07\x00\x00\x00hostkeyq\tX\r\x00\x00\x00~/.ssh/id_rsaq\nuX\x0c\x00\x00\x00grp_ip_arrayq\x0b}q\x0c(X\x06\x00\x00\x00host10q\rX\r\x00\x00\x00192.168.59.10q\x0eX\x06\x00\x00\x00host11q\x0fX\r\x00\x00\x00192.168.59.11q\x10X\x06\x00\x00\x00host12q\x11X\r\x00\x00\x00192.168.59.12q\x12X\x06\x00\x00\x00host13q\x13X'
+2019/08/08 01:20:59 PM root 7223 - 140647741048576:Thread-4 - DEBUG - lib_api_server.py thread_tcplink line: 218 - store slice data num 0 to buffer dict:
+
+2019/08/08 01:20:59 PM root 7223 - 140647741048576:Thread-4 - DEBUG - lib_api_server.py thread_tcplink line: 220 - buffer dict:
+ {0: b'\x80\x03}q\x00(X\x03\x00\x00\x00sumq\x01X@\x00\x00\x003571171329b2811b29f70fad677b3ca650356a01b8bee8c00f5ef08b33b1ceecq\x02X\x06\x00\x00\x00bin_idq\x03C\x182019/08/08-13:20:59_dataq\x04X\x08\x00\x00\x00bin_dataq\x05BA\x03\x00\x00\x80\x03}q\x00(X\x08\x00\x00\x00grp_nameq\x01X\x04\x00\x00\x00grp0q\x02X\x0c\x00\x00\x00grp_ssh_infoq\x03}q\x04(X\x04\x00\x00\x00portq\x05K\x16X\x04\x00\x00\x00userq\x06NX\x08\x00\x00\x00passwordq\x07NX\x07\x00\x00\x00timeoutq\x08K\x0fX\x07\x00\x00\x00hostkeyq\tX\r\x00\x00\x00~/.ssh/id_rsaq\nuX\x0c\x00\x00\x00grp_ip_arrayq\x0b}q\x0c(X\x06\x00\x00\x00host10q\rX\r\x00\x00\x00192.168.59.10q\x0eX\x06\x00\x00\x00host11q\x0fX\r\x00\x00\x00192.168.59.11q\x10X\x06\x00\x00\x00host12q\x11X\r\x00\x00\x00192.168.59.12q\x12X\x06\x00\x00\x00host13q\x13X'}
+2019/08/08 01:20:59 PM root 7223 - 140647741048576:Thread-4 - DEBUG - lib_api_server.py thread_tcplink line: 211 - recived slice info:
+slice seq num: b'fffff0x1' 
+slice seq max: b'fffff0x2' 
+slice sum origin: b'b79445cbcccb8ae094f214f62976be73f9b92502dd939028f2bfb408c7d4beab' 
+slice sum confirm: b'b79445cbcccb8ae094f214f62976be73f9b92502dd939028f2bfb408c7d4beab' 
+slice content: b'\r\x00\x00\x00192.168.59.13q\x14X\x06\x00\x00\x00host14q\x15X\r\x00\x00\x00192.168.59.14q\x16X\x06\x00\x00\x00host15q\x17X\r\x00\x00\x00192.168.59.15q\x18X\x06\x00\x00\x00host16q\x19X\r\x00\x00\x00192.168.59.16q\x1aX\x06\x00\x00\x00host17q\x1bX\r\x00\x00\x00192.168.59.17q\x1cX\x06\x00\x00\x00host18q\x1dX\r\x00\x00\x00192.168.59.18q\x1eX\x06\x00\x00\x00host19q\x1fX\r\x00\x00\x00192.168.59.19q X\x06\x00\x00\x00host20q!X\r\x00\x00\x00192.168.59.20q"X\x06\x00\x00\x00host21q#X\r\x00\x00\x00192.168.59.21q$X\x06\x00\x00\x00host22q%X\r\x00\x00\x00192.168.59.22q&X\x06\x00\x00\x00host23q\'X\r\x00\x00\x00192.168.59.23q(X\x06\x00\x00\x00host24q)X\r\x00\x00\x00192.168.59.24q*X\x06\x00\x00\x00host25q+X\r\x00\x00\x00192.168.59.25q,X\x06\x00\x00\x00host26q-X\r\x00'
+2019/08/08 01:20:59 PM root 7223 - 140647741048576:Thread-4 - DEBUG - lib_api_server.py thread_tcplink line: 218 - store slice data num 1 to buffer dict:
+
+2019/08/08 01:20:59 PM root 7223 - 140647741048576:Thread-4 - DEBUG - lib_api_server.py thread_tcplink line: 220 - buffer dict:
+ {0: b'\x80\x03}q\x00(X\x03\x00\x00\x00sumq\x01X@\x00\x00\x003571171329b2811b29f70fad677b3ca650356a01b8bee8c00f5ef08b33b1ceecq\x02X\x06\x00\x00\x00bin_idq\x03C\x182019/08/08-13:20:59_dataq\x04X\x08\x00\x00\x00bin_dataq\x05BA\x03\x00\x00\x80\x03}q\x00(X\x08\x00\x00\x00grp_nameq\x01X\x04\x00\x00\x00grp0q\x02X\x0c\x00\x00\x00grp_ssh_infoq\x03}q\x04(X\x04\x00\x00\x00portq\x05K\x16X\x04\x00\x00\x00userq\x06NX\x08\x00\x00\x00passwordq\x07NX\x07\x00\x00\x00timeoutq\x08K\x0fX\x07\x00\x00\x00hostkeyq\tX\r\x00\x00\x00~/.ssh/id_rsaq\nuX\x0c\x00\x00\x00grp_ip_arrayq\x0b}q\x0c(X\x06\x00\x00\x00host10q\rX\r\x00\x00\x00192.168.59.10q\x0eX\x06\x00\x00\x00host11q\x0fX\r\x00\x00\x00192.168.59.11q\x10X\x06\x00\x00\x00host12q\x11X\r\x00\x00\x00192.168.59.12q\x12X\x06\x00\x00\x00host13q\x13X', 1: b'\r\x00\x00\x00192.168.59.13q\x14X\x06\x00\x00\x00host14q\x15X\r\x00\x00\x00192.168.59.14q\x16X\x06\x00\x00\x00host15q\x17X\r\x00\x00\x00192.168.59.15q\x18X\x06\x00\x00\x00host16q\x19X\r\x00\x00\x00192.168.59.16q\x1aX\x06\x00\x00\x00host17q\x1bX\r\x00\x00\x00192.168.59.17q\x1cX\x06\x00\x00\x00host18q\x1dX\r\x00\x00\x00192.168.59.18q\x1eX\x06\x00\x00\x00host19q\x1fX\r\x00\x00\x00192.168.59.19q X\x06\x00\x00\x00host20q!X\r\x00\x00\x00192.168.59.20q"X\x06\x00\x00\x00host21q#X\r\x00\x00\x00192.168.59.21q$X\x06\x00\x00\x00host22q%X\r\x00\x00\x00192.168.59.22q&X\x06\x00\x00\x00host23q\'X\r\x00\x00\x00192.168.59.23q(X\x06\x00\x00\x00host24q)X\r\x00\x00\x00192.168.59.24q*X\x06\x00\x00\x00host25q+X\r\x00\x00\x00192.168.59.25q,X\x06\x00\x00\x00host26q-X\r\x00'}
+2019/08/08 01:20:59 PM root 7223 - 140647741048576:Thread-4 - DEBUG - lib_api_server.py thread_tcplink line: 211 - recived slice info:
+slice seq num: b'fffff0x2' 
+slice seq max: b'fffff0x2' 
+slice sum origin: b'7c3cab7128dfc56a05e355eed20d5e6a8421b57403ef5f3b396f7474de8a2128' 
+slice sum confirm: b'7c3cab7128dfc56a05e355eed20d5e6a8421b57403ef5f3b396f7474de8a2128' 
+slice content: b'\x00\x00192.168.59.26q.X\x06\x00\x00\x00host27q/X\r\x00\x00\x00192.168.59.27q0X\x06\x00\x00\x00host28q1X\r\x00\x00\x00192.168.59.28q2X\x06\x00\x00\x00host29q3X\r\x00\x00\x00192.168.59.29q4uu.q\x06u.'
+2019/08/08 01:20:59 PM root 7223 - 140647741048576:Thread-4 - DEBUG - lib_api_server.py thread_tcplink line: 218 - store slice data num 2 to buffer dict:
+
+2019/08/08 01:20:59 PM root 7223 - 140647741048576:Thread-4 - DEBUG - lib_api_server.py thread_tcplink line: 220 - buffer dict:
+ {0: b'\x80\x03}q\x00(X\x03\x00\x00\x00sumq\x01X@\x00\x00\x003571171329b2811b29f70fad677b3ca650356a01b8bee8c00f5ef08b33b1ceecq\x02X\x06\x00\x00\x00bin_idq\x03C\x182019/08/08-13:20:59_dataq\x04X\x08\x00\x00\x00bin_dataq\x05BA\x03\x00\x00\x80\x03}q\x00(X\x08\x00\x00\x00grp_nameq\x01X\x04\x00\x00\x00grp0q\x02X\x0c\x00\x00\x00grp_ssh_infoq\x03}q\x04(X\x04\x00\x00\x00portq\x05K\x16X\x04\x00\x00\x00userq\x06NX\x08\x00\x00\x00passwordq\x07NX\x07\x00\x00\x00timeoutq\x08K\x0fX\x07\x00\x00\x00hostkeyq\tX\r\x00\x00\x00~/.ssh/id_rsaq\nuX\x0c\x00\x00\x00grp_ip_arrayq\x0b}q\x0c(X\x06\x00\x00\x00host10q\rX\r\x00\x00\x00192.168.59.10q\x0eX\x06\x00\x00\x00host11q\x0fX\r\x00\x00\x00192.168.59.11q\x10X\x06\x00\x00\x00host12q\x11X\r\x00\x00\x00192.168.59.12q\x12X\x06\x00\x00\x00host13q\x13X', 1: b'\r\x00\x00\x00192.168.59.13q\x14X\x06\x00\x00\x00host14q\x15X\r\x00\x00\x00192.168.59.14q\x16X\x06\x00\x00\x00host15q\x17X\r\x00\x00\x00192.168.59.15q\x18X\x06\x00\x00\x00host16q\x19X\r\x00\x00\x00192.168.59.16q\x1aX\x06\x00\x00\x00host17q\x1bX\r\x00\x00\x00192.168.59.17q\x1cX\x06\x00\x00\x00host18q\x1dX\r\x00\x00\x00192.168.59.18q\x1eX\x06\x00\x00\x00host19q\x1fX\r\x00\x00\x00192.168.59.19q X\x06\x00\x00\x00host20q!X\r\x00\x00\x00192.168.59.20q"X\x06\x00\x00\x00host21q#X\r\x00\x00\x00192.168.59.21q$X\x06\x00\x00\x00host22q%X\r\x00\x00\x00192.168.59.22q&X\x06\x00\x00\x00host23q\'X\r\x00\x00\x00192.168.59.23q(X\x06\x00\x00\x00host24q)X\r\x00\x00\x00192.168.59.24q*X\x06\x00\x00\x00host25q+X\r\x00\x00\x00192.168.59.25q,X\x06\x00\x00\x00host26q-X\r\x00', 2: b'\x00\x00192.168.59.26q.X\x06\x00\x00\x00host27q/X\r\x00\x00\x00192.168.59.27q0X\x06\x00\x00\x00host28q1X\r\x00\x00\x00192.168.59.28q2X\x06\x00\x00\x00host29q3X\r\x00\x00\x00192.168.59.29q4uu.q\x06u.'}
+2019/08/08 01:20:59 PM root 7223 - 140647741048576:Thread-4 - DEBUG - lib_api_server.py thread_tcplink line: 166 - confirm stop reciving slices:
+ seq_max: b'fffff0x2'
+2019/08/08 01:20:59 PM root 7223 - 140647741048576:Thread-4 - DEBUG - lib_api_server.py thread_tcplink line: 172 - check slice num 0
+2019/08/08 01:20:59 PM root 7223 - 140647741048576:Thread-4 - DEBUG - lib_api_server.py thread_tcplink line: 172 - check slice num 1
+2019/08/08 01:20:59 PM root 7223 - 140647741048576:Thread-4 - DEBUG - lib_api_server.py thread_tcplink line: 172 - check slice num 2
+2019/08/08 01:20:59 PM root 7223 - 140647741048576:Thread-4 - DEBUG - lib_api_server.py _check_msg line: 75 - b'try to load data form pkg:' b'\x80\x03}q\x00(X\x03\x00\x00\x00sumq\x01X@\x00\x00\x003571171329b2811b29f70fad677b3ca650356a01b8bee8c00f5ef08b33b1ceecq\x02X\x06\x00\x00\x00bin_idq\x03C\x182019/08/08-13:20:59_dataq\x04X\x08\x00\x00\x00bin_dataq\x05BA\x03\x00\x00\x80\x03}q\x00(X\x08\x00\x00\x00grp_nameq\x01X\x04\x00\x00\x00grp0q\x02X\x0c\x00\x00\x00grp_ssh_infoq\x03}q\x04(X\x04\x00\x00\x00portq\x05K\x16X\x04\x00\x00\x00userq\x06NX\x08\x00\x00\x00passwordq\x07NX\x07\x00\x00\x00timeoutq\x08K\x0fX\x07\x00\x00\x00hostkeyq\tX\r\x00\x00\x00~/.ssh/id_rsaq\nuX\x0c\x00\x00\x00grp_ip_arrayq\x0b}q\x0c(X\x06\x00\x00\x00host10q\rX\r\x00\x00\x00192.168.59.10q\x0eX\x06\x00\x00\x00host11q\x0fX\r\x00\x00\x00192.168.59.11q\x10X\x06\x00\x00\x00host12q\x11X\r\x00\x00\x00192.168.59.12q\x12X\x06\x00\x00\x00host13q\x13X\r\x00\x00\x00192.168.59.13q\x14X\x06\x00\x00\x00host14q\x15X\r\x00\x00\x00192.168.59.14q\x16X\x06\x00\x00\x00host15q\x17X\r\x00\x00\x00192.168.59.15q\x18X\x06\x00\x00\x00host16q\x19X\r\x00\x00\x00192.168.59.16q\x1aX\x06\x00\x00\x00host17q\x1bX\r\x00\x00\x00192.168.59.17q\x1cX\x06\x00\x00\x00host18q\x1dX\r\x00\x00\x00192.168.59.18q\x1eX\x06\x00\x00\x00host19q\x1fX\r\x00\x00\x00192.168.59.19q X\x06\x00\x00\x00host20q!X\r\x00\x00\x00192.168.59.20q"X\x06\x00\x00\x00host21q#X\r\x00\x00\x00192.168.59.21q$X\x06\x00\x00\x00host22q%X\r\x00\x00\x00192.168.59.22q&X\x06\x00\x00\x00host23q\'X\r\x00\x00\x00192.168.59.23q(X\x06\x00\x00\x00host24q)X\r\x00\x00\x00192.168.59.24q*X\x06\x00\x00\x00host25q+X\r\x00\x00\x00192.168.59.25q,X\x06\x00\x00\x00host26q-X\r\x00\x00\x00192.168.59.26q.X\x06\x00\x00\x00host27q/X\r\x00\x00\x00192.168.59.27q0X\x06\x00\x00\x00host28q1X\r\x00\x00\x00192.168.59.28q2X\x06\x00\x00\x00host29q3X\r\x00\x00\x00192.168.59.29q4uu.q\x06u.'
+2019/08/08 01:20:59 PM root 7223 - 140647741048576:Thread-4 - DEBUG - lib_api_server.py _check_msg line: 79 - data loading success
+2019/08/08 01:20:59 PM root 7223 - 140647741048576:Thread-4 - DEBUG - lib_api_server.py thread_tcplink line: 186 - the complete msg data:
+ {'sum': '3571171329b2811b29f70fad677b3ca650356a01b8bee8c00f5ef08b33b1ceec', 'bin_id': b'2019/08/08-13:20:59_data', 'bin_data': b'\x80\x03}q\x00(X\x08\x00\x00\x00grp_nameq\x01X\x04\x00\x00\x00grp0q\x02X\x0c\x00\x00\x00grp_ssh_infoq\x03}q\x04(X\x04\x00\x00\x00portq\x05K\x16X\x04\x00\x00\x00userq\x06NX\x08\x00\x00\x00passwordq\x07NX\x07\x00\x00\x00timeoutq\x08K\x0fX\x07\x00\x00\x00hostkeyq\tX\r\x00\x00\x00~/.ssh/id_rsaq\nuX\x0c\x00\x00\x00grp_ip_arrayq\x0b}q\x0c(X\x06\x00\x00\x00host10q\rX\r\x00\x00\x00192.168.59.10q\x0eX\x06\x00\x00\x00host11q\x0fX\r\x00\x00\x00192.168.59.11q\x10X\x06\x00\x00\x00host12q\x11X\r\x00\x00\x00192.168.59.12q\x12X\x06\x00\x00\x00host13q\x13X\r\x00\x00\x00192.168.59.13q\x14X\x06\x00\x00\x00host14q\x15X\r\x00\x00\x00192.168.59.14q\x16X\x06\x00\x00\x00host15q\x17X\r\x00\x00\x00192.168.59.15q\x18X\x06\x00\x00\x00host16q\x19X\r\x00\x00\x00192.168.59.16q\x1aX\x06\x00\x00\x00host17q\x1bX\r\x00\x00\x00192.168.59.17q\x1cX\x06\x00\x00\x00host18q\x1dX\r\x00\x00\x00192.168.59.18q\x1eX\x06\x00\x00\x00host19q\x1fX\r\x00\x00\x00192.168.59.19q X\x06\x00\x00\x00host20q!X\r\x00\x00\x00192.168.59.20q"X\x06\x00\x00\x00host21q#X\r\x00\x00\x00192.168.59.21q$X\x06\x00\x00\x00host22q%X\r\x00\x00\x00192.168.59.22q&X\x06\x00\x00\x00host23q\'X\r\x00\x00\x00192.168.59.23q(X\x06\x00\x00\x00host24q)X\r\x00\x00\x00192.168.59.24q*X\x06\x00\x00\x00host25q+X\r\x00\x00\x00192.168.59.25q,X\x06\x00\x00\x00host26q-X\r\x00\x00\x00192.168.59.26q.X\x06\x00\x00\x00host27q/X\r\x00\x00\x00192.168.59.27q0X\x06\x00\x00\x00host28q1X\r\x00\x00\x00192.168.59.28q2X\x06\x00\x00\x00host29q3X\r\x00\x00\x00192.168.59.29q4uu.'}
+2019/08/08 01:20:59 PM root 7223 - 140647741048576:Thread-4 - DEBUG - lib_api_server.py parse_client_data line: 102 - data info: 
+data sum: 3571171329b2811b29f70fad677b3ca650356a01b8bee8c00f5ef08b33b1ceec 
+data id: b'2019/08/08-13:20:59_data' 
+data tag: b'data' 
+data sent time: b'2019/08/08-13:20:59' 
+data content: b'\x80\x03}q\x00(X\x08\x00\x00\x00grp_nameq\x01X\x04\x00\x00\x00grp0q\x02X\x0c\x00\x00\x00grp_ssh_infoq\x03}q\x04(X\x04\x00\x00\x00portq\x05K\x16X\x04\x00\x00\x00userq\x06NX\x08\x00\x00\x00passwordq\x07NX\x07\x00\x00\x00timeoutq\x08K\x0fX\x07\x00\x00\x00hostkeyq\tX\r\x00\x00\x00~/.ssh/id_rsaq\nuX\x0c\x00\x00\x00grp_ip_arrayq\x0b}q\x0c(X\x06\x00\x00\x00host10q\rX\r\x00\x00\x00192.168.59.10q\x0eX\x06\x00\x00\x00host11q\x0fX\r\x00\x00\x00192.168.59.11q\x10X\x06\x00\x00\x00host12q\x11X\r\x00\x00\x00192.168.59.12q\x12X\x06\x00\x00\x00host13q\x13X\r\x00\x00\x00192.168.59.13q\x14X\x06\x00\x00\x00host14q\x15X\r\x00\x00\x00192.168.59.14q\x16X\x06\x00\x00\x00host15q\x17X\r\x00\x00\x00192.168.59.15q\x18X\x06\x00\x00\x00host16q\x19X\r\x00\x00\x00192.168.59.16q\x1aX\x06\x00\x00\x00host17q\x1bX\r\x00\x00\x00192.168.59.17q\x1cX\x06\x00\x00\x00host18q\x1dX\r\x00\x00\x00192.168.59.18q\x1eX\x06\x00\x00\x00host19q\x1fX\r\x00\x00\x00192.168.59.19q X\x06\x00\x00\x00host20q!X\r\x00\x00\x00192.168.59.20q"X\x06\x00\x00\x00host21q#X\r\x00\x00\x00192.168.59.21q$X\x06\x00\x00\x00host22q%X\r\x00\x00\x00192.168.59.22q&X\x06\x00\x00\x00host23q\'X\r\x00\x00\x00192.168.59.23q(X\x06\x00\x00\x00host24q)X\r\x00\x00\x00192.168.59.24q*X\x06\x00\x00\x00host25q+X\r\x00\x00\x00192.168.59.25q,X\x06\x00\x00\x00host26q-X\r\x00\x00\x00192.168.59.26q.X\x06\x00\x00\x00host27q/X\r\x00\x00\x00192.168.59.27q0X\x06\x00\x00\x00host28q1X\r\x00\x00\x00192.168.59.28q2X\x06\x00\x00\x00host29q3X\r\x00\x00\x00192.168.59.29q4uu.'
+2019/08/08 01:20:59 PM root 7223 - 140647741048576:Thread-4 - INFO - lib_api_server.py parse_client_data line: 123 - reply: b'data 2019/08/08-13:20:59_data  recived and confirmed'
+2019/08/08 01:20:59 PM root 7223 - 140647741048576:Thread-4 - DEBUG - lib_api_server.py thread_tcplink line: 228 - Connection from 192.168.59.102:35948 closed.
+2019/08/15 03:22:40 AM root 3419 - 139850586478400:MainThread - DEBUG - lib_api_server.py __init__ line: 64 - 192.168.59.102 9999 waiting for connection ..
+2019/08/15 03:22:54 AM root 3419 - 139850405598976:Thread-1 - DEBUG - lib_api_server.py thread_tcplink line: 154 - Accept new connection from 192.168.59.102:37874...
+2019/08/15 03:22:54 AM root 3419 - 139850405598976:Thread-1 - DEBUG - lib_api_server.py thread_tcplink line: 215 - recived slice info:
+slice seq num: b'fffff0x0' 
+slice seq max: b'fffff0x0' 
+slice sum origin: b'4f3480797775671c46e578cd6a4cd02ad4af9f4a672a23b0247a6ab406dca520' 
+slice sum confirm: b'4f3480797775671c46e578cd6a4cd02ad4af9f4a672a23b0247a6ab406dca520' 
+slice content: b'\x80\x03}q\x00(X\x03\x00\x00\x00sumq\x01X@\x00\x00\x00a8777a6d9b4617b754f32800f85eeb12becf07b3e4e2c869ac3b3667da9ef946q\x02X\x06\x00\x00\x00bin_idq\x03C\x172019/08/15-03:22:54_msgq\x04X\x08\x00\x00\x00bin_dataq\x05C\x05closeq\x06u.'
+2019/08/15 03:22:54 AM root 3419 - 139850405598976:Thread-1 - DEBUG - lib_api_server.py thread_tcplink line: 222 - store slice data num 0 to buffer dict:
+
+2019/08/15 03:22:54 AM root 3419 - 139850405598976:Thread-1 - DEBUG - lib_api_server.py thread_tcplink line: 224 - buffer dict:
+ {0: b'\x80\x03}q\x00(X\x03\x00\x00\x00sumq\x01X@\x00\x00\x00a8777a6d9b4617b754f32800f85eeb12becf07b3e4e2c869ac3b3667da9ef946q\x02X\x06\x00\x00\x00bin_idq\x03C\x172019/08/15-03:22:54_msgq\x04X\x08\x00\x00\x00bin_dataq\x05C\x05closeq\x06u.'}
+2019/08/15 03:22:54 AM root 3419 - 139850405598976:Thread-1 - DEBUG - lib_api_server.py thread_tcplink line: 170 - confirm stop reciving slices:
+ seq_max: b'fffff0x0'
+2019/08/15 03:22:54 AM root 3419 - 139850405598976:Thread-1 - DEBUG - lib_api_server.py thread_tcplink line: 176 - check slice num 0
+2019/08/15 03:22:54 AM root 3419 - 139850405598976:Thread-1 - DEBUG - lib_api_server.py _check_msg line: 79 - b'try to load data form pkg:' b'\x80\x03}q\x00(X\x03\x00\x00\x00sumq\x01X@\x00\x00\x00a8777a6d9b4617b754f32800f85eeb12becf07b3e4e2c869ac3b3667da9ef946q\x02X\x06\x00\x00\x00bin_idq\x03C\x172019/08/15-03:22:54_msgq\x04X\x08\x00\x00\x00bin_dataq\x05C\x05closeq\x06u.'
+2019/08/15 03:22:54 AM root 3419 - 139850405598976:Thread-1 - DEBUG - lib_api_server.py _check_msg line: 83 - data loading success
+2019/08/15 03:22:54 AM root 3419 - 139850405598976:Thread-1 - DEBUG - lib_api_server.py thread_tcplink line: 190 - the complete msg data:
+ {'sum': 'a8777a6d9b4617b754f32800f85eeb12becf07b3e4e2c869ac3b3667da9ef946', 'bin_id': b'2019/08/15-03:22:54_msg', 'bin_data': b'close'}
+2019/08/15 03:22:54 AM root 3419 - 139850405598976:Thread-1 - DEBUG - lib_api_server.py parse_client_data line: 106 - data info: 
+data sum: a8777a6d9b4617b754f32800f85eeb12becf07b3e4e2c869ac3b3667da9ef946 
+data id: b'2019/08/15-03:22:54_msg' 
+data tag: b'msg' 
+data sent time: b'2019/08/15-03:22:54' 
+data content: b'close'
+2019/08/15 03:22:54 AM root 3419 - 139850405598976:Thread-1 - INFO - lib_api_server.py parse_client_data line: 127 - reply: b'data 2019/08/15-03:22:54_msg  recived and confirmed'
+2019/08/15 03:22:54 AM root 3419 - 139850405598976:Thread-1 - DEBUG - lib_api_server.py thread_tcplink line: 232 - Connection from 192.168.59.102:37874 closed.
+2019/08/15 03:23:19 AM root 3419 - 139850405598976:Thread-2 - DEBUG - lib_api_server.py thread_tcplink line: 154 - Accept new connection from 192.168.59.102:37876...
+2019/08/15 03:23:19 AM root 3419 - 139850405598976:Thread-2 - DEBUG - lib_api_server.py thread_tcplink line: 215 - recived slice info:
+slice seq num: b'fffff0x0' 
+slice seq max: b'fffff0x0' 
+slice sum origin: b'cac360ae0f1a6eebf84a6e6a5bb34dccd3aef129eb0f1ae9ba0ee9e22a7e71e6' 
+slice sum confirm: b'cac360ae0f1a6eebf84a6e6a5bb34dccd3aef129eb0f1ae9ba0ee9e22a7e71e6' 
+slice content: b'\x80\x03}q\x00(X\x03\x00\x00\x00sumq\x01X@\x00\x00\x00470dba0016b87a28c8c6a466ffb8970c7dbc154816d734be941ed1f40b38745eq\x02X\x06\x00\x00\x00bin_idq\x03C\x172019/08/15-03:23:19_msgq\x04X\x08\x00\x00\x00bin_dataq\x05C\x07a b c dq\x06u.'
+2019/08/15 03:23:19 AM root 3419 - 139850405598976:Thread-2 - DEBUG - lib_api_server.py thread_tcplink line: 222 - store slice data num 0 to buffer dict:
+
+2019/08/15 03:23:19 AM root 3419 - 139850405598976:Thread-2 - DEBUG - lib_api_server.py thread_tcplink line: 224 - buffer dict:
+ {0: b'\x80\x03}q\x00(X\x03\x00\x00\x00sumq\x01X@\x00\x00\x00470dba0016b87a28c8c6a466ffb8970c7dbc154816d734be941ed1f40b38745eq\x02X\x06\x00\x00\x00bin_idq\x03C\x172019/08/15-03:23:19_msgq\x04X\x08\x00\x00\x00bin_dataq\x05C\x07a b c dq\x06u.'}
+2019/08/15 03:23:19 AM root 3419 - 139850405598976:Thread-2 - DEBUG - lib_api_server.py thread_tcplink line: 170 - confirm stop reciving slices:
+ seq_max: b'fffff0x0'
+2019/08/15 03:23:19 AM root 3419 - 139850405598976:Thread-2 - DEBUG - lib_api_server.py thread_tcplink line: 176 - check slice num 0
+2019/08/15 03:23:19 AM root 3419 - 139850405598976:Thread-2 - DEBUG - lib_api_server.py _check_msg line: 79 - b'try to load data form pkg:' b'\x80\x03}q\x00(X\x03\x00\x00\x00sumq\x01X@\x00\x00\x00470dba0016b87a28c8c6a466ffb8970c7dbc154816d734be941ed1f40b38745eq\x02X\x06\x00\x00\x00bin_idq\x03C\x172019/08/15-03:23:19_msgq\x04X\x08\x00\x00\x00bin_dataq\x05C\x07a b c dq\x06u.'
+2019/08/15 03:23:19 AM root 3419 - 139850405598976:Thread-2 - DEBUG - lib_api_server.py _check_msg line: 83 - data loading success
+2019/08/15 03:23:19 AM root 3419 - 139850405598976:Thread-2 - DEBUG - lib_api_server.py thread_tcplink line: 190 - the complete msg data:
+ {'sum': '470dba0016b87a28c8c6a466ffb8970c7dbc154816d734be941ed1f40b38745e', 'bin_id': b'2019/08/15-03:23:19_msg', 'bin_data': b'a b c d'}
+2019/08/15 03:23:19 AM root 3419 - 139850405598976:Thread-2 - DEBUG - lib_api_server.py parse_client_data line: 106 - data info: 
+data sum: 470dba0016b87a28c8c6a466ffb8970c7dbc154816d734be941ed1f40b38745e 
+data id: b'2019/08/15-03:23:19_msg' 
+data tag: b'msg' 
+data sent time: b'2019/08/15-03:23:19' 
+data content: b'a b c d'
+2019/08/15 03:23:19 AM root 3419 - 139850405598976:Thread-2 - INFO - lib_api_server.py parse_client_data line: 127 - reply: b'data 2019/08/15-03:23:19_msg  recived and confirmed'
+2019/08/15 03:23:19 AM root 3419 - 139850405598976:Thread-2 - DEBUG - lib_api_server.py thread_tcplink line: 232 - Connection from 192.168.59.102:37876 closed.
+2019/08/15 03:24:51 AM root 3465 - 140114460190528:MainThread - DEBUG - lib_api_server.py __init__ line: 64 - 192.168.59.102 9999 waiting for connection ..
+2019/08/15 03:24:56 AM root 3465 - 140114279311104:Thread-1 - DEBUG - lib_api_server.py thread_tcplink line: 155 - Accept new connection from 192.168.59.102:37882...
+2019/08/15 03:24:56 AM root 3465 - 140114279311104:Thread-1 - DEBUG - lib_api_server.py thread_tcplink line: 216 - recived slice info:
+slice seq num: b'fffff0x0' 
+slice seq max: b'fffff0x0' 
+slice sum origin: b'0e32e2b080f2f3a4b325214363a2d732441a3948bbc513c54e6efa5f9e31891d' 
+slice sum confirm: b'0e32e2b080f2f3a4b325214363a2d732441a3948bbc513c54e6efa5f9e31891d' 
+slice content: b'\x80\x03}q\x00(X\x03\x00\x00\x00sumq\x01X@\x00\x00\x00cc15a12b6876d151ee99cbce12bd21f014c81b2eca1d0502e27c45e7abafe138q\x02X\x06\x00\x00\x00bin_idq\x03C\x172019/08/15-03:24:56_msgq\x04X\x08\x00\x00\x00bin_dataq\x05C\x05closeq\x06u.'
+2019/08/15 03:24:56 AM root 3465 - 140114279311104:Thread-1 - DEBUG - lib_api_server.py thread_tcplink line: 223 - store slice data num 0 to buffer dict:
+
+2019/08/15 03:24:56 AM root 3465 - 140114279311104:Thread-1 - DEBUG - lib_api_server.py thread_tcplink line: 225 - buffer dict:
+ {0: b'\x80\x03}q\x00(X\x03\x00\x00\x00sumq\x01X@\x00\x00\x00cc15a12b6876d151ee99cbce12bd21f014c81b2eca1d0502e27c45e7abafe138q\x02X\x06\x00\x00\x00bin_idq\x03C\x172019/08/15-03:24:56_msgq\x04X\x08\x00\x00\x00bin_dataq\x05C\x05closeq\x06u.'}
+2019/08/15 03:24:56 AM root 3465 - 140114279311104:Thread-1 - DEBUG - lib_api_server.py thread_tcplink line: 171 - confirm stop reciving slices:
+ seq_max: b'fffff0x0'
+2019/08/15 03:24:56 AM root 3465 - 140114279311104:Thread-1 - DEBUG - lib_api_server.py thread_tcplink line: 177 - check slice num 0
+2019/08/15 03:24:56 AM root 3465 - 140114279311104:Thread-1 - DEBUG - lib_api_server.py _check_msg line: 80 - b'try to load data form pkg:' b'\x80\x03}q\x00(X\x03\x00\x00\x00sumq\x01X@\x00\x00\x00cc15a12b6876d151ee99cbce12bd21f014c81b2eca1d0502e27c45e7abafe138q\x02X\x06\x00\x00\x00bin_idq\x03C\x172019/08/15-03:24:56_msgq\x04X\x08\x00\x00\x00bin_dataq\x05C\x05closeq\x06u.'
+2019/08/15 03:24:56 AM root 3465 - 140114279311104:Thread-1 - DEBUG - lib_api_server.py _check_msg line: 84 - data loading success
+2019/08/15 03:24:56 AM root 3465 - 140114279311104:Thread-1 - DEBUG - lib_api_server.py thread_tcplink line: 191 - the complete msg data:
+ {'sum': 'cc15a12b6876d151ee99cbce12bd21f014c81b2eca1d0502e27c45e7abafe138', 'bin_id': b'2019/08/15-03:24:56_msg', 'bin_data': b'close'}
+2019/08/15 03:24:56 AM root 3465 - 140114279311104:Thread-1 - DEBUG - lib_api_server.py parse_client_data line: 107 - data info: 
+data sum: cc15a12b6876d151ee99cbce12bd21f014c81b2eca1d0502e27c45e7abafe138 
+data id: b'2019/08/15-03:24:56_msg' 
+data tag: b'msg' 
+data sent time: b'2019/08/15-03:24:56' 
+data content: b'close'
+2019/08/15 03:24:56 AM root 3465 - 140114279311104:Thread-1 - INFO - lib_api_server.py parse_client_data line: 128 - reply: b'data 2019/08/15-03:24:56_msg  recived and confirmed'
+2019/08/15 03:24:56 AM root 3465 - 140114279311104:Thread-1 - DEBUG - lib_api_server.py thread_tcplink line: 233 - Connection from 192.168.59.102:37882 closed.
+2019/08/15 03:26:25 AM root 3484 - 140700760983360:MainThread - DEBUG - lib_api_server.py __init__ line: 64 - 192.168.59.102 9999 waiting for connection ..
+2019/08/15 03:26:30 AM root 3484 - 140700580103936:Thread-1 - DEBUG - lib_api_server.py thread_tcplink line: 157 - Accept new connection from 192.168.59.102:37884...
+2019/08/15 03:26:30 AM root 3484 - 140700580103936:Thread-1 - DEBUG - lib_api_server.py thread_tcplink line: 218 - recived slice info:
+slice seq num: b'fffff0x0' 
+slice seq max: b'fffff0x0' 
+slice sum origin: b'8fea4768626beec4fa3379ad56cab40acca83b5f7769e982428ae4d4b86640e6' 
+slice sum confirm: b'8fea4768626beec4fa3379ad56cab40acca83b5f7769e982428ae4d4b86640e6' 
+slice content: b'\x80\x03}q\x00(X\x03\x00\x00\x00sumq\x01X@\x00\x00\x008f238e140cc519d5d01195f31cc7d22d346c3667c9961abce3fdcbf4160b56d0q\x02X\x06\x00\x00\x00bin_idq\x03C\x172019/08/15-03:26:30_msgq\x04X\x08\x00\x00\x00bin_dataq\x05C\x07a b c dq\x06u.'
+2019/08/15 03:26:30 AM root 3484 - 140700580103936:Thread-1 - DEBUG - lib_api_server.py thread_tcplink line: 225 - store slice data num 0 to buffer dict:
+
+2019/08/15 03:26:30 AM root 3484 - 140700580103936:Thread-1 - DEBUG - lib_api_server.py thread_tcplink line: 227 - buffer dict:
+ {0: b'\x80\x03}q\x00(X\x03\x00\x00\x00sumq\x01X@\x00\x00\x008f238e140cc519d5d01195f31cc7d22d346c3667c9961abce3fdcbf4160b56d0q\x02X\x06\x00\x00\x00bin_idq\x03C\x172019/08/15-03:26:30_msgq\x04X\x08\x00\x00\x00bin_dataq\x05C\x07a b c dq\x06u.'}
+2019/08/15 03:26:30 AM root 3484 - 140700580103936:Thread-1 - DEBUG - lib_api_server.py thread_tcplink line: 173 - confirm stop reciving slices:
+ seq_max: b'fffff0x0'
+2019/08/15 03:26:30 AM root 3484 - 140700580103936:Thread-1 - DEBUG - lib_api_server.py thread_tcplink line: 179 - check slice num 0
+2019/08/15 03:26:30 AM root 3484 - 140700580103936:Thread-1 - DEBUG - lib_api_server.py _check_msg line: 82 - b'try to load data form pkg:' b'\x80\x03}q\x00(X\x03\x00\x00\x00sumq\x01X@\x00\x00\x008f238e140cc519d5d01195f31cc7d22d346c3667c9961abce3fdcbf4160b56d0q\x02X\x06\x00\x00\x00bin_idq\x03C\x172019/08/15-03:26:30_msgq\x04X\x08\x00\x00\x00bin_dataq\x05C\x07a b c dq\x06u.'
+2019/08/15 03:26:30 AM root 3484 - 140700580103936:Thread-1 - DEBUG - lib_api_server.py _check_msg line: 86 - data loading success
+2019/08/15 03:26:30 AM root 3484 - 140700580103936:Thread-1 - DEBUG - lib_api_server.py thread_tcplink line: 193 - the complete msg data:
+ {'sum': '8f238e140cc519d5d01195f31cc7d22d346c3667c9961abce3fdcbf4160b56d0', 'bin_id': b'2019/08/15-03:26:30_msg', 'bin_data': b'a b c d'}
+2019/08/15 03:26:30 AM root 3484 - 140700580103936:Thread-1 - DEBUG - lib_api_server.py parse_client_data line: 109 - data info: 
+data sum: 8f238e140cc519d5d01195f31cc7d22d346c3667c9961abce3fdcbf4160b56d0 
+data id: b'2019/08/15-03:26:30_msg' 
+data tag: b'msg' 
+data sent time: b'2019/08/15-03:26:30' 
+data content: b'a b c d'
+2019/08/15 03:26:30 AM root 3484 - 140700580103936:Thread-1 - INFO - lib_api_server.py parse_client_data line: 130 - reply: b'data 2019/08/15-03:26:30_msg  recived and confirmed'
+2019/08/15 03:26:30 AM root 3484 - 140700580103936:Thread-1 - DEBUG - lib_api_server.py thread_tcplink line: 235 - Connection from 192.168.59.102:37884 closed.
+2019/08/15 03:26:54 AM root 3484 - 140700580103936:Thread-2 - DEBUG - lib_api_server.py thread_tcplink line: 157 - Accept new connection from 192.168.59.102:37886...
+2019/08/15 03:26:54 AM root 3484 - 140700580103936:Thread-2 - DEBUG - lib_api_server.py thread_tcplink line: 218 - recived slice info:
+slice seq num: b'fffff0x0' 
+slice seq max: b'fffff0x0' 
+slice sum origin: b'bb37e65dfa67fd96e1f58fb4190199c8679e6cded4259ebc152bbaab4d7cc761' 
+slice sum confirm: b'bb37e65dfa67fd96e1f58fb4190199c8679e6cded4259ebc152bbaab4d7cc761' 
+slice content: b'\x80\x03}q\x00(X\x03\x00\x00\x00sumq\x01X@\x00\x00\x006bfca46901502ad3f5d8bee484f495790b9da41b6e1069a797974cab674f33e8q\x02X\x06\x00\x00\x00bin_idq\x03C\x172019/08/15-03:26:54_msgq\x04X\x08\x00\x00\x00bin_dataq\x05C\x0ctest messageq\x06u.'
+2019/08/15 03:26:54 AM root 3484 - 140700580103936:Thread-2 - DEBUG - lib_api_server.py thread_tcplink line: 225 - store slice data num 0 to buffer dict:
+
+2019/08/15 03:26:54 AM root 3484 - 140700580103936:Thread-2 - DEBUG - lib_api_server.py thread_tcplink line: 227 - buffer dict:
+ {0: b'\x80\x03}q\x00(X\x03\x00\x00\x00sumq\x01X@\x00\x00\x006bfca46901502ad3f5d8bee484f495790b9da41b6e1069a797974cab674f33e8q\x02X\x06\x00\x00\x00bin_idq\x03C\x172019/08/15-03:26:54_msgq\x04X\x08\x00\x00\x00bin_dataq\x05C\x0ctest messageq\x06u.'}
+2019/08/15 03:26:54 AM root 3484 - 140700580103936:Thread-2 - DEBUG - lib_api_server.py thread_tcplink line: 173 - confirm stop reciving slices:
+ seq_max: b'fffff0x0'
+2019/08/15 03:26:54 AM root 3484 - 140700580103936:Thread-2 - DEBUG - lib_api_server.py thread_tcplink line: 179 - check slice num 0
+2019/08/15 03:26:54 AM root 3484 - 140700580103936:Thread-2 - DEBUG - lib_api_server.py _check_msg line: 82 - b'try to load data form pkg:' b'\x80\x03}q\x00(X\x03\x00\x00\x00sumq\x01X@\x00\x00\x006bfca46901502ad3f5d8bee484f495790b9da41b6e1069a797974cab674f33e8q\x02X\x06\x00\x00\x00bin_idq\x03C\x172019/08/15-03:26:54_msgq\x04X\x08\x00\x00\x00bin_dataq\x05C\x0ctest messageq\x06u.'
+2019/08/15 03:26:54 AM root 3484 - 140700580103936:Thread-2 - DEBUG - lib_api_server.py _check_msg line: 86 - data loading success
+2019/08/15 03:26:54 AM root 3484 - 140700580103936:Thread-2 - DEBUG - lib_api_server.py thread_tcplink line: 193 - the complete msg data:
+ {'sum': '6bfca46901502ad3f5d8bee484f495790b9da41b6e1069a797974cab674f33e8', 'bin_id': b'2019/08/15-03:26:54_msg', 'bin_data': b'test message'}
+2019/08/15 03:26:54 AM root 3484 - 140700580103936:Thread-2 - DEBUG - lib_api_server.py parse_client_data line: 109 - data info: 
+data sum: 6bfca46901502ad3f5d8bee484f495790b9da41b6e1069a797974cab674f33e8 
+data id: b'2019/08/15-03:26:54_msg' 
+data tag: b'msg' 
+data sent time: b'2019/08/15-03:26:54' 
+data content: b'test message'
+2019/08/15 03:26:54 AM root 3484 - 140700580103936:Thread-2 - INFO - lib_api_server.py parse_client_data line: 130 - reply: b'data 2019/08/15-03:26:54_msg  recived and confirmed'
+2019/08/15 03:26:54 AM root 3484 - 140700580103936:Thread-2 - DEBUG - lib_api_server.py thread_tcplink line: 235 - Connection from 192.168.59.102:37886 closed.
+2019/08/15 03:27:15 AM root 3484 - 140700580103936:Thread-3 - DEBUG - lib_api_server.py thread_tcplink line: 157 - Accept new connection from 192.168.59.102:37888...
+2019/08/15 03:27:15 AM root 3484 - 140700580103936:Thread-3 - DEBUG - lib_api_server.py thread_tcplink line: 218 - recived slice info:
+slice seq num: b'fffff0x0' 
+slice seq max: b'fffff0x0' 
+slice sum origin: b'd79d168819bf86f5e4003a965d3ad96abe5552e2dc8a9084e1cb529aa9a7f356' 
+slice sum confirm: b'd79d168819bf86f5e4003a965d3ad96abe5552e2dc8a9084e1cb529aa9a7f356' 
+slice content: b'\x80\x03}q\x00(X\x03\x00\x00\x00sumq\x01X@\x00\x00\x0010ff8b3b3eb9bfd0a63e256ebb7cd7b843022d04a8386383a9c63997400f7606q\x02X\x06\x00\x00\x00bin_idq\x03C\x172019/08/15-03:27:15_msgq\x04X\x08\x00\x00\x00bin_dataq\x05C\x05closeq\x06u.'
+2019/08/15 03:27:15 AM root 3484 - 140700580103936:Thread-3 - DEBUG - lib_api_server.py thread_tcplink line: 225 - store slice data num 0 to buffer dict:
+
+2019/08/15 03:27:15 AM root 3484 - 140700580103936:Thread-3 - DEBUG - lib_api_server.py thread_tcplink line: 227 - buffer dict:
+ {0: b'\x80\x03}q\x00(X\x03\x00\x00\x00sumq\x01X@\x00\x00\x0010ff8b3b3eb9bfd0a63e256ebb7cd7b843022d04a8386383a9c63997400f7606q\x02X\x06\x00\x00\x00bin_idq\x03C\x172019/08/15-03:27:15_msgq\x04X\x08\x00\x00\x00bin_dataq\x05C\x05closeq\x06u.'}
+2019/08/15 03:27:15 AM root 3484 - 140700580103936:Thread-3 - DEBUG - lib_api_server.py thread_tcplink line: 173 - confirm stop reciving slices:
+ seq_max: b'fffff0x0'
+2019/08/15 03:27:15 AM root 3484 - 140700580103936:Thread-3 - DEBUG - lib_api_server.py thread_tcplink line: 179 - check slice num 0
+2019/08/15 03:27:15 AM root 3484 - 140700580103936:Thread-3 - DEBUG - lib_api_server.py _check_msg line: 82 - b'try to load data form pkg:' b'\x80\x03}q\x00(X\x03\x00\x00\x00sumq\x01X@\x00\x00\x0010ff8b3b3eb9bfd0a63e256ebb7cd7b843022d04a8386383a9c63997400f7606q\x02X\x06\x00\x00\x00bin_idq\x03C\x172019/08/15-03:27:15_msgq\x04X\x08\x00\x00\x00bin_dataq\x05C\x05closeq\x06u.'
+2019/08/15 03:27:15 AM root 3484 - 140700580103936:Thread-3 - DEBUG - lib_api_server.py _check_msg line: 86 - data loading success
+2019/08/15 03:27:15 AM root 3484 - 140700580103936:Thread-3 - DEBUG - lib_api_server.py thread_tcplink line: 193 - the complete msg data:
+ {'sum': '10ff8b3b3eb9bfd0a63e256ebb7cd7b843022d04a8386383a9c63997400f7606', 'bin_id': b'2019/08/15-03:27:15_msg', 'bin_data': b'close'}
+2019/08/15 03:27:15 AM root 3484 - 140700580103936:Thread-3 - DEBUG - lib_api_server.py parse_client_data line: 109 - data info: 
+data sum: 10ff8b3b3eb9bfd0a63e256ebb7cd7b843022d04a8386383a9c63997400f7606 
+data id: b'2019/08/15-03:27:15_msg' 
+data tag: b'msg' 
+data sent time: b'2019/08/15-03:27:15' 
+data content: b'close'
+2019/08/15 03:27:15 AM root 3484 - 140700580103936:Thread-3 - INFO - lib_api_server.py parse_client_data line: 130 - reply: b'data 2019/08/15-03:27:15_msg  recived and confirmed'
+2019/08/15 03:27:15 AM root 3484 - 140700580103936:Thread-3 - DEBUG - lib_api_server.py thread_tcplink line: 235 - Connection from 192.168.59.102:37888 closed.
+2019/08/15 03:27:25 AM root 3484 - 140700580103936:Thread-4 - DEBUG - lib_api_server.py thread_tcplink line: 157 - Accept new connection from 192.168.59.102:37890...
+2019/08/15 03:27:25 AM root 3484 - 140700580103936:Thread-4 - DEBUG - lib_api_server.py thread_tcplink line: 218 - recived slice info:
+slice seq num: b'fffff0x0' 
+slice seq max: b'fffff0x0' 
+slice sum origin: b'a84908de7d87e61bac377a09eebbcafa3f59a67c3298268185c478ed6c53beec' 
+slice sum confirm: b'a84908de7d87e61bac377a09eebbcafa3f59a67c3298268185c478ed6c53beec' 
+slice content: b'\x80\x03}q\x00(X\x03\x00\x00\x00sumq\x01X@\x00\x00\x00365fffa0e8aeddb306323e0802d5df7af6c0697576ea2dc08cf891b36b15c6b6q\x02X\x06\x00\x00\x00bin_idq\x03C\x172019/08/15-03:27:25_msgq\x04X\x08\x00\x00\x00bin_dataq\x05C\x05closeq\x06u.'
+2019/08/15 03:27:25 AM root 3484 - 140700580103936:Thread-4 - DEBUG - lib_api_server.py thread_tcplink line: 225 - store slice data num 0 to buffer dict:
+
+2019/08/15 03:27:25 AM root 3484 - 140700580103936:Thread-4 - DEBUG - lib_api_server.py thread_tcplink line: 227 - buffer dict:
+ {0: b'\x80\x03}q\x00(X\x03\x00\x00\x00sumq\x01X@\x00\x00\x00365fffa0e8aeddb306323e0802d5df7af6c0697576ea2dc08cf891b36b15c6b6q\x02X\x06\x00\x00\x00bin_idq\x03C\x172019/08/15-03:27:25_msgq\x04X\x08\x00\x00\x00bin_dataq\x05C\x05closeq\x06u.'}
+2019/08/15 03:27:25 AM root 3484 - 140700580103936:Thread-4 - DEBUG - lib_api_server.py thread_tcplink line: 173 - confirm stop reciving slices:
+ seq_max: b'fffff0x0'
+2019/08/15 03:27:25 AM root 3484 - 140700580103936:Thread-4 - DEBUG - lib_api_server.py thread_tcplink line: 179 - check slice num 0
+2019/08/15 03:27:25 AM root 3484 - 140700580103936:Thread-4 - DEBUG - lib_api_server.py _check_msg line: 82 - b'try to load data form pkg:' b'\x80\x03}q\x00(X\x03\x00\x00\x00sumq\x01X@\x00\x00\x00365fffa0e8aeddb306323e0802d5df7af6c0697576ea2dc08cf891b36b15c6b6q\x02X\x06\x00\x00\x00bin_idq\x03C\x172019/08/15-03:27:25_msgq\x04X\x08\x00\x00\x00bin_dataq\x05C\x05closeq\x06u.'
+2019/08/15 03:27:25 AM root 3484 - 140700580103936:Thread-4 - DEBUG - lib_api_server.py _check_msg line: 86 - data loading success
+2019/08/15 03:27:25 AM root 3484 - 140700580103936:Thread-4 - DEBUG - lib_api_server.py thread_tcplink line: 193 - the complete msg data:
+ {'sum': '365fffa0e8aeddb306323e0802d5df7af6c0697576ea2dc08cf891b36b15c6b6', 'bin_id': b'2019/08/15-03:27:25_msg', 'bin_data': b'close'}
+2019/08/15 03:27:25 AM root 3484 - 140700580103936:Thread-4 - DEBUG - lib_api_server.py parse_client_data line: 109 - data info: 
+data sum: 365fffa0e8aeddb306323e0802d5df7af6c0697576ea2dc08cf891b36b15c6b6 
+data id: b'2019/08/15-03:27:25_msg' 
+data tag: b'msg' 
+data sent time: b'2019/08/15-03:27:25' 
+data content: b'close'
+2019/08/15 03:27:25 AM root 3484 - 140700580103936:Thread-4 - INFO - lib_api_server.py parse_client_data line: 130 - reply: b'data 2019/08/15-03:27:25_msg  recived and confirmed'
+2019/08/15 03:27:25 AM root 3484 - 140700580103936:Thread-4 - DEBUG - lib_api_server.py thread_tcplink line: 235 - Connection from 192.168.59.102:37890 closed.
+2019/08/15 03:31:25 AM root 3528 - 140130541541184:MainThread - DEBUG - lib_api_server.py __init__ line: 64 - 192.168.59.102 9999 waiting for connection ..
+2019/08/15 03:31:31 AM root 3528 - 140130360661760:Thread-1 - DEBUG - lib_api_server.py thread_tcplink line: 157 - Accept new connection from 192.168.59.102:37894...
+2019/08/15 03:31:31 AM root 3528 - 140130360661760:Thread-1 - DEBUG - lib_api_server.py thread_tcplink line: 218 - recived slice info:
+slice seq num: b'fffff0x0' 
+slice seq max: b'fffff0x0' 
+slice sum origin: b'3a6d7e040153c7d49ab29d303a9b6ffd5497a3c60a24bd56b6fa156f1a84b556' 
+slice sum confirm: b'3a6d7e040153c7d49ab29d303a9b6ffd5497a3c60a24bd56b6fa156f1a84b556' 
+slice content: b'\x80\x03}q\x00(X\x03\x00\x00\x00sumq\x01X@\x00\x00\x008efa58c40abe7c3bac3632a4c5c61e4340c5250689d29e614726612d2d4adb0aq\x02X\x06\x00\x00\x00bin_idq\x03C\x172019/08/15-03:31:31_msgq\x04X\x08\x00\x00\x00bin_dataq\x05C\x0ctest messageq\x06u.'
+2019/08/15 03:31:31 AM root 3528 - 140130360661760:Thread-1 - DEBUG - lib_api_server.py thread_tcplink line: 225 - store slice data num 0 to buffer dict:
+
+2019/08/15 03:31:31 AM root 3528 - 140130360661760:Thread-1 - DEBUG - lib_api_server.py thread_tcplink line: 227 - buffer dict:
+ {0: b'\x80\x03}q\x00(X\x03\x00\x00\x00sumq\x01X@\x00\x00\x008efa58c40abe7c3bac3632a4c5c61e4340c5250689d29e614726612d2d4adb0aq\x02X\x06\x00\x00\x00bin_idq\x03C\x172019/08/15-03:31:31_msgq\x04X\x08\x00\x00\x00bin_dataq\x05C\x0ctest messageq\x06u.'}
+2019/08/15 03:31:31 AM root 3528 - 140130360661760:Thread-1 - DEBUG - lib_api_server.py thread_tcplink line: 173 - confirm stop reciving slices:
+ seq_max: b'fffff0x0'
+2019/08/15 03:31:31 AM root 3528 - 140130360661760:Thread-1 - DEBUG - lib_api_server.py thread_tcplink line: 179 - check slice num 0
+2019/08/15 03:31:31 AM root 3528 - 140130360661760:Thread-1 - DEBUG - lib_api_server.py _check_msg line: 82 - b'try to load data form pkg:' b'\x80\x03}q\x00(X\x03\x00\x00\x00sumq\x01X@\x00\x00\x008efa58c40abe7c3bac3632a4c5c61e4340c5250689d29e614726612d2d4adb0aq\x02X\x06\x00\x00\x00bin_idq\x03C\x172019/08/15-03:31:31_msgq\x04X\x08\x00\x00\x00bin_dataq\x05C\x0ctest messageq\x06u.'
+2019/08/15 03:31:31 AM root 3528 - 140130360661760:Thread-1 - DEBUG - lib_api_server.py _check_msg line: 86 - data loading success
+2019/08/15 03:31:31 AM root 3528 - 140130360661760:Thread-1 - DEBUG - lib_api_server.py thread_tcplink line: 193 - the complete msg data:
+ {'sum': '8efa58c40abe7c3bac3632a4c5c61e4340c5250689d29e614726612d2d4adb0a', 'bin_id': b'2019/08/15-03:31:31_msg', 'bin_data': b'test message'}
+2019/08/15 03:31:31 AM root 3528 - 140130360661760:Thread-1 - DEBUG - lib_api_server.py parse_client_data line: 109 - data info: 
+data sum: 8efa58c40abe7c3bac3632a4c5c61e4340c5250689d29e614726612d2d4adb0a 
+data id: b'2019/08/15-03:31:31_msg' 
+data tag: b'msg' 
+data sent time: b'2019/08/15-03:31:31' 
+data content: b'test message'
+2019/08/15 03:31:31 AM root 3528 - 140130360661760:Thread-1 - INFO - lib_api_server.py parse_client_data line: 130 - reply: b'data 2019/08/15-03:31:31_msg  recived and confirmed'
+2019/08/15 03:31:31 AM root 3528 - 140130360661760:Thread-1 - DEBUG - lib_api_server.py thread_tcplink line: 235 - Connection from 192.168.59.102:37894 closed.
+2019/08/15 03:31:32 AM root 3528 - 140130360661760:Thread-2 - DEBUG - lib_api_server.py thread_tcplink line: 157 - Accept new connection from 192.168.59.102:37896...
+2019/08/15 03:31:32 AM root 3528 - 140130360661760:Thread-2 - DEBUG - lib_api_server.py thread_tcplink line: 218 - recived slice info:
+slice seq num: b'fffff0x0' 
+slice seq max: b'fffff0x0' 
+slice sum origin: b'bcfbf56457129e43f550e58fbcd84f891ad09eb2d8be24fbe675cad83abbc1e3' 
+slice sum confirm: b'bcfbf56457129e43f550e58fbcd84f891ad09eb2d8be24fbe675cad83abbc1e3' 
+slice content: b'\x80\x03}q\x00(X\x03\x00\x00\x00sumq\x01X@\x00\x00\x006aa993acec7748867d2520d5d43f0896175d6aca321a6324178f15cde0f484caq\x02X\x06\x00\x00\x00bin_idq\x03C\x172019/08/15-03:31:32_msgq\x04X\x08\x00\x00\x00bin_dataq\x05C\x0ctest messageq\x06u.'
+2019/08/15 03:31:32 AM root 3528 - 140130360661760:Thread-2 - DEBUG - lib_api_server.py thread_tcplink line: 225 - store slice data num 0 to buffer dict:
+
+2019/08/15 03:31:32 AM root 3528 - 140130360661760:Thread-2 - DEBUG - lib_api_server.py thread_tcplink line: 227 - buffer dict:
+ {0: b'\x80\x03}q\x00(X\x03\x00\x00\x00sumq\x01X@\x00\x00\x006aa993acec7748867d2520d5d43f0896175d6aca321a6324178f15cde0f484caq\x02X\x06\x00\x00\x00bin_idq\x03C\x172019/08/15-03:31:32_msgq\x04X\x08\x00\x00\x00bin_dataq\x05C\x0ctest messageq\x06u.'}
+2019/08/15 03:31:32 AM root 3528 - 140130360661760:Thread-2 - DEBUG - lib_api_server.py thread_tcplink line: 173 - confirm stop reciving slices:
+ seq_max: b'fffff0x0'
+2019/08/15 03:31:32 AM root 3528 - 140130360661760:Thread-2 - DEBUG - lib_api_server.py thread_tcplink line: 179 - check slice num 0
+2019/08/15 03:31:32 AM root 3528 - 140130360661760:Thread-2 - DEBUG - lib_api_server.py _check_msg line: 82 - b'try to load data form pkg:' b'\x80\x03}q\x00(X\x03\x00\x00\x00sumq\x01X@\x00\x00\x006aa993acec7748867d2520d5d43f0896175d6aca321a6324178f15cde0f484caq\x02X\x06\x00\x00\x00bin_idq\x03C\x172019/08/15-03:31:32_msgq\x04X\x08\x00\x00\x00bin_dataq\x05C\x0ctest messageq\x06u.'
+2019/08/15 03:31:32 AM root 3528 - 140130360661760:Thread-2 - DEBUG - lib_api_server.py _check_msg line: 86 - data loading success
+2019/08/15 03:31:32 AM root 3528 - 140130360661760:Thread-2 - DEBUG - lib_api_server.py thread_tcplink line: 193 - the complete msg data:
+ {'sum': '6aa993acec7748867d2520d5d43f0896175d6aca321a6324178f15cde0f484ca', 'bin_id': b'2019/08/15-03:31:32_msg', 'bin_data': b'test message'}
+2019/08/15 03:31:32 AM root 3528 - 140130360661760:Thread-2 - DEBUG - lib_api_server.py parse_client_data line: 109 - data info: 
+data sum: 6aa993acec7748867d2520d5d43f0896175d6aca321a6324178f15cde0f484ca 
+data id: b'2019/08/15-03:31:32_msg' 
+data tag: b'msg' 
+data sent time: b'2019/08/15-03:31:32' 
+data content: b'test message'
+2019/08/15 03:31:32 AM root 3528 - 140130360661760:Thread-2 - INFO - lib_api_server.py parse_client_data line: 130 - reply: b'data 2019/08/15-03:31:32_msg  recived and confirmed'
+2019/08/15 03:31:32 AM root 3528 - 140130360661760:Thread-2 - DEBUG - lib_api_server.py thread_tcplink line: 235 - Connection from 192.168.59.102:37896 closed.
+2019/08/15 03:31:33 AM root 3528 - 140130360661760:Thread-3 - DEBUG - lib_api_server.py thread_tcplink line: 157 - Accept new connection from 192.168.59.102:37898...
+2019/08/15 03:31:33 AM root 3528 - 140130360661760:Thread-3 - DEBUG - lib_api_server.py thread_tcplink line: 218 - recived slice info:
+slice seq num: b'fffff0x0' 
+slice seq max: b'fffff0x0' 
+slice sum origin: b'e132e9dbb92799917fbceb70b6cdf68e9d6f8e4ed22c387d118561ea5ac03730' 
+slice sum confirm: b'e132e9dbb92799917fbceb70b6cdf68e9d6f8e4ed22c387d118561ea5ac03730' 
+slice content: b'\x80\x03}q\x00(X\x03\x00\x00\x00sumq\x01X@\x00\x00\x00665da0149bcf1e3bbae30c1e4cc794ef24839d6d404235c9831deb0c85d423fdq\x02X\x06\x00\x00\x00bin_idq\x03C\x172019/08/15-03:31:33_msgq\x04X\x08\x00\x00\x00bin_dataq\x05C\x0ctest messageq\x06u.'
+2019/08/15 03:31:33 AM root 3528 - 140130360661760:Thread-3 - DEBUG - lib_api_server.py thread_tcplink line: 225 - store slice data num 0 to buffer dict:
+
+2019/08/15 03:31:33 AM root 3528 - 140130360661760:Thread-3 - DEBUG - lib_api_server.py thread_tcplink line: 227 - buffer dict:
+ {0: b'\x80\x03}q\x00(X\x03\x00\x00\x00sumq\x01X@\x00\x00\x00665da0149bcf1e3bbae30c1e4cc794ef24839d6d404235c9831deb0c85d423fdq\x02X\x06\x00\x00\x00bin_idq\x03C\x172019/08/15-03:31:33_msgq\x04X\x08\x00\x00\x00bin_dataq\x05C\x0ctest messageq\x06u.'}
+2019/08/15 03:31:33 AM root 3528 - 140130360661760:Thread-3 - DEBUG - lib_api_server.py thread_tcplink line: 173 - confirm stop reciving slices:
+ seq_max: b'fffff0x0'
+2019/08/15 03:31:33 AM root 3528 - 140130360661760:Thread-3 - DEBUG - lib_api_server.py thread_tcplink line: 179 - check slice num 0
+2019/08/15 03:31:33 AM root 3528 - 140130360661760:Thread-3 - DEBUG - lib_api_server.py _check_msg line: 82 - b'try to load data form pkg:' b'\x80\x03}q\x00(X\x03\x00\x00\x00sumq\x01X@\x00\x00\x00665da0149bcf1e3bbae30c1e4cc794ef24839d6d404235c9831deb0c85d423fdq\x02X\x06\x00\x00\x00bin_idq\x03C\x172019/08/15-03:31:33_msgq\x04X\x08\x00\x00\x00bin_dataq\x05C\x0ctest messageq\x06u.'
+2019/08/15 03:31:33 AM root 3528 - 140130360661760:Thread-3 - DEBUG - lib_api_server.py _check_msg line: 86 - data loading success
+2019/08/15 03:31:33 AM root 3528 - 140130360661760:Thread-3 - DEBUG - lib_api_server.py thread_tcplink line: 193 - the complete msg data:
+ {'sum': '665da0149bcf1e3bbae30c1e4cc794ef24839d6d404235c9831deb0c85d423fd', 'bin_id': b'2019/08/15-03:31:33_msg', 'bin_data': b'test message'}
+2019/08/15 03:31:33 AM root 3528 - 140130360661760:Thread-3 - DEBUG - lib_api_server.py parse_client_data line: 109 - data info: 
+data sum: 665da0149bcf1e3bbae30c1e4cc794ef24839d6d404235c9831deb0c85d423fd 
+data id: b'2019/08/15-03:31:33_msg' 
+data tag: b'msg' 
+data sent time: b'2019/08/15-03:31:33' 
+data content: b'test message'
+2019/08/15 03:31:33 AM root 3528 - 140130360661760:Thread-3 - INFO - lib_api_server.py parse_client_data line: 130 - reply: b'data 2019/08/15-03:31:33_msg  recived and confirmed'
+2019/08/15 03:31:33 AM root 3528 - 140130360661760:Thread-3 - DEBUG - lib_api_server.py thread_tcplink line: 235 - Connection from 192.168.59.102:37898 closed.
+2019/08/15 03:31:34 AM root 3528 - 140130360661760:Thread-4 - DEBUG - lib_api_server.py thread_tcplink line: 157 - Accept new connection from 192.168.59.102:37900...
+2019/08/15 03:31:34 AM root 3528 - 140130360661760:Thread-4 - DEBUG - lib_api_server.py thread_tcplink line: 218 - recived slice info:
+slice seq num: b'fffff0x0' 
+slice seq max: b'fffff0x0' 
+slice sum origin: b'7be110126b489475c77f517c24d71ae5ea1b65f3d0feb5a1717029490d3c4abd' 
+slice sum confirm: b'7be110126b489475c77f517c24d71ae5ea1b65f3d0feb5a1717029490d3c4abd' 
+slice content: b'\x80\x03}q\x00(X\x03\x00\x00\x00sumq\x01X@\x00\x00\x00a4df4b0eddd5dfa4e514253f8fd3bac8d6cf534a567c9bf4449809421dd6f5f9q\x02X\x06\x00\x00\x00bin_idq\x03C\x172019/08/15-03:31:34_msgq\x04X\x08\x00\x00\x00bin_dataq\x05C\x0ctest messageq\x06u.'
+2019/08/15 03:31:34 AM root 3528 - 140130360661760:Thread-4 - DEBUG - lib_api_server.py thread_tcplink line: 225 - store slice data num 0 to buffer dict:
+
+2019/08/15 03:31:34 AM root 3528 - 140130360661760:Thread-4 - DEBUG - lib_api_server.py thread_tcplink line: 227 - buffer dict:
+ {0: b'\x80\x03}q\x00(X\x03\x00\x00\x00sumq\x01X@\x00\x00\x00a4df4b0eddd5dfa4e514253f8fd3bac8d6cf534a567c9bf4449809421dd6f5f9q\x02X\x06\x00\x00\x00bin_idq\x03C\x172019/08/15-03:31:34_msgq\x04X\x08\x00\x00\x00bin_dataq\x05C\x0ctest messageq\x06u.'}
+2019/08/15 03:31:34 AM root 3528 - 140130360661760:Thread-4 - DEBUG - lib_api_server.py thread_tcplink line: 173 - confirm stop reciving slices:
+ seq_max: b'fffff0x0'
+2019/08/15 03:31:34 AM root 3528 - 140130360661760:Thread-4 - DEBUG - lib_api_server.py thread_tcplink line: 179 - check slice num 0
+2019/08/15 03:31:34 AM root 3528 - 140130360661760:Thread-4 - DEBUG - lib_api_server.py _check_msg line: 82 - b'try to load data form pkg:' b'\x80\x03}q\x00(X\x03\x00\x00\x00sumq\x01X@\x00\x00\x00a4df4b0eddd5dfa4e514253f8fd3bac8d6cf534a567c9bf4449809421dd6f5f9q\x02X\x06\x00\x00\x00bin_idq\x03C\x172019/08/15-03:31:34_msgq\x04X\x08\x00\x00\x00bin_dataq\x05C\x0ctest messageq\x06u.'
+2019/08/15 03:31:34 AM root 3528 - 140130360661760:Thread-4 - DEBUG - lib_api_server.py _check_msg line: 86 - data loading success
+2019/08/15 03:31:34 AM root 3528 - 140130360661760:Thread-4 - DEBUG - lib_api_server.py thread_tcplink line: 193 - the complete msg data:
+ {'sum': 'a4df4b0eddd5dfa4e514253f8fd3bac8d6cf534a567c9bf4449809421dd6f5f9', 'bin_id': b'2019/08/15-03:31:34_msg', 'bin_data': b'test message'}
+2019/08/15 03:31:34 AM root 3528 - 140130360661760:Thread-4 - DEBUG - lib_api_server.py parse_client_data line: 109 - data info: 
+data sum: a4df4b0eddd5dfa4e514253f8fd3bac8d6cf534a567c9bf4449809421dd6f5f9 
+data id: b'2019/08/15-03:31:34_msg' 
+data tag: b'msg' 
+data sent time: b'2019/08/15-03:31:34' 
+data content: b'test message'
+2019/08/15 03:31:34 AM root 3528 - 140130360661760:Thread-4 - INFO - lib_api_server.py parse_client_data line: 130 - reply: b'data 2019/08/15-03:31:34_msg  recived and confirmed'
+2019/08/15 03:31:34 AM root 3528 - 140130360661760:Thread-4 - DEBUG - lib_api_server.py thread_tcplink line: 235 - Connection from 192.168.59.102:37900 closed.
+2019/08/15 03:31:35 AM root 3528 - 140130360661760:Thread-5 - DEBUG - lib_api_server.py thread_tcplink line: 157 - Accept new connection from 192.168.59.102:37902...
+2019/08/15 03:31:35 AM root 3528 - 140130360661760:Thread-5 - DEBUG - lib_api_server.py thread_tcplink line: 218 - recived slice info:
+slice seq num: b'fffff0x0' 
+slice seq max: b'fffff0x0' 
+slice sum origin: b'ebafaaf0c5a9580d1b10191984e6a2caf4552785d6b2a71866905e6aa1e5c60d' 
+slice sum confirm: b'ebafaaf0c5a9580d1b10191984e6a2caf4552785d6b2a71866905e6aa1e5c60d' 
+slice content: b'\x80\x03}q\x00(X\x03\x00\x00\x00sumq\x01X@\x00\x00\x002c0e60b868dbbd68e569d5aec323435f0333b454962ac59444dc7111b6f07f41q\x02X\x06\x00\x00\x00bin_idq\x03C\x172019/08/15-03:31:35_msgq\x04X\x08\x00\x00\x00bin_dataq\x05C\x0ctest messageq\x06u.'
+2019/08/15 03:31:35 AM root 3528 - 140130360661760:Thread-5 - DEBUG - lib_api_server.py thread_tcplink line: 225 - store slice data num 0 to buffer dict:
+
+2019/08/15 03:31:35 AM root 3528 - 140130360661760:Thread-5 - DEBUG - lib_api_server.py thread_tcplink line: 227 - buffer dict:
+ {0: b'\x80\x03}q\x00(X\x03\x00\x00\x00sumq\x01X@\x00\x00\x002c0e60b868dbbd68e569d5aec323435f0333b454962ac59444dc7111b6f07f41q\x02X\x06\x00\x00\x00bin_idq\x03C\x172019/08/15-03:31:35_msgq\x04X\x08\x00\x00\x00bin_dataq\x05C\x0ctest messageq\x06u.'}
+2019/08/15 03:31:35 AM root 3528 - 140130360661760:Thread-5 - DEBUG - lib_api_server.py thread_tcplink line: 173 - confirm stop reciving slices:
+ seq_max: b'fffff0x0'
+2019/08/15 03:31:35 AM root 3528 - 140130360661760:Thread-5 - DEBUG - lib_api_server.py thread_tcplink line: 179 - check slice num 0
+2019/08/15 03:31:35 AM root 3528 - 140130360661760:Thread-5 - DEBUG - lib_api_server.py _check_msg line: 82 - b'try to load data form pkg:' b'\x80\x03}q\x00(X\x03\x00\x00\x00sumq\x01X@\x00\x00\x002c0e60b868dbbd68e569d5aec323435f0333b454962ac59444dc7111b6f07f41q\x02X\x06\x00\x00\x00bin_idq\x03C\x172019/08/15-03:31:35_msgq\x04X\x08\x00\x00\x00bin_dataq\x05C\x0ctest messageq\x06u.'
+2019/08/15 03:31:35 AM root 3528 - 140130360661760:Thread-5 - DEBUG - lib_api_server.py _check_msg line: 86 - data loading success
+2019/08/15 03:31:35 AM root 3528 - 140130360661760:Thread-5 - DEBUG - lib_api_server.py thread_tcplink line: 193 - the complete msg data:
+ {'sum': '2c0e60b868dbbd68e569d5aec323435f0333b454962ac59444dc7111b6f07f41', 'bin_id': b'2019/08/15-03:31:35_msg', 'bin_data': b'test message'}
+2019/08/15 03:31:35 AM root 3528 - 140130360661760:Thread-5 - DEBUG - lib_api_server.py parse_client_data line: 109 - data info: 
+data sum: 2c0e60b868dbbd68e569d5aec323435f0333b454962ac59444dc7111b6f07f41 
+data id: b'2019/08/15-03:31:35_msg' 
+data tag: b'msg' 
+data sent time: b'2019/08/15-03:31:35' 
+data content: b'test message'
+2019/08/15 03:31:35 AM root 3528 - 140130360661760:Thread-5 - INFO - lib_api_server.py parse_client_data line: 130 - reply: b'data 2019/08/15-03:31:35_msg  recived and confirmed'
+2019/08/15 03:31:35 AM root 3528 - 140130360661760:Thread-5 - DEBUG - lib_api_server.py thread_tcplink line: 235 - Connection from 192.168.59.102:37902 closed.
+2019/08/15 03:31:37 AM root 3528 - 140130360661760:Thread-6 - DEBUG - lib_api_server.py thread_tcplink line: 157 - Accept new connection from 192.168.59.102:37904...
+2019/08/15 03:31:37 AM root 3528 - 140130360661760:Thread-6 - DEBUG - lib_api_server.py thread_tcplink line: 218 - recived slice info:
+slice seq num: b'fffff0x0' 
+slice seq max: b'fffff0x0' 
+slice sum origin: b'c758f8c762ae5e831bf94cf79c864dffcecec0b38818866799a8a9785af8b5f7' 
+slice sum confirm: b'c758f8c762ae5e831bf94cf79c864dffcecec0b38818866799a8a9785af8b5f7' 
+slice content: b'\x80\x03}q\x00(X\x03\x00\x00\x00sumq\x01X@\x00\x00\x003c1b399e845dcb6d521b060af48a7724f245ff21560ef5d6609ea1721541cec5q\x02X\x06\x00\x00\x00bin_idq\x03C\x172019/08/15-03:31:37_msgq\x04X\x08\x00\x00\x00bin_dataq\x05C\x05closeq\x06u.'
+2019/08/15 03:31:37 AM root 3528 - 140130360661760:Thread-6 - DEBUG - lib_api_server.py thread_tcplink line: 225 - store slice data num 0 to buffer dict:
+
+2019/08/15 03:31:37 AM root 3528 - 140130360661760:Thread-6 - DEBUG - lib_api_server.py thread_tcplink line: 227 - buffer dict:
+ {0: b'\x80\x03}q\x00(X\x03\x00\x00\x00sumq\x01X@\x00\x00\x003c1b399e845dcb6d521b060af48a7724f245ff21560ef5d6609ea1721541cec5q\x02X\x06\x00\x00\x00bin_idq\x03C\x172019/08/15-03:31:37_msgq\x04X\x08\x00\x00\x00bin_dataq\x05C\x05closeq\x06u.'}
+2019/08/15 03:31:37 AM root 3528 - 140130360661760:Thread-6 - DEBUG - lib_api_server.py thread_tcplink line: 173 - confirm stop reciving slices:
+ seq_max: b'fffff0x0'
+2019/08/15 03:31:37 AM root 3528 - 140130360661760:Thread-6 - DEBUG - lib_api_server.py thread_tcplink line: 179 - check slice num 0
+2019/08/15 03:31:37 AM root 3528 - 140130360661760:Thread-6 - DEBUG - lib_api_server.py _check_msg line: 82 - b'try to load data form pkg:' b'\x80\x03}q\x00(X\x03\x00\x00\x00sumq\x01X@\x00\x00\x003c1b399e845dcb6d521b060af48a7724f245ff21560ef5d6609ea1721541cec5q\x02X\x06\x00\x00\x00bin_idq\x03C\x172019/08/15-03:31:37_msgq\x04X\x08\x00\x00\x00bin_dataq\x05C\x05closeq\x06u.'
+2019/08/15 03:31:37 AM root 3528 - 140130360661760:Thread-6 - DEBUG - lib_api_server.py _check_msg line: 86 - data loading success
+2019/08/15 03:31:37 AM root 3528 - 140130360661760:Thread-6 - DEBUG - lib_api_server.py thread_tcplink line: 193 - the complete msg data:
+ {'sum': '3c1b399e845dcb6d521b060af48a7724f245ff21560ef5d6609ea1721541cec5', 'bin_id': b'2019/08/15-03:31:37_msg', 'bin_data': b'close'}
+2019/08/15 03:31:37 AM root 3528 - 140130360661760:Thread-6 - DEBUG - lib_api_server.py parse_client_data line: 109 - data info: 
+data sum: 3c1b399e845dcb6d521b060af48a7724f245ff21560ef5d6609ea1721541cec5 
+data id: b'2019/08/15-03:31:37_msg' 
+data tag: b'msg' 
+data sent time: b'2019/08/15-03:31:37' 
+data content: b'close'
+2019/08/15 03:31:37 AM root 3528 - 140130360661760:Thread-6 - INFO - lib_api_server.py parse_client_data line: 130 - reply: b'data 2019/08/15-03:31:37_msg  recived and confirmed'
+2019/08/15 03:31:37 AM root 3528 - 140130360661760:Thread-6 - DEBUG - lib_api_server.py thread_tcplink line: 235 - Connection from 192.168.59.102:37904 closed.
+2019/08/15 03:51:50 AM root 3528 - 140130360661760:Thread-7 - DEBUG - lib_api_server.py thread_tcplink line: 157 - Accept new connection from 192.168.59.102:37914...
+2019/08/15 03:51:50 AM root 3528 - 140130360661760:Thread-7 - DEBUG - lib_api_server.py thread_tcplink line: 218 - recived slice info:
+slice seq num: b'fffff0x0' 
+slice seq max: b'fffff0x0' 
+slice sum origin: b'da75ca3407c195ddf1b7f5c31d8e2d31c7f2a06b32118807b88f1a6bc579cc05' 
+slice sum confirm: b'da75ca3407c195ddf1b7f5c31d8e2d31c7f2a06b32118807b88f1a6bc579cc05' 
+slice content: b'\x80\x03}q\x00(X\x03\x00\x00\x00sumq\x01X@\x00\x00\x00366c90b23fca692f446f51f1625c4f416e3c25528e8a64f2bea67c909847f50dq\x02X\x06\x00\x00\x00bin_idq\x03C\x172019/08/15-03:51:50_msgq\x04X\x08\x00\x00\x00bin_dataq\x05C\x05closeq\x06u.'
+2019/08/15 03:51:50 AM root 3528 - 140130360661760:Thread-7 - DEBUG - lib_api_server.py thread_tcplink line: 225 - store slice data num 0 to buffer dict:
+
+2019/08/15 03:51:50 AM root 3528 - 140130360661760:Thread-7 - DEBUG - lib_api_server.py thread_tcplink line: 227 - buffer dict:
+ {0: b'\x80\x03}q\x00(X\x03\x00\x00\x00sumq\x01X@\x00\x00\x00366c90b23fca692f446f51f1625c4f416e3c25528e8a64f2bea67c909847f50dq\x02X\x06\x00\x00\x00bin_idq\x03C\x172019/08/15-03:51:50_msgq\x04X\x08\x00\x00\x00bin_dataq\x05C\x05closeq\x06u.'}
+2019/08/15 03:51:50 AM root 3528 - 140130360661760:Thread-7 - DEBUG - lib_api_server.py thread_tcplink line: 173 - confirm stop reciving slices:
+ seq_max: b'fffff0x0'
+2019/08/15 03:51:50 AM root 3528 - 140130360661760:Thread-7 - DEBUG - lib_api_server.py thread_tcplink line: 179 - check slice num 0
+2019/08/15 03:51:50 AM root 3528 - 140130360661760:Thread-7 - DEBUG - lib_api_server.py _check_msg line: 82 - b'try to load data form pkg:' b'\x80\x03}q\x00(X\x03\x00\x00\x00sumq\x01X@\x00\x00\x00366c90b23fca692f446f51f1625c4f416e3c25528e8a64f2bea67c909847f50dq\x02X\x06\x00\x00\x00bin_idq\x03C\x172019/08/15-03:51:50_msgq\x04X\x08\x00\x00\x00bin_dataq\x05C\x05closeq\x06u.'
+2019/08/15 03:51:50 AM root 3528 - 140130360661760:Thread-7 - DEBUG - lib_api_server.py _check_msg line: 86 - data loading success
+2019/08/15 03:51:50 AM root 3528 - 140130360661760:Thread-7 - DEBUG - lib_api_server.py thread_tcplink line: 193 - the complete msg data:
+ {'sum': '366c90b23fca692f446f51f1625c4f416e3c25528e8a64f2bea67c909847f50d', 'bin_id': b'2019/08/15-03:51:50_msg', 'bin_data': b'close'}
+2019/08/15 03:51:50 AM root 3528 - 140130360661760:Thread-7 - DEBUG - lib_api_server.py parse_client_data line: 109 - data info: 
+data sum: 366c90b23fca692f446f51f1625c4f416e3c25528e8a64f2bea67c909847f50d 
+data id: b'2019/08/15-03:51:50_msg' 
+data tag: b'msg' 
+data sent time: b'2019/08/15-03:51:50' 
+data content: b'close'
+2019/08/15 03:51:50 AM root 3528 - 140130360661760:Thread-7 - INFO - lib_api_server.py parse_client_data line: 130 - reply: b'data 2019/08/15-03:51:50_msg  recived and confirmed'
+2019/08/15 03:51:50 AM root 3528 - 140130360661760:Thread-7 - DEBUG - lib_api_server.py thread_tcplink line: 235 - Connection from 192.168.59.102:37914 closed.

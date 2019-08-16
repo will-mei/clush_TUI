@@ -46,20 +46,20 @@ subprocess.DEVNULL  # 等同于 /dev/null
 subprocess.PIPE     # 打开标准流的管道
 subprocess.STDOUT   # stdout 
 
-class subprocess.Popen( args,                   # 命令的字符串或列表
-                        bufsize=-1,             # 缓冲大小, 负值代表使用默认值, 默认全缓冲
-                        executable=None,        # 执行的命令或可执行文件, 一般不指定, 从args中获取
+class subprocess.Popen( args,                    # 命令的字符串或列表
+                        bufsize=-1,              # 缓冲大小, 负值代表使用默认值, 默认全缓冲
+                        executable=None,         # 执行的命令或可执行文件, 一般不指定, 从args中获取
                         stdin=None,
                         stdout=None,
                         stderr=None,
-                        preexec_fn=None,        # 在调用fork产生新程 和 调用exec在进程执行新任务之间 调用的hook函数
-                        close_fds=True,         # 是否关闭 0/1/2 之外的其他文件描述符
+                        preexec_fn=None,         # 在调用fork产生新程 和 调用exec在进程执行新任务之间 调用的hook函数
+                        close_fds=True,          # 是否关闭 0/1/2 之外的其他文件描述符
                         shell=False,
                         cwd=None,
                         env=None,
-                        universal_newlines=None,# 子进程的stdout和stderr被视为文本对象
-                        startupinfo=None,       # 仅Windows 指定子进程属性
-                        creationflags=0,        # 仅Windows 指定子进程属性 样式
+                        universal_newlines=None, # 子进程的stdout和stderr被视为文本对象
+                        startupinfo=None,        # 仅Windows 指定子进程属性
+                        creationflags=0,         # 仅Windows 指定子进程属性 样式
                         restore_signals=True,
                         start_new_session=False,
                         pass_fds=(),
@@ -82,7 +82,8 @@ def ez_cmd(cmd, *args, **keywords):
                               stderr = subprocess.STDOUT,
                               universal_newlines = True,
                               encoding = locale.getpreferredencoding(),
-                              *args, **keywords)
+                              *args, **keywords
+                             )
     #return proc_obj.stdout.split('\n')
     return proc_obj.stdout #.split('\n')
 
@@ -91,9 +92,11 @@ def cmd_ok(cmd, *args, **keywords):
         raise TypeError('the cmd should be a string of shell commands')
     return_code_int = subprocess.call(cmd.strip(),
                                       shell  = True,
+                                      stdout = subprocess.PIPE,
                                       stderr = subprocess.PIPE,
                                       universal_newlines = True,
-                                      *args, **keywords)
+                                      *args, **keywords
+                                     )
     if return_code_int == 0:
         return True
     else:
@@ -103,3 +106,5 @@ def cmd_ok(cmd, *args, **keywords):
 if  __name__ == "__main__":
     cmd = 'lsblk -ps'
     print(ez_cmd(cmd))
+    if cmd_ok('ls'):
+        print("you are ready to go.")

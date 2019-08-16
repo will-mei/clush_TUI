@@ -144,7 +144,8 @@ class SearchTaskForm(npyscreen.ActionFormV2):
 
     def refresh_task_list(self, _input):
         self.dump_task_list()
-        self.display()
+        #self.display()
+        self.DISPLAY()
 
     def dump_task_list(self):
         conn  = sqlite3.connect(workflow_db)
@@ -324,6 +325,7 @@ class SearchTaskForm(npyscreen.ActionFormV2):
     def update_selected_task(self, _input):
         if self.edit_status != 'select':
             npyscreen.notify_confirm('请先提交当前进行编辑的任务', title='编辑冲突')
+            return
         # task selected 
         if isinstance(self.task_select_box.value, int):
             self.edit_status = 'update'
