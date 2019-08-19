@@ -331,16 +331,36 @@ class SSHConnection(object):
         return self.output
 
     def single_cmd(self, cmd, stdin=None):
-        _command_prefix = 'echo "$$" && exec '
-        stdin, stdout, stderr = self._client.exec_command(_command_prefix + cmd)
+        #stdin, stdout, stderr = self._client.exec_command(cmd)
 
-        pid = stdout.readline().strip()
+        #_command_prefix = 'echo "$$" ; exec '
+        #stdin, stdout, stderr = self._client.exec_command(_command_prefix + cmd)
+
+        # paramiko_process 1 (when connected via paramiko)
+        # |
+        # subprocess 2 (deal with exec_command )
+        # |
+        # command process 3 (subprocess of 2, exec the command you want to run)
+        # |
+        # end
+
+        #_command = 'echo "$$" ; { echo $$ ; %s }; echo "$!"'  % cmd
+        _command = '{\n%s\n}; echo -n "${!:-$$}"'  % cmd
+        #print("\ncmd:", _command)
+        stdin, stdout, stderr = self._client.exec_command(_command)
+
+        #pid = stdout.readline().strip()
         if sys.version_info.major >= 3:
-            data = str(stdout.read(), encoding='utf-8')
+            out = str(stdout.read(), encoding='utf-8')
             err = str(stderr.read(), encoding='utf-8')
         else:
-            data = stdout.read()
+            out = stdout.read()
             err = stderr.read()
+
+        #print("out:", out)
+        pid     = out.split('\n')[-1]
+        data    = out[:len(pid) *-1]
+
         # collect info 
         self.output['pid'].append(pid)
         self.output['stdin'].append(cmd)
@@ -403,7 +423,7 @@ if __name__ == "__main__":
     # a host
     h = {
          'host':        ('host1', '192.168.59.252'),
-         'port':        22,
+         'port':        None,
          'user':        None,
          'password':    None,
          'timeout':     15,
@@ -437,17 +457,23 @@ if __name__ == "__main__":
     #ok    con.get('~/log', '~/logsub/')
 
         # cmd list 
-    #ok    out1 = con.exec_command(c)
-        out1 = con.exec_command('~/a.sh & ')
-        print_output(out1)
+    #ok    out0 = con.exec_command(c)
+    #    print_output(out0)
+
+        # cmd in background
+        # if you want a command run in background, please redirect the output!!
+        # otherwise, paramiko will keep waiting till the subprocess ends itself!!
+        # cause the subprocess shares the same output pipe with the current bash which was called by paramiko
+    #ok    out1 = con.exec_command('~/a.sh &>/dev/null &')
+    #    print_output(out1)
 
         # single cmd 
     #ok    out2 = con.exec_command('echo $HOSTNAME')
     #    print_output(out2)
 
         # cmd with error
-    #ok    out3 = con.exec_command('ls notexistfile')
-    #    print_output(out3)
+        out3 = con.exec_command('ls notexistfile')
+        print_output(out3)
 
         # run a script 
     #ok    sout = con.exec_script('~/a.sh')

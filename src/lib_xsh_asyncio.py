@@ -92,21 +92,37 @@ def valid_ip(ip):
 
 class ConnectionGroup:
 
-    # all hosts in a same group share the same login user and ssh port 
-    def __init__(self, grp_info, admin_terminal):
-        self.grp_info   = grp_info 
-        self.grp_name   = grp_info['grp_name'] 
-        self.term_id    = admin_terminal
-        # host:connection 
+    # all hosts in a same group share the same login info 
+    def __init__(self, grp_info):
+        self.grp_name   = grp_info['grp_name']
+        self.ssh_info   = grp_info['grp_ssh_info']
+        self.ip_array   = grp_info['grp_ip_array']
+        # host connection obj list 
         self._connections = {}
-        #
+        # get hosts connected
         if len(self.grp_info['grp_ip_array']):
-            self._group_connect('init')
+            self._estab_connection('init')
 
-    def _host_connect(self, hostname, mode='init'):
+    def _estab_connection(self, mode):
+        _threads_list   = []
+        list(map(
+                lambda hostname: _threads_list.append(
+                    threading.Thread(
+                        target=self._connect_host,
+                        args=(hostname, mode) 
+                    )
+                ),
+                self.grp_info['grp_ip_array']
+        ))
+        # start every thread
+        [ x.start() for x in  _threads_list ]
+        # join and end
+        [ x.join() for x in _threads_list ]
+
+    def _connect_host(self, hostname, mode='init'):
         # get ssh info combined together
         # (fqdn, ip)
-        _host_info              = (hostname, self.grp_info['grp_ip_array'][hostname])
+        _host_info              = (hostname, self.ip_array[hostname])
         _host_ssh_info          = self.grp_info['grp_ssh_info']
         _host_ssh_info['host']  = _host_info
 
@@ -130,17 +146,6 @@ class ConnectionGroup:
             self._connections[hostname].reconnect()
         elif mode == 'close' and self._connections[hostname]:
             self._connections[hostname].close()
-
-    def _group_connect(self, mode):
-        _threads         = []
-        list(map(
-                lambda hostname: _threads.append(
-                    threading.Thread(target=self._host_connect, args=(hostname, mode) )
-                ),
-                self.grp_info['grp_ip_array']
-        ))
-        [ x.start() for x in  _threads ]
-        [ x.join() for x in _threads ]
 
     # reconnect all connections 
     def reconnect(self):
@@ -338,6 +343,7 @@ if __name__ == "__main__":
             'hostkey':'~/.ssh/id_rsa'
         },
         'grp_ip_array': {
+            # hostname:ip
             'host' + str(x) : '192.168.59.' + str(x) for x in range(100, 254)
         }
     }
@@ -348,7 +354,7 @@ if __name__ == "__main__":
     # status
     # stderr
     # time costs
-    # host id 
+    # host id
 
     # xsh obj is a host connection group
     xsh = ConnectionGroup(g)
