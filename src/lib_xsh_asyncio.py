@@ -11,7 +11,7 @@ except:
 import logging
 logging.basicConfig(
     #filename= '/var/log/messages',
-    filename= '../log/messages',
+    #filename= '../log/messages',
     level   = logging.INFO,
     format  = '%(asctime)s %(name)s %(process)d - %(thread)d:%(threadName)s - %(levelname)s - %(pathname)s %(funcName)s line: %(lineno)d - %(message)s',
     datefmt = '%Y/%m/%d %I:%M:%S %p'
@@ -38,7 +38,7 @@ import hashlib
 try:
     from src.lib_ssh_paramiko import SSHConnection
 except:
-    from lib_ssh_paramiko import SSHConnection
+    from lib_ssh_paramiko import SSHConnection,print_output
 
 #from peewee import *
 #import datetime
@@ -82,6 +82,48 @@ def valid_ip(ip):
                 )
             ) == 4
 
+# give the output summary of a single command
+def print_group_output(output):
+    _unaccessable = 0
+    _summary = []
+
+
+    _sum_dict = {
+        'failed':0,
+        'success':0,
+        'output sum':[] # md5, content, number, hosts
+    }
+    _output_dict = {
+        'md5': None,
+        'content': None,
+        'number': 0,
+        'hosts': []
+    }
+
+    # each result
+    for i in output:
+        # not None
+        if output[i]:
+            _out = output[i]
+            while len(_summary) < len(_out['stdin']):
+                _summary.append(_sum_dict)
+            _failed = 0
+            _success = 0
+            # check status of each cmd
+            for i in range(len(_out['stdin'])):
+                if _out['status'][i] == 0:
+                    _success +=1
+                else:
+                    _failed +=1
+        else:
+            _unaccessable +=1
+
+    for i in range(len(_summary)):
+        print('\noutput summary:')
+        print('cmd:')
+        print('success:', _success)
+        print('failed:', _failed)
+        print('unaccessable:', _unaccessable)
 
 # a wharfage with a watchdog to keep a group of ssh connection alive, and keep their status info maintainable 
 # pass in server info
@@ -100,67 +142,71 @@ class ConnectionGroup:
         # host connection obj list 
         self._connections = {}
         # get hosts connected
-        if len(self.grp_info['grp_ip_array']):
-            self._estab_connection('init')
+        if len(self.ip_array):
+            self._manage_connections(mode='update')
 
-    def _estab_connection(self, mode):
+    def _get_host_connection(self, hostname):
+        # get ssh info combined together
+        # (fqdn, ip)
+        _host_info              = (hostname, self.ip_array[hostname])
+        _host_ssh_info          = self.ssh_info
+        _host_ssh_info['host']  = _host_info
+
+        #print(hostname, 'connection ', mode)
+        _msg = 'ssh connection group: ' +self.grp_name + 'get ssh client connection @' +hostname 
+        logging.debug(_msg)
+
+        # ignore the failed ones
+        try:
+            _connection = SSHConnection(_host_ssh_info)
+            #print(hostname, 'ssh success')
+        except:
+            _connection = None
+            #print(hostname, 'ssh failed')
+
+        return _connection
+
+    def _alter_host_connection(self, hostname, mode='update'):
+        if mode == 'update':
+            self._connections[hostname] = self._get_host_connection(hostname)
+        elif self._connections[hostname]:
+            if mode == 'reconnect':
+                self._connections[hostname].reconnect()
+            elif mode == 'close':
+                self._connections[hostname].close()
+        else:
+            pass
+
+    def _manage_connections(self, mode):
         _threads_list   = []
         list(map(
                 lambda hostname: _threads_list.append(
+                    # thread for connecting remote host
                     threading.Thread(
-                        target=self._connect_host,
+                        target=self._alter_host_connection,
                         args=(hostname, mode) 
                     )
                 ),
-                self.grp_info['grp_ip_array']
+                self.ip_array
         ))
         # start every thread
         [ x.start() for x in  _threads_list ]
         # join and end
         [ x.join() for x in _threads_list ]
 
-    def _connect_host(self, hostname, mode='init'):
-        # get ssh info combined together
-        # (fqdn, ip)
-        _host_info              = (hostname, self.ip_array[hostname])
-        _host_ssh_info          = self.grp_info['grp_ssh_info']
-        _host_ssh_info['host']  = _host_info
+    def close(self):
+        self._manage_connections('close')
 
-        # sleep for threading 
-        #time.sleep(0)
-
-        #print(hostname, 'connection ', mode)
-        _msg = 'ssh connection group: ' +self.grp_name + ' '+mode +' connection @' +hostname 
-        logging.debug(_msg)
-
-        if mode == 'init':
-            try:
-                self._connections[hostname] = SSHConnection(_host_ssh_info)
-                print(hostname, 'ssh success')
-            except:
-                self._connections[hostname] = None
-        elif mode == 'update':
-            self._connections[hostname]._ssh_info = _host_ssh_info
-            self._connections[hostname].update_connection()
-        elif mode == 'reconnect':
-            self._connections[hostname].reconnect()
-        elif mode == 'close' and self._connections[hostname]:
-            self._connections[hostname].close()
+    # reconnect the existed ones
+    def reconnect(self):
+        self._manage_connections('reconnect')
 
     # reconnect all connections 
-    def reconnect(self):
-        self._group_connect('reconnect')
-
-    # reconnect the failed ones
     def update_connections(self):
         # update grp_info
-        self._group_connect('update')
+        self._manage_connections('update')
 
-    def close(self):
-        self._group_connect('close')
-
-    # bind key of output 
-    def single_run(self, hostname, cmd_list):
+    def _run_on_single_host(self, hostname, cmd_list):
         _con_obj = self._connections[hostname]
         if _con_obj :
             try:
@@ -169,26 +215,44 @@ class ConnectionGroup:
                 _out = None 
         else:
             _out = None
-        self._output_data[hostname] = _out
+        self._output[hostname] = _out
 
-    # run command on all host 
-    def grp_run(self, cmd_list):
-        self._output_data = {}
+    # run command of command list
+    def run(self, command):
+        self.exec_command(command)
 
-        _threads         = []
+    # run command on all host
+    def exec_command(self, cmd_list):
+        # 
+        self._output = {}
+
+        _threads = []
         list(map(
                 lambda hostname: _threads.append(
-                    threading.Thread(target=self.single_run,
-                                     args=(hostname, cmd_list))
+                    threading.Thread(
+                        target=self._run_on_single_host,
+                        args=(hostname, cmd_list)
+                    )
                 ),
                 self._connections
         ))
         [ x.start() for x in  _threads ]
         [ x.join() for x in _threads ]
-        return self._output_data 
 
-    def run(self, cmd_list):
-        return self.grp_run(cmd_list)
+        ## result summary
+        #if isinstance(cmd_list, str):
+        #    # fail hosts
+        #    self._output['connection failed'] = list(self._output.values()).count(None)
+        #    self._output['failed'] = 
+        #    # sucess hosts 
+        #    self._output['success'] = 
+        #    # every type of ouput text count
+        #    #
+        #    pass 
+        #elif isinstance(cmd_list, list):
+        #    pass
+
+        return self._output
 
     # if a group is alive or unvalid 
     def is_alive(self):
@@ -200,15 +264,10 @@ class ConnectionGroup:
             )
         )
 
-    # close the connection of a online host, but it's info is still in the grp_info 
-    def cut_off(self, hostname):
+    # drive out a host, info removed , connection closed 
+    def remove_host(self, hostname):
         if self._connections[hostname]:
             self._connections[hostname].close()
-
-    # drive out or expel a host, info removed , connection closed 
-    # its connection cannot be reused any more 
-    def expel(self, hostname):
-        self.cut_off(hostname)
         del self.grp_info['grp_ip_array'][hostname]
 
     def __getitem__(self, hostname):
@@ -336,7 +395,7 @@ if __name__ == "__main__":
     g = {
         'grp_name':'grp0',
         'grp_ssh_info':{
-            'port':22,
+            'port':None,
             'user':None,
             'password':None,
             'timeout':15,
@@ -344,7 +403,7 @@ if __name__ == "__main__":
         },
         'grp_ip_array': {
             # hostname:ip
-            'host' + str(x) : '192.168.59.' + str(x) for x in range(100, 254)
+            'host' + str(x) : '192.168.59.' + str(x) for x in range(200, 254)
         }
     }
 
@@ -361,61 +420,67 @@ if __name__ == "__main__":
     #print(xsh._connections)
 
     # run a command
-    xsh.exec_command('lsblk')
-
-    # run a script
-    xsh.exec_script('~/a.sh')
-
-    # distribute a file
-    xsh.put('~/a.sh', '~/aa')
-
-    # distribute a dir
-    xsh.put('~/abc', '~/abc')
-
-    # collect one file from group to a dir 
-    xsh.get('/etc/redhat-release', '~/release')
-
-    # collect dir from group
-    xsh.get('/etc/ssh/', '~/ssh')
-
-    # configure fault tolerance 20%
-    xsh.set_valid_ratio(20.0)
-
-    # get fault tolerance info
-    xsh.get_valid_ratio()
-
-    # get cmd history
-    xsh.get_history()
-
-    # get a task to be executed over again
-    xsh.redo_task(xsh.get_history()[-1]) 
-
-    # clean up history
-    xsh.clean_up_history()
-
-    # run cmd on a certain host
-    xsh['host1'].exec_command('echo $HOSTNAME')
-
-    # get hosts list
-    xsh.hosts()
-
-    # get connections list 
-    xsh.connections()
-
-    # get ssh info
-    xsh.ssh_info()
-
-    # get connections group health status
-    xsh.health_info()
-
-    # close connections 
-    xsh.close()
-
-    # reconnect
-    xsh.reconnect()
-
-    # stop action
-    xsh.stop()
+    out0 = xsh.exec_command('lsblk')
+    # summary for each single host
+    # summary for each single cmd
+    for i in out0:
+        if out0[i]:
+            print_output(out0[i])
+        else:
+            print(i, out0[i])
+#    # run a script
+#    xsh.exec_script('~/a.sh')
+#
+#    # distribute a file
+#    xsh.put('~/a.sh', '~/aa')
+#
+#    # distribute a dir
+#    xsh.put('~/abc', '~/abc')
+#
+#    # collect one file from group to a dir 
+#    xsh.get('/etc/redhat-release', '~/release')
+#
+#    # collect dir from group
+#    xsh.get('/etc/ssh/', '~/ssh')
+#
+#    # configure fault tolerance 20%
+#    xsh.set_valid_ratio(20.0)
+#
+#    # get fault tolerance info
+#    xsh.get_valid_ratio()
+#
+#    # get cmd history
+#    xsh.get_history()
+#
+#    # get a task to be executed over again
+#    xsh.redo_task(xsh.get_history()[-1]) 
+#
+#    # clean up history
+#    xsh.clean_up_history()
+#
+#    # run cmd on a certain host
+#    xsh['host1'].exec_command('echo $HOSTNAME')
+#
+#    # get hosts list
+#    xsh.hosts()
+#
+#    # get connections list 
+#    xsh.connections()
+#
+#    # get ssh info
+#    xsh.ssh_info()
+#
+#    # get connections group health status
+#    xsh.health_info()
+#
+#    # close connections 
+#    xsh.close()
+#
+#    # reconnect
+#    xsh.reconnect()
+#
+#    # stop action
+#    xsh.stop()
 
 
     # recive info from socket

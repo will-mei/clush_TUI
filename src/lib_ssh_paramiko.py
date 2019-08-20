@@ -30,6 +30,8 @@ def print_output(output):
     print("cmd list:",          output['stdin'])
     print("cmd pid:",           output['pid'])
     print("cmd stdout:",        output['stdout'])
+    #for i in output['stdout']:
+    #    print(i)
     print("cmd stderr:",        output['stderr'])
     print("cmd return status:", output['status'])
     print("cmd return time:",   output['date'])
@@ -49,26 +51,25 @@ def localpath_expansion(localpath):
 class SSHConnection(object):
     def __init__(self, ssh_info):
         self._ssh_info      = ssh_info
-        self.update_ssh_info()
+        self.update_ssh_info(ssh_info)
         # ssh socket
         self._transport     = None
         self._sftp          = None
         self._client        = None
-        self._init_con_fn   = self._init_fn()
         self._connect()  # 建立连接
 
-    def update_ssh_info(self):
-        self.fqdn           = self._ssh_info['host'][0]
-        self.ipaddr         = self._ssh_info['host'][1]
+    def update_ssh_info(self, ssh_info):
+        self.fqdn           = ssh_info['host'][0]
+        self.ipaddr         = ssh_info['host'][1]
         self._host          = self.ipaddr 
-        self._port          = self._ssh_info['port']
-        self._username      = self._ssh_info['user']
-        self._password      = self._ssh_info['password']
-        self._timeout       = self._ssh_info['timeout']
-        self._key_filename  = self._ssh_info['hostkey'].replace('~', os.path.expanduser('~'))
+        self._port          = ssh_info['port']
+        self._username      = ssh_info['user']
+        self._password      = ssh_info['password']
+        self._timeout       = ssh_info['timeout']
+        self._key_filename  = ssh_info['hostkey'].replace('~', os.path.expanduser('~'))
 
     # closure with connection info stored 
-    def _init_fn(self):
+    def _init_client(self):
         h = self._host
         u = username=self._username
         p = password=self._password
@@ -95,17 +96,18 @@ class SSHConnection(object):
             return _client
         return _client_connect_fn
 
-    def _connect(self, mode='init'):
-        # get _client
-        if not self._client:
-            self._client = self._init_con_fn()
+    def _connect(self, mode='update'):
+        # generate paramiko client connection
+        if not self._client or mode == 'update':
+            self._get_con_fn    = self._init_client()
+            self._client = self._get_con_fn()
         elif mode == 'reconnect':
-            self._client = self._init_con_fn()
+            self._client = self._get_con_fn()
+
         # check _client
         self._transport = self._client._transport
         self._transport.setName(self._host)
         self._transport.setName(self._host)
-
 
     # connect with the ssh info which were used at the very begining of its creation
     def reconnect(self):
@@ -114,28 +116,8 @@ class SSHConnection(object):
         else:
             self._connect()
 
-    # connect with current ssh info
     def update_connection(self):
-        self._client = paramiko.SSHClient()
-        self._client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        try:
-            self._client.connect(
-                self._host,
-                username=self._username,
-                password=self._password,
-                key_filename=self._key_filename
-            )
-        except:
-            self._client = None
-            pass
-
-    #def update_status(status):
-    #    if      status == 'reconnect':
-    #        self._connect(mode='reconnect')
-    #    elif    status == 'update':
-    #        self.update_connection()
-    #    elif    status == 'close':
-    #        self.close()
+        self._connect(mode='update')
 
     def remotepath_expansion(self, remotepath):
         # dir
@@ -300,7 +282,7 @@ class SSHConnection(object):
             self.exec_command('mkdir -p %s' % _dir)
 
     #执行命令
-    def run(self,command):
+    def run(self, command):
         return self.exec_command(command)
 
     # input str / list of str 
@@ -345,7 +327,7 @@ class SSHConnection(object):
         # end
 
         #_command = 'echo "$$" ; { echo $$ ; %s }; echo "$!"'  % cmd
-        _command = '{\n%s\n}; echo -n "${!:-$$}"'  % cmd
+        _command = '{\n%s\n}; \ncmd_return=$? ; \n_trace(){\necho -n "${!:-$$}" && return $cmd_return\n}; \n_trace'  % cmd
         #print("\ncmd:", _command)
         stdin, stdout, stderr = self._client.exec_command(_command)
 
@@ -392,7 +374,7 @@ class SSHConnection(object):
             # temporary solution on linux 
             self.exec_command('/bin/true')
             return True 
-        except:
+        except paramiko.ssh_exception.NoValidConnectionsError:
             return False 
 
     def close(self):
