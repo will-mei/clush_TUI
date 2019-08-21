@@ -34,6 +34,7 @@ import time
 #import asyncio
 
 import hashlib
+import copy
 
 try:
     from src.lib_ssh_paramiko import SSHConnection
@@ -84,46 +85,94 @@ def valid_ip(ip):
 
 # give the output summary of a single command
 def print_group_output(output):
-    _unaccessable = 0
+    #_unaccessable = 0
+    _offline_hosts = []
+    _total = len(output)
     _summary = []
 
-
-    _sum_dict = {
-        'failed':0,
+    _report_dict = {
+        'command':None,
+        'error':0,
         'success':0,
-        'output sum':[] # md5, content, number, hosts
+        'success output sum':{}, # md5:{content:xx, number:xx, hosts:xx}#
+        'error output sum':{}
     }
+    #
+        #'md5': None,
     _output_dict = {
-        'md5': None,
         'content': None,
         'number': 0,
         'hosts': []
     }
 
-    # each result
-    for i in output:
+    # the result of a host
+    for host_index in output:
         # not None
-        if output[i]:
-            _out = output[i]
-            while len(_summary) < len(_out['stdin']):
-                _summary.append(_sum_dict)
-            _failed = 0
-            _success = 0
-            # check status of each cmd
-            for i in range(len(_out['stdin'])):
-                if _out['status'][i] == 0:
-                    _success +=1
-                else:
-                    _failed +=1
-        else:
-            _unaccessable +=1
+        if output[host_index]:
+            _out = output[host_index]
 
+            # check sum dict
+            # ['cmd1', 'cmd2']
+            # [_sum1, _sum2]
+            _sum = copy.deepcopy(_report_dict)
+            while len(_summary) < len(_out['stdin']):
+                _summary.append(_sum)
+
+            # add cmd info to sum seq
+            for i in range(len(_out['stdin'])):
+                # command text
+                _summary[i]['command'] = _out['stdin'][i]
+                # count sucess and error 
+                _item = copy.deepcopy(_output_dict)
+                if _out['status'][i] == 0:
+                    _summary[i]['success'] +=1
+                    # count success output content
+                    _content = _out['stdout'][i]
+                    _md5 = hashlib.md5(_content.encode('utf-8')).hexdigest()
+                    if _md5 in _summary[i]['success output sum'].keys():
+                        _summary[i]['success output sum'][_md5]['number'] +=1
+                        _summary[i]['success output sum'][_md5]['hosts'].append(_out['host'])
+                    else:
+                        _summary[i]['success output sum'][_md5] = _item
+                        _summary[i]['success output sum'][_md5]['content'] = _content
+                        _summary[i]['success output sum'][_md5]['number'] +=1
+                        _summary[i]['success output sum'][_md5]['hosts'].append(_out['host'])
+                else:
+                    _summary[i]['error'] +=1
+                    # count success output content
+                    _content = _out['stderr'][i]
+                    _md5 = hashlib.md5(_content.encode('utf-8')).hexdigest()
+                    if _md5 in _summary[i]['error output sum'].keys():
+                        _summary[i]['error output sum'][_md5]['number'] +=1
+                        _summary[i]['error output sum'][_md5]['hosts'].append(_out['host'])
+                    else:
+                        _summary[i]['error output sum'][_md5] = _item
+                        _summary[i]['error output sum'][_md5]['content'] = _content
+                        _summary[i]['error output sum'][_md5]['number'] +=1
+                        _summary[i]['error output sum'][_md5]['hosts'].append(_out['host'])
+
+        else:
+            #_unaccessable +=1
+            _offline_hosts.append(host_index)
+
+    print('\ntask summary:')
+    print('total hosts:',   _total)
+    print('offline hosts:', len(_offline_hosts))
+    print('unaccessable:',  _offline_hosts)
+    print('\noutput summary:')
     for i in range(len(_summary)):
-        print('\noutput summary:')
-        print('cmd:')
-        print('success:', _success)
-        print('failed:', _failed)
-        print('unaccessable:', _unaccessable)
+        _sum = _summary[i]
+        print('command:',   _sum['command'])
+        print('success:',   _sum['success'])
+        print('error:',     _sum['error'])
+        for m in _sum['success output sum']:
+            _cmd_sum = _sum['success output sum'][m]
+            print(_cmd_sum['number'], 'host', _cmd_sum['hosts'], '\ncmd successfully returned as:')
+            print(_cmd_sum['content'])
+        for m in _sum['error output sum']:
+            _cmd_sum = _sum['error output sum'][m]
+            print(_cmd_sum['number'], 'host', _cmd_sum['hosts'], '\ncmd with error returned as:')
+            print(_cmd_sum['content'])
 
 # a wharfage with a watchdog to keep a group of ssh connection alive, and keep their status info maintainable 
 # pass in server info
@@ -239,20 +288,52 @@ class ConnectionGroup:
         [ x.start() for x in  _threads ]
         [ x.join() for x in _threads ]
 
-        ## result summary
-        #if isinstance(cmd_list, str):
-        #    # fail hosts
-        #    self._output['connection failed'] = list(self._output.values()).count(None)
-        #    self._output['failed'] = 
-        #    # sucess hosts 
-        #    self._output['success'] = 
-        #    # every type of ouput text count
-        #    #
-        #    pass 
-        #elif isinstance(cmd_list, list):
-        #    pass
-
         return self._output
+
+    def put(self, local_source, remote_dest):
+        _threads = []
+        list(map(
+            lambda hostname: _threads.append(
+                threading.Thread(
+                    target=self._put_to_single_host,
+                    args=(hostname, local_source, remote_dest)
+                )
+            ),
+            self._connections
+        ))
+        [ x.start() for x in  _threads ]
+        [ x.join() for x in _threads ]
+
+    def _put_to_single_host(self, hostname, local_source, remote_dest):
+        _con_obj = self._connections[hostname]
+        try:
+            if _con_obj:
+                _con_obj.put(local_source, remote_dest)
+        except:
+            pass
+
+    def get(self, remote_source, local_dest):
+        _threads = []
+        list(map(
+            lambda hostname: _threads.append(
+                threading.Thread(
+                    target=self._get_from_single_host,
+                    args=(hostname, remote_source, local_dest)
+                )
+            ),
+            self._connections
+        ))
+        [ x.start() for x in  _threads ]
+        [ x.join() for x in _threads ]
+
+    def _get_from_single_host(self, hostname, remote_source, local_dest):
+        local_dest = (local_dest +'/' + hostname +'/').replace('//', '/')
+        _con_obj = self._connections[hostname]
+        try:
+            if _con_obj:
+                _con_obj.get(remote_source, local_dest)
+        except:
+            pass
 
     # if a group is alive or unvalid 
     def is_alive(self):
@@ -420,19 +501,20 @@ if __name__ == "__main__":
     #print(xsh._connections)
 
     # run a command
-    out0 = xsh.exec_command('lsblk')
+#ok    out0 = xsh.exec_command('lsblk')
     # summary for each single host
     # summary for each single cmd
-    for i in out0:
-        if out0[i]:
-            print_output(out0[i])
-        else:
-            print(i, out0[i])
+#    print_group_output(out0)
+
+    # a failed command
+#ok    out1 = xsh.exec_command('ls failtest')
+#    print_group_output(out1)
+
 #    # run a script
 #    xsh.exec_script('~/a.sh')
 #
-#    # distribute a file
-#    xsh.put('~/a.sh', '~/aa')
+    # distribute a file
+    xsh.put('~/a.sh', '~/aabb')
 #
 #    # distribute a dir
 #    xsh.put('~/abc', '~/abc')
@@ -473,8 +555,8 @@ if __name__ == "__main__":
 #    # get connections group health status
 #    xsh.health_info()
 #
-#    # close connections 
-#    xsh.close()
+    # close connections 
+    xsh.close()
 #
 #    # reconnect
 #    xsh.reconnect()
