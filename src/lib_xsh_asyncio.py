@@ -162,16 +162,16 @@ def print_group_output(output):
     print('\noutput summary:')
     for i in range(len(_summary)):
         _sum = _summary[i]
-        print('command:',   _sum['command'])
+        print('discription:',   _sum['command'])
         print('success:',   _sum['success'])
         print('error:',     _sum['error'])
         for m in _sum['success output sum']:
             _cmd_sum = _sum['success output sum'][m]
-            print(_cmd_sum['number'], 'host', _cmd_sum['hosts'], '\ncmd successfully returned as:')
+            print(_cmd_sum['number'], 'host', _cmd_sum['hosts'], '\ntask successfully returned as:')
             print(_cmd_sum['content'])
         for m in _sum['error output sum']:
             _cmd_sum = _sum['error output sum'][m]
-            print(_cmd_sum['number'], 'host', _cmd_sum['hosts'], '\ncmd with error returned as:')
+            print(_cmd_sum['number'], 'host', _cmd_sum['hosts'], '\ntask with error returned as:')
             print(_cmd_sum['content'])
 
 # a wharfage with a watchdog to keep a group of ssh connection alive, and keep their status info maintainable 
@@ -261,6 +261,7 @@ class ConnectionGroup:
             try:
                 _out = _con_obj.run(cmd_list)
             except:
+                #_out = False 
                 _out = None 
         else:
             _out = None
@@ -291,6 +292,7 @@ class ConnectionGroup:
         return self._output
 
     def put(self, local_source, remote_dest):
+        self._output = {}
         _threads = []
         list(map(
             lambda hostname: _threads.append(
@@ -304,15 +306,22 @@ class ConnectionGroup:
         [ x.start() for x in  _threads ]
         [ x.join() for x in _threads ]
 
+        return self._output
+
     def _put_to_single_host(self, hostname, local_source, remote_dest):
         _con_obj = self._connections[hostname]
-        try:
-            if _con_obj:
-                _con_obj.put(local_source, remote_dest)
-        except:
-            pass
+        if _con_obj:
+            try:
+                _out = _con_obj.put(local_source, remote_dest)
+                self._output[hostname] = _out
+            except:
+                #self._output[hostname] = False
+                self._output[hostname] = None
+        else:
+            self._output[hostname] = None
 
     def get(self, remote_source, local_dest):
+        self._output = {}
         _threads = []
         list(map(
             lambda hostname: _threads.append(
@@ -326,14 +335,19 @@ class ConnectionGroup:
         [ x.start() for x in  _threads ]
         [ x.join() for x in _threads ]
 
+        return self._output
+
     def _get_from_single_host(self, hostname, remote_source, local_dest):
         local_dest = (local_dest +'/' + hostname +'/').replace('//', '/')
         _con_obj = self._connections[hostname]
         try:
             if _con_obj:
-                _con_obj.get(remote_source, local_dest)
+                _out = _con_obj.get(remote_source, local_dest)
+                self._output[hostname] = _out
+            else:
+                self._output[hostname] = None
         except:
-            pass
+            self._output[hostname] = False
 
     # if a group is alive or unvalid 
     def is_alive(self):
@@ -507,14 +521,15 @@ if __name__ == "__main__":
 #    print_group_output(out0)
 
     # a failed command
-#ok    out1 = xsh.exec_command('ls failtest')
-#    print_group_output(out1)
+    out1 = xsh.exec_command('ls failtest')
+    print_group_output(out1)
 
 #    # run a script
 #    xsh.exec_script('~/a.sh')
 #
     # distribute a file
-    xsh.put('~/a.sh', '~/aabb')
+    out2 = xsh.put('~/a.sh', '~/aabb')
+    print_group_output(out2)
 #
 #    # distribute a dir
 #    xsh.put('~/abc', '~/abc')
