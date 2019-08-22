@@ -45,7 +45,7 @@ def localpath_expansion(localpath):
     localpath = os.path.abspath(localpath)
 
     # 注意,输出结果结尾无'/'后缀
-    print("local abspath:", localpath)
+    #print("local abspath:", localpath)
     return localpath
 
 class SSHConnection(object):
@@ -133,7 +133,7 @@ class SSHConnection(object):
             if _out['status'][0] == 0:
                 remotepath  = _out['stdout'][0].strip() + '/' + remotepath.split('/')[-1]
 
-        print("remote abspath:", remotepath)
+        #print("remote abspath:", remotepath)
         return {'abspath':remotepath, 'type':_target_type}
 
     def remote_target_type(self, remotepath):
@@ -146,9 +146,43 @@ class SSHConnection(object):
         else:
             raise EnvironmentError("cannot stat target type: %s" % remotepath)
 
+    def reset_cmd_output(self):
+        # clean output
+        self.output = {}
+        self.output['pid']      = []
+        self.output['stdin']    = []
+        self.output['stdout']   = []
+        self.output['stderr']   = []
+        self.output['status']   = []
+        self.output['date']     = []
+        self.output['host']     = self._host
+
+    def reset_transfer_output(self):
+        # clean output
+        self.transfer_output = {}
+        self.transfer_output['pid']      = []
+        self.transfer_output['stdin']    = []
+        self.transfer_output['stdout']   = []
+        self.transfer_output['stderr']   = []
+        self.transfer_output['status']   = []
+        self.transfer_output['date']     = []
+        self.transfer_output['host']     = self._host
+
+    def generate_partial_output_of_file_transfer(self):
+        self.transfer_output['pid'].append(os.getpid())
+        #self.transfer_output['stdin'].append('sftp: ' +remote_source +' to ' +local_dest) 
+        self.transfer_output['stdout'].append('')
+        self.transfer_output['stderr'].append('')
+        #self.transfer_output['status'].append(0)
+        self.transfer_output['date'].append(datetime.datetime.now())
+
+
     #下载 - 递归同步
     def get(self, remote_source, local_dest):
-        print('get:', remote_source,' to: ', local_dest)
+        #print(self._host, 'get:', remote_source,' to: ', local_dest)
+
+        self.reset_transfer_output()
+
         # check sftp connection
         if not self._sftp:
             self._sftp = paramiko.SFTPClient.from_transport(self._transport)
@@ -185,6 +219,9 @@ class SSHConnection(object):
                     _dest + '/'
                 )
 
+        # output 
+        return self.transfer_output
+
     def get_file(self, remote_source, local_dest):
         # file a/x b/x
         # check the directory of dest file
@@ -195,6 +232,10 @@ class SSHConnection(object):
             os.makedirs(_dest_dir)
         # get the file
         self._sftp.get(remote_source, local_dest)
+
+        self.generate_partial_output_of_file_transfer()
+        self.transfer_output['stdin'].append('sftp get: ' +remote_source +' to ' +local_dest) 
+        self.transfer_output['status'].append(0)
 
     def get_dir(self, remote_source, local_dest):
         # a b : a/ b : a/ b/
@@ -212,9 +253,16 @@ class SSHConnection(object):
             # empty folder 
             os.makedirs(local_dest)
 
+        self.generate_partial_output_of_file_transfer()
+        self.transfer_output['stdin'].append('sftp get: ' +remote_source +' to ' +local_dest) 
+        self.transfer_output['status'].append(0)
+
     #上传 - 递归同步
     def put(self, local_source, remote_dest):
-        print('put:', local_source,' to: ', remote_dest)
+        #print(self._host, 'put:', local_source,' to: ', remote_dest)
+
+        self.reset_transfer_output()
+
         if not self._sftp:
             self._sftp = paramiko.SFTPClient.from_transport(self._transport)
 
@@ -247,6 +295,10 @@ class SSHConnection(object):
                     _dest['abspath'] + '/'
                 )
 
+        # output 
+        return self.transfer_output
+
+
     def put_file(self, local_source, remote_dest):
         # file a/x b/x
         # check dest file dir
@@ -257,6 +309,10 @@ class SSHConnection(object):
             self.mkdir_p(_dest_dir)
 
         self._sftp.put(local_source, remote_dest, confirm=True)
+
+        self.generate_partial_output_of_file_transfer()
+        self.transfer_output['stdin'].append('sftp put: ' +local_source +' to ' +remote_dest) 
+        self.transfer_output['status'].append(0)
 
     def put_dir(self, local_source, remote_dest):
         self.mkdir_p(remote_dest)
@@ -273,6 +329,9 @@ class SSHConnection(object):
         else:
             raise FileExistsError("%s is not a directory!" % local_source)
 
+        self.transfer_output['stdin'].append('sftp put: ' +local_source +' to ' +remote_dest) 
+        self.transfer_output['status'].append(0)
+
     # 创建远程目录
     def mkdir_p(self, _dir):
         _out = self.exec_command('test -d %s' % _dir)
@@ -288,15 +347,16 @@ class SSHConnection(object):
     # input str / list of str 
     # output tuple of hostname, stdout  and err  
     def exec_command(self, command):
-        # clean output
-        self.output = {}
-        self.output['pid']      = []
-        self.output['stdin']    = []
-        self.output['stdout']   = []
-        self.output['stderr']   = []
-        self.output['status']   = []
-        self.output['date']     = []
-        self.output['host']     = self._host
+        ## clean output
+        #self.output = {}
+        #self.output['pid']      = []
+        #self.output['stdin']    = []
+        #self.output['stdout']   = []
+        #self.output['stderr']   = []
+        #self.output['status']   = []
+        #self.output['date']     = []
+        #self.output['host']     = self._host
+        self.reset_cmd_output()
         # get connection 
         if self._client is None:
             self._client = paramiko.SSHClient()
@@ -433,7 +493,8 @@ if __name__ == "__main__":
     #ok    con.put('~/repository/Cluster_jobs_TUI/log', '~/log')
 
         # get file 
-    #ok    con.get('~/aa', '~/abc')
+        out01 = con.get('~/aa', '~/abc')
+        print_output(out01)
 
         # get dir 
     #ok    con.get('~/log', '~/logsub/')
