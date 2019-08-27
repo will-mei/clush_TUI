@@ -22,10 +22,13 @@ warnings.filterwarnings('ignore')
 
 import string,random
 
+import copy
+from collections import Iterable
+
 def random_string(n):
     return ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(n))
 
-def print_output(output):
+def print_host_output(output):
     print('\noutput summary:')
     print("cmd list:",          output['stdin'])
     print("cmd pid:",           output['pid'])
@@ -37,17 +40,6 @@ def print_output(output):
     print("cmd return time:",   output['date'])
     print("cmd host:",          output['host'])
 
-def localpath_expansion(localpath):
-    # 家目录替换
-    if localpath[:2] == '~/':
-        localpath = os.environ['HOME'] + localpath[1:]
-    # 相对路劲转换
-    localpath = os.path.abspath(localpath)
-
-    # 注意,输出结果结尾无'/'后缀
-    #print("local abspath:", localpath)
-    return localpath
-
 class SSHConnection(object):
     def __init__(self, ssh_info):
         self._ssh_info      = ssh_info
@@ -57,6 +49,16 @@ class SSHConnection(object):
         self._sftp          = None
         self._client        = None
         self._connect()  # 建立连接
+
+        # clean output
+        self._output_dict = {}
+        self._output_dict['pid']      = []
+        self._output_dict['stdin']    = []
+        self._output_dict['stdout']   = []
+        self._output_dict['stderr']   = []
+        self._output_dict['status']   = []
+        self._output_dict['date']     = []
+        self._output_dict['host']     = self._host
 
     def update_ssh_info(self, ssh_info):
         self.fqdn           = ssh_info['host'][0]
@@ -119,54 +121,93 @@ class SSHConnection(object):
     def update_connection(self):
         self._connect(mode='update')
 
+    def localpath_expansion(self, localpath):
+        # 家目录替换
+        if localpath[:2] == '~/':
+            _localpath = os.environ['HOME'] + localpath[1:]
+        else:
+            _localpath = localpath
+        # 绝对路劲转换
+        _localpath = os.path.abspath(_localpath)
+
+        # 注意,输出结果结尾无'/'后缀
+        if localpath[-1] == '/':
+            _localpath = _localpath + '/'
+
+        print("local", localpath, "abspath:", _localpath)
+        return _localpath
+
     def remotepath_expansion(self, remotepath):
-        # dir
         _target_type = self.remote_target_type(remotepath)
+        # dir
         if _target_type == 'directory':
             _out = self.exec_command('echo $(cd %s && pwd)' % remotepath)
-            #print_output(_out)
+            #print_host_output(_out)
             if _out['status'][0] == 0:
-                remotepath  = _out['stdout'][0].strip()
-        else:
-            # file
+                _remotepath  = _out['stdout'][0].strip()
+        # file
+        elif _target_type == 'file':
+            # class paramiko.sftp_si.SFTPServerInterface 
+            #_remotepath = self._sftp.canonicalize(remotepath)
             _out = self.exec_command('echo $(cd $(dirname %s) && pwd)' % remotepath)
             if _out['status'][0] == 0:
-                remotepath  = _out['stdout'][0].strip() + '/' + remotepath.split('/')[-1]
+                _remotepath  = _out['stdout'][0].strip() + '/' + os.path.basename(remotepath)
+        elif remotepath[:2] == '~/':
+            _out = self.exec_command('echo $HOME')
+            if _out['status'][0] == 0:
+                _remotepath = _out['stdout'][0].strip() + remotepath[1:]
+        else:
+            _remotepath = remotepath
 
-        #print("remote abspath:", remotepath)
-        return {'abspath':remotepath, 'type':_target_type}
+        if remotepath[-1] == '/':
+            _remotepath = (_remotepath + '/').replace('//', '/')
+
+        print("remote", remotepath, "abspath:", _remotepath)
+        return _remotepath
 
     def remote_target_type(self, remotepath):
+        # no ready method to use 
         _out = self.exec_command('file -b %s' % remotepath)
-        if _out['status'][0] == 0:
-            if _out['stdout'][0].strip() == 'directory':
-                return 'directory'
-            else:
-                return 'file'
-        else:
-            raise EnvironmentError("cannot stat target type: %s" % remotepath)
+        #if _out['status'][0] == 0:
+            # this doesn't work, it always return success
+        #else:
+        #    raise EnvironmentError("cannot stat target type: %s" % remotepath)
 
-    def reset_cmd_output(self):
+        # check the output text instead
+        if 'No such file or directory' in _out['stdout'][0]:
+            #raise FileNotFoundError(remotepath + _out['stdout'][0])
+            return 'other'
+        elif 'Permission denied' in _out['stdout'][0]:
+            #raise PermissionError(remotepath + _out['stdout'][0])
+            return 'other'
+        elif _out['stdout'][0].strip() == 'directory':
+            return 'directory'
+        else:
+            return 'file'
+
+    def walk_local_dir_content(self, dirname):
+        _result = []
+        for d in os.walk(dirname):
+            # dir
+            if d[0] != dirname:
+                _result.append(d[0])
+            # file
+            if d[2]:
+                for f in d[2]:
+                    _result.append(
+                        (d[0] + '/' + f).replace('//', '/')
+                    )
+        return _result
+
+    def reset_command_output(self):
         # clean output
-        self.output = {}
-        self.output['pid']      = []
-        self.output['stdin']    = []
-        self.output['stdout']   = []
-        self.output['stderr']   = []
-        self.output['status']   = []
-        self.output['date']     = []
-        self.output['host']     = self._host
+        self.command_output = copy.deepcopy(self._output_dict)
+
+    def reset_script_output(self):
+        self.script_output = copy.deepcopy(self._output_dict)
 
     def reset_transfer_output(self):
-        # clean output
-        self.transfer_output = {}
-        self.transfer_output['pid']      = []
-        self.transfer_output['stdin']    = []
-        self.transfer_output['stdout']   = []
-        self.transfer_output['stderr']   = []
-        self.transfer_output['status']   = []
-        self.transfer_output['date']     = []
-        self.transfer_output['host']     = self._host
+        self.transfer_output = copy.deepcopy(self._output_dict)
 
     def generate_partial_output_of_file_transfer(self):
         self.transfer_output['pid'].append(os.getpid())
@@ -176,48 +217,60 @@ class SSHConnection(object):
         #self.transfer_output['status'].append(0)
         self.transfer_output['date'].append(datetime.datetime.now())
 
-
     #下载 - 递归同步
-    def get(self, remote_source, local_dest):
-        #print(self._host, 'get:', remote_source,' to: ', local_dest)
+    def get(self, remote_source, local_dest, reset_output=True):
+        print('\n')
+        print('get:', remote_source,' to: ', local_dest)
 
-        self.reset_transfer_output()
+        if reset_output:
+            self.reset_transfer_output()
 
         # check sftp connection
         if not self._sftp:
             self._sftp = paramiko.SFTPClient.from_transport(self._transport)
 
-        # abspath converting
+        # source existence and abspath converting
         _source = self.remotepath_expansion(remote_source)
-        _dest   = localpath_expansion(local_dest)
 
+        # check the existence of dest file directory
+        _dest_dir = os.path.dirname(local_dest)
+        if not os.path.exists(_dest_dir):
+            os.makedirs(_dest_dir)
+        _dest = self.localpath_expansion(local_dest)
+        _dest   = (self.localpath_expansion(_dest_dir) +'/' +os.path.basename(local_dest)).replace('//', '/')
+        print(self._host, 'put:', _source, 'to:', _dest)
+
+        # source type 
         # file
-        if _source['type'] == 'file':
-            self.get_file(_source['abspath'], _dest)
+        if self.remote_target_type(_source) == 'file':
+            if os.path.exists(_dest) and os.path.isdir(_dest):
+                _dest = (_dest + '/' + os.path.basename(_source)).replace('//', '/')
+            self.get_file(_source, _dest)
         # dir
-        elif _source['type'] == 'directory':
-            # get dir under local dir as a sub directory 
+        elif self.remote_target_type(_source) == 'directory':
             if local_dest[-1] == '/':
                 if remote_source[-1] == '/':
                     # a/ b/
                     self.get_dir(
-                        _source['abspath'] + '/',
-                        _dest + '/'
+                        _source,
+                        _dest
                     )
+            # get as sub directory 
                 else:
-                    # a b/ : a/ b/a/
-                    _dest = _dest + '/' + _source['abspath'].split('/')[-1]
+                    # a b/ --> a/ b/a/
+                    _dest = _dest + os.path.basename(_source) +'/'
                     self.get_dir(
-                        _source['abspath'] + '/',
-                        _dest + '/'
+                        _source + '/',
+                        _dest
                     )
             else:
-                # dir content
-                # a b : a/ b : a/ b/
+                # a b == a/ b --> a/ b/
                 self.get_dir(
-                    _source['abspath'] + '/',
+                    (_source + '/').replace('//', '/'),
                     _dest + '/'
                 )
+        else:
+            pass
 
         # output 
         return self.transfer_output
@@ -246,7 +299,7 @@ class SSHConnection(object):
             remote_source = (remote_source + '/').replace('//', '/')
             local_dest = (local_dest + '/').replace('//', '/')
             list(map(
-                lambda x : self.get(remote_source + x, local_dest + x),
+                lambda x : self.get(remote_source + x, local_dest + x, reset_output=False),
                 content_list
             ))
         else:
@@ -258,51 +311,77 @@ class SSHConnection(object):
         self.transfer_output['status'].append(0)
 
     #上传 - 递归同步
-    def put(self, local_source, remote_dest):
-        #print(self._host, 'put:', local_source,' to: ', remote_dest)
+    def put(self, local_source, remote_dest, reset_output=True):
+        print('\n')
+        print('put:', local_source,' to: ', remote_dest)
 
-        self.reset_transfer_output()
+        if reset_output:
+            self.reset_transfer_output()
 
         if not self._sftp:
             self._sftp = paramiko.SFTPClient.from_transport(self._transport)
 
-        _source = localpath_expansion(local_source)
-        _dest   = self.remotepath_expansion(remote_dest)
+        # source existence and abspath converting
+        _source = self.localpath_expansion(local_source)
+        if not os.path.exists(_source):
+            raise FileExistsError(_source)
 
+        # check the existence of dest file directory
+        _dest_dir = os.path.dirname(remote_dest)
+        try:
+            # no ready-made mathod for this, use listdir to confirm it
+            self._sftp.listdir(_dest_dir)
+        except FileNotFoundError:
+            self.mkdir_p(_dest_dir)
+        _dest = self.remotepath_expansion(remote_dest)
+#        _dest   = (self.remotepath_expansion(_dest_dir) +'/' +os.path.basename(remote_dest)).replace('//', '/')
+        print(self._host, 'put:', _source, 'to:', _dest)
+
+        # source type
         # file
         if os.path.isfile(_source):
-            self.put_file(_source, _dest['abspath'])
+            if remote_dest[-1] == '/':
+                _dest = (_dest + '/' + os.path.basename(_source)).replace('//', '/')
+            else:
+                _type = self.remote_target_type(_dest)
+                if _type == 'directory':
+                    _dest = (_dest + '/' + os.path.basename(_source)).replace('//', '/')
+
+            self.put_file(_source, _dest)
         # dir
-        else:
+        elif os.path.isdir(_source):
             if remote_dest[-1] == '/':
                 if local_source[-1] == '/':
                     # a/ b/
                     self.put_dir(
-                        _source + '/',
-                        _dest['abspath'] + '/'
+                        _source,
+                        _dest
                     )
+            # put as sub directory 
                 else:
-                    # a b/ : a/ b/a/
-                    _dest = _dest['abspath'] + '/' + _source.split('/')[-1]
+                    # a b/ --> a/ b/a/
+                    _dest = _dest + os.path.basename(_source) + '/'
                     self.put_dir(
                         _source + '/',
-                        _dest + '/'
+                        _dest
                     )
             else:
-                # a/ b : a b : a/ b/
+                # a/ b == a b --> a/ b/
                 self.put_dir(
-                    _source + '/',
-                    _dest['abspath'] + '/'
+                    (_source + '/').replace('//', '/'),
+                    _dest + '/'
                 )
+        else:
+            pass
 
         # output 
         return self.transfer_output
-
 
     def put_file(self, local_source, remote_dest):
         # file a/x b/x
         # check dest file dir
         _dest_dir = os.path.dirname(remote_dest)
+        print('file:', local_source, remote_dest)
         try:
             self._sftp.listdir(_dest_dir)
         except FileNotFoundError:
@@ -313,24 +392,31 @@ class SSHConnection(object):
         self.generate_partial_output_of_file_transfer()
         self.transfer_output['stdin'].append('sftp put: ' +local_source +' to ' +remote_dest) 
         self.transfer_output['status'].append(0)
+        print(self.transfer_output)
 
     def put_dir(self, local_source, remote_dest):
+        print('dir:', local_source, remote_dest)
         self.mkdir_p(remote_dest)
 
-        if lib_cli_bash.cmd_ok('ls %s/' % local_source):
-            content_list = list(filter(
-                lambda x : len(x) > 0,
-                lib_cli_bash.ez_cmd('find ' +local_source +'*').split('\n')
-            ))
-            list(map(
-                lambda x : self.put(x , remote_dest + x.lstrip(local_source)),
-                content_list
-            ))
+        if os.path.exists(local_source):
+            if os.path.isdir(local_source):
+                content_list = self.walk_local_dir_content(local_source)
+                if content_list:
+                    print(content_list)
+                    for x in content_list:
+                        print(x, remote_dest + x[len(local_source):])
+                    list(map(
+                        lambda sub_target : self.put(sub_target , remote_dest + sub_target[len(local_source):], reset_output=False),
+                        content_list
+                    ))
+            else:
+                raise TypeError("%s is not a directory!" % local_source)
         else:
-            raise FileExistsError("%s is not a directory!" % local_source)
+            raise FileNotFoundError("%s not found." % local_source)
 
         self.transfer_output['stdin'].append('sftp put: ' +local_source +' to ' +remote_dest) 
         self.transfer_output['status'].append(0)
+        print(self.transfer_output)
 
     # 创建远程目录
     def mkdir_p(self, _dir):
@@ -348,31 +434,24 @@ class SSHConnection(object):
     # output tuple of hostname, stdout  and err  
     def exec_command(self, command):
         ## clean output
-        #self.output = {}
-        #self.output['pid']      = []
-        #self.output['stdin']    = []
-        #self.output['stdout']   = []
-        #self.output['stderr']   = []
-        #self.output['status']   = []
-        #self.output['date']     = []
-        #self.output['host']     = self._host
-        self.reset_cmd_output()
+        self.reset_command_output()
         # get connection 
         if self._client is None:
             self._client = paramiko.SSHClient()
             self._client._transport = self._transport
         # check cmd
         if isinstance(command, str):
-            self.single_cmd(command)
-        elif isinstance(command, list) and False not in map(lambda x : isinstance(x, str), command):
-            list(map(self.single_cmd, command))
+            self.single_exec(command)
+        # not str but Iterable
+        elif isinstance(command, Iterable) and False not in map(lambda x : isinstance(x, str), command):
+            list(map(self.single_exec, command))
         # the log part
         # temporarily skiped
 
         # output 
-        return self.output
+        return self.command_output
 
-    def single_cmd(self, cmd, stdin=None):
+    def single_exec(self, cmd, stdin=None):
         #stdin, stdout, stderr = self._client.exec_command(cmd)
 
         #_command_prefix = 'echo "$$" ; exec '
@@ -404,30 +483,52 @@ class SSHConnection(object):
         data    = out[:len(pid) *-1]
 
         # collect info 
-        self.output['pid'].append(pid)
-        self.output['stdin'].append(cmd)
-        self.output['stdout'].append(data)
-        self.output['stderr'].append(err)
-        self.output['status'].append(stdout.channel.recv_exit_status())
-        #self.output['date'].append(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
-        self.output['date'].append(datetime.datetime.now())
+        self.command_output['pid'].append(pid)
+        self.command_output['stdin'].append(cmd)
+        self.command_output['stdout'].append(data)
+        self.command_output['stderr'].append(err)
+        self.command_output['status'].append(stdout.channel.recv_exit_status())
+        #self.command_output['date'].append(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+        self.command_output['date'].append(datetime.datetime.now())
 
     def exec_script(self, script_file):
-        return self.copy_run(script_file)
+        print('exec script:', script_file)
+        self.reset_script_output()
+        if isinstance(script_file, str):
+            self.single_copy_run(script_file)
+        # not str but Iterable
+        elif isinstance(script_file, Iterable) and False not in map(lambda x : isinstance(x, str), script_file):
+            list(map(self.single_copy_run, script_file))
 
-    def copy_run(self, script_file):
+        return self.script_output
+
+    def single_copy_run(self, script_file, script_exec_dir='/tmp/'):
         # generate a tmp file name 
-        _tmp_file_name = '/tmp/'+ random_string(8) + os.path.basename(script_file) 
+        script_exec_dir = (script_exec_dir +'/').replace('//', '/')
+        _tmp_file_name = script_exec_dir +random_string(8) +os.path.basename(script_file) 
+
         # copy file 
         self.put(script_file, _tmp_file_name)
+
         # run script 
         self.exec_command('chmod +x ' + _tmp_file_name)
         _script_output = self.exec_command(_tmp_file_name)
-        _script_output['stdin'] = script_file
+        #print(_script_output)
+
         # cleanning
         self.exec_command('rm -f ' + _tmp_file_name)
-        # return 
-        return _script_output
+
+        # collect info 
+        #print(self.script_output)
+        for k in _script_output:
+            if k == 'host':
+                continue
+            elif k == 'stdin':
+                #print(self.script_output[k])
+                self.script_output[k].append(script_file)
+            else:
+                #print(self.script_output[k])
+                self.script_output[k].append(_script_output[k][0])
 
     def is_alive(self):
         try:
@@ -471,8 +572,6 @@ if __name__ == "__main__":
          'timeout':     15,
          'hostkey':     '~/.ssh/id_rsa'
         }
-    # a command list
-    c = ['lsblk', 'blkid', 'ps aux|grep grep']
 
     # output
     # 0: cmd / stdin
@@ -493,34 +592,35 @@ if __name__ == "__main__":
     #ok    con.put('~/repository/Cluster_jobs_TUI/log', '~/log')
 
         # get file 
-        out01 = con.get('~/aa', '~/abc')
-        print_output(out01)
+    #ok    out01 = con.get('~/aa', '~/abc')
+    #    print_host_output(out01)
 
         # get dir 
     #ok    con.get('~/log', '~/logsub/')
 
-        # cmd list 
-    #ok    out0 = con.exec_command(c)
-    #    print_output(out0)
+        # cmd list squnce 
+    #ok    c = ['lsblk', 'blkid', 'ps aux|grep grep']
+    #    out0 = con.exec_command(c)
+    #    print_host_output(out0)
 
         # cmd in background
         # if you want a command run in background, please redirect the output!!
         # otherwise, paramiko will keep waiting till the subprocess ends itself!!
         # cause the subprocess shares the same output pipe with the current bash which was called by paramiko
     #ok    out1 = con.exec_command('~/a.sh &>/dev/null &')
-    #    print_output(out1)
+    #    print_host_output(out1)
 
         # single cmd 
-    #ok    out2 = con.exec_command('echo $HOSTNAME')
-    #    print_output(out2)
+    #    out2 = con.exec_command('echo $HOSTNAME')
+    #    print_host_output(out2)
 
         # cmd with error
-        out3 = con.exec_command('ls notexistfile')
-        print_output(out3)
+    #ok    out3 = con.exec_command('ls notexistfile')
+    #    print_host_output(out3)
 
         # run a script 
-    #ok    sout = con.exec_script('~/a.sh')
-    #    print_output(sout)
+        sout = con.exec_script('~/a.sh')
+        print_host_output(sout)
 
     # try reconnect 
 #ok    con.reconnect()

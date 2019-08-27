@@ -39,7 +39,7 @@ import copy
 try:
     from src.lib_ssh_paramiko import SSHConnection
 except:
-    from lib_ssh_paramiko import SSHConnection,print_output
+    from lib_ssh_paramiko import SSHConnection
 
 #from peewee import *
 #import datetime
@@ -84,21 +84,23 @@ def valid_ip(ip):
             ) == 4
 
 # give the output summary of a single command
-def print_group_output(output):
+def get_group_output_report(output):
+    _output_report = {}
+    _total_hosts = len(output)
     #_unaccessable = 0
-    _offline_hosts = []
-    _total = len(output)
-    _summary = []
+    _offline_hosts_list = []
 
-    _report_dict = {
+    _summary = []
+    # ['command1', 'command2']
+    # [cmd_report1, cmd_report2]
+    _cmd_report_dict = {
         'command':None,
         'error':0,
         'success':0,
         'success output sum':{}, # md5:{content:xx, number:xx, hosts:xx}#
         'error output sum':{}
     }
-    #
-        #'md5': None,
+    #'md5': _output_dict
     _output_dict = {
         'content': None,
         'number': 0,
@@ -112,9 +114,7 @@ def print_group_output(output):
             _out = output[host_index]
 
             # check sum dict
-            # ['cmd1', 'cmd2']
-            # [_sum1, _sum2]
-            _sum = copy.deepcopy(_report_dict)
+            _sum = copy.deepcopy(_cmd_report_dict)
             while len(_summary) < len(_out['stdin']):
                 _summary.append(_sum)
 
@@ -124,9 +124,12 @@ def print_group_output(output):
                 _summary[i]['command'] = _out['stdin'][i]
                 # count sucess and error 
                 _item = copy.deepcopy(_output_dict)
+
                 if _out['status'][i] == 0:
                     _summary[i]['success'] +=1
                     # count success output content
+                    if not _out['stdout']:
+                        continue
                     _content = _out['stdout'][i]
                     _md5 = hashlib.md5(_content.encode('utf-8')).hexdigest()
                     if _md5 in _summary[i]['success output sum'].keys():
@@ -140,6 +143,8 @@ def print_group_output(output):
                 else:
                     _summary[i]['error'] +=1
                     # count success output content
+                    if not _out['stderr']:
+                        continue
                     _content = _out['stderr'][i]
                     _md5 = hashlib.md5(_content.encode('utf-8')).hexdigest()
                     if _md5 in _summary[i]['error output sum'].keys():
@@ -153,18 +158,30 @@ def print_group_output(output):
 
         else:
             #_unaccessable +=1
-            _offline_hosts.append(host_index)
+            _offline_hosts_list.append(host_index)
 
+    _output_report['total hosts'] = _total_hosts
+    _output_report['unaccessable'] = _offline_hosts_list
+    _output_report['output summary'] = _summary
+
+    return _output_report
+
+def print_group_output_report(_output_report):
     print('\ntask summary:')
-    print('total hosts:',   _total)
-    print('offline hosts:', len(_offline_hosts))
-    print('unaccessable:',  _offline_hosts)
-    print('\noutput summary:')
+    _total_hosts        = _output_report['total hosts']
+    _offline_hosts_list = _output_report['unaccessable']
+    _summary            = _output_report['output summary']
+
+    print('total hosts:',   _total_hosts)
+    print('offline hosts:', len(_offline_hosts_list))
+    print('unaccessable:',  _offline_hosts_list)
+
+    print('\nsubtask output summary:')
     for i in range(len(_summary)):
         _sum = _summary[i]
         print('discription:',   _sum['command'])
-        print('success:',   _sum['success'])
-        print('error:',     _sum['error'])
+        print('success:',       _sum['success'])
+        print('error:',         _sum['error'])
         for m in _sum['success output sum']:
             _cmd_sum = _sum['success output sum'][m]
             print(_cmd_sum['number'], 'host', _cmd_sum['hosts'], '\ntask successfully returned as:')
@@ -173,6 +190,11 @@ def print_group_output(output):
             _cmd_sum = _sum['error output sum'][m]
             print(_cmd_sum['number'], 'host', _cmd_sum['hosts'], '\ntask with error returned as:')
             print(_cmd_sum['content'])
+
+def print_group_output(output):
+    print_group_output_report(
+        get_group_output_report(output)
+    )
 
 # a wharfage with a watchdog to keep a group of ssh connection alive, and keep their status info maintainable 
 # pass in server info
@@ -255,33 +277,39 @@ class ConnectionGroup:
         # update grp_info
         self._manage_connections('update')
 
-    def _run_on_single_host(self, hostname, cmd_list):
-        _con_obj = self._connections[hostname]
-        if _con_obj :
-            try:
-                _out = _con_obj.run(cmd_list)
-            except:
-                #_out = False 
-                _out = None 
-        else:
-            _out = None
-        self._output[hostname] = _out
-
-    # run command of command list
+    # run command or command list
     def run(self, command):
-        self.exec_command(command)
+        return self.exec_command(command)
 
-    # run command on all host
-    def exec_command(self, cmd_list):
-        # 
+    def exec_command(self, command):
+        return self.group_exec(command, task_type='exec_command')
+
+    def exec_script(self, script_file):
+        return self.group_exec(script_file, task_type='exec_script')
+
+    def put(self, local_source, remote_dest):
+        return self.group_exec(local_source, remote_dest, task_type='put')
+
+    def get(self, remote_source, local_dest):
+        return self.group_exec(remote_source, local_dest, task_type='get')
+
+    def group_exec(self, *args, task_type='command'):
+        if task_type == 'exec_command':
+            task_function = self._run_command_on_single_host
+        elif task_type == 'exec_script':
+            task_function = self._run_script_on_single_host
+        elif task_type == 'put':
+            task_function = self._put_to_single_host
+        elif task_type == 'get':
+            task_function = self._get_from_single_host
+
         self._output = {}
-
         _threads = []
         list(map(
                 lambda hostname: _threads.append(
                     threading.Thread(
-                        target=self._run_on_single_host,
-                        args=(hostname, cmd_list)
+                        target=task_function,
+                        args=(hostname, *args)
                     )
                 ),
                 self._connections
@@ -291,63 +319,56 @@ class ConnectionGroup:
 
         return self._output
 
-    def put(self, local_source, remote_dest):
-        self._output = {}
-        _threads = []
-        list(map(
-            lambda hostname: _threads.append(
-                threading.Thread(
-                    target=self._put_to_single_host,
-                    args=(hostname, local_source, remote_dest)
-                )
-            ),
-            self._connections
-        ))
-        [ x.start() for x in  _threads ]
-        [ x.join() for x in _threads ]
+    def _run_command_on_single_host(self, hostname, cmd_list):
+        _con_obj = self._connections[hostname]
+        if _con_obj :
+            try:
+                _out = _con_obj.exec_command(cmd_list)
+            except:
+                #_out = False 
+                _out = None 
+        else:
+            _out = None
+        self._output[hostname] = _out
 
-        return self._output
+    def _run_script_on_single_host(self, hostname, script_file):
+        _con_obj = self._connections[hostname]
+        if _con_obj :
+            try:
+                _out = _con_obj.exec_script(script_file)
+            except:
+                #_out = False
+                _out = None 
+        else:
+            _out = None
+        self._output[hostname] = _out
 
     def _put_to_single_host(self, hostname, local_source, remote_dest):
         _con_obj = self._connections[hostname]
         if _con_obj:
-            try:
-                _out = _con_obj.put(local_source, remote_dest)
-                self._output[hostname] = _out
-            except:
-                #self._output[hostname] = False
-                self._output[hostname] = None
+            _out = _con_obj.put(local_source, remote_dest)
+            self._output[hostname] = _out
+            #try:
+            #    _out = _con_obj.put(local_source, remote_dest)
+            #    self._output[hostname] = _out
+            #except:
+            #    #self._output[hostname] = False
+            #    self._output[hostname] = None
         else:
             self._output[hostname] = None
 
-    def get(self, remote_source, local_dest):
-        self._output = {}
-        _threads = []
-        list(map(
-            lambda hostname: _threads.append(
-                threading.Thread(
-                    target=self._get_from_single_host,
-                    args=(hostname, remote_source, local_dest)
-                )
-            ),
-            self._connections
-        ))
-        [ x.start() for x in  _threads ]
-        [ x.join() for x in _threads ]
-
-        return self._output
-
     def _get_from_single_host(self, hostname, remote_source, local_dest):
+        # different host different target directory
         local_dest = (local_dest +'/' + hostname +'/').replace('//', '/')
         _con_obj = self._connections[hostname]
-        try:
-            if _con_obj:
+        if _con_obj:
+            try:
                 _out = _con_obj.get(remote_source, local_dest)
                 self._output[hostname] = _out
-            else:
+            except:
                 self._output[hostname] = None
-        except:
-            self._output[hostname] = False
+        else:
+            self._output[hostname] = None
 
     # if a group is alive or unvalid 
     def is_alive(self):
@@ -402,87 +423,6 @@ class ConnectionGroup:
         )))
         #return str(self._connections)
 
-# communicate wiht other app 
-# here defines what you can do to a group 
-class ClusterTerminal(api_server):
-
-    def create(self):
-        self._groups  = {}
-
-    def parse_call(self, _data):
-        if _data['tag'] == 'msg':
-            self.parse_msg(_data['data'])
-        else:
-            self.perform_task(_data)
-
-    def perform_task(self, _data):
-        print('call with tag:', _data['tag'])
-        print('data content:', _data['data'])
-
-    def parse_msg(self, _msg):
-        print('recived msg:', _msg)
-
-    # run command list on all groups 
-    def brodcast_cmd(self, cmd_list):
-        print('broadcast cmd:', cmd_list)
-
-#    def __contains__(self, grp_name):
-#        return self.has_grp(grp_name)
-#    def has_key(self, grp_name):
-#        return self.has_grp(grp_name)
-#    def has_grp(self, grp_name):
-#        return self._host_group_array.__contains__(grp_name)
-#
-    def __getitem__(self):
-        pass
-
-    def __delitem__(self):
-        # close all connections on that group
-        map(lambda con : con.close(), self._groups[key].connections())
-        # remove name and info
-        del self._groups[key]
-
-#    def __len__(self):
-#        pass
-
-    # key: grp_name
-    # value: grp_connections
-#    def __setitem__(self, grp, grp_con):
-#        self._host_group_array[grp] = grp_con
-#        pass
-
-#    def __str__(self):
-#        return list(map(lambda grp : grp.name, self.con_groups))
-#        pass
-
-#    def clear(self):
-#        map(lambda con_grp : con_grp.close(self.name), self.con_groups)
-#        self._host_group_array.clear()
-
-#    def items(self):
-#        pass
-#
-#    def keys(self):
-#        return self.groups()
-#    def groups(self):
-#        pass
-#
-#    def pop(self):
-#        pass
-#
-#    def popitem(self):
-#        pass
-#
-#    def setdefault(self):
-#        pass
-
-#    def update(self):
-#    def update_connection(self):
-#        pass 
-#    def values(self):
-#        return self.connections()
-#    def connections(self):
-#        pass
 
 if __name__ == "__main__":
     # a host group 
@@ -498,7 +438,7 @@ if __name__ == "__main__":
         },
         'grp_ip_array': {
             # hostname:ip
-            'host' + str(x) : '192.168.59.' + str(x) for x in range(200, 254)
+            'host' + str(x) : '192.168.59.' + str(x) for x in range(220, 254)
         }
     }
 
@@ -521,18 +461,26 @@ if __name__ == "__main__":
 #    print_group_output(out0)
 
     # a failed command
-    out1 = xsh.exec_command('ls failtest')
-    print_group_output(out1)
+#ok    out1 = xsh.exec_command('ls failtest')
+#    print_group_output(out1)
 
-#    # run a script
-#    xsh.exec_script('~/a.sh')
-#
+#ok    out01 = xsh.run('lsblk')
+#    print_group_output(out01)
+
+    # run a script
+#ok    out2 = xsh.exec_script('~/a.sh')
+#    print(out2)
+#    print_group_output(out2)
+
     # distribute a file
-    out2 = xsh.put('~/a.sh', '~/aabb')
-    print_group_output(out2)
-#
-#    # distribute a dir
-#    xsh.put('~/abc', '~/abc')
+#ok    out3 = xsh.put('~/a.sh', '~/aabb')
+#    print_group_output(out3)
+
+    # distribute a dir
+    out4 = xsh.put('~/aabc', '~/abc')
+    print(out4)
+    print(out4['host252'])
+    print_group_output(out4)
 #
 #    # collect one file from group to a dir 
 #    xsh.get('/etc/redhat-release', '~/release')
@@ -580,25 +528,25 @@ if __name__ == "__main__":
 #    xsh.stop()
 
 
-    # recive info from socket
-    # there will be a hash str send to terminal alone with the cmd, all commands will be hashed with it 
-    s = {
-        'server_id'     :b'test_user_id',
-        'server_ip'     :'192.168.59.102',
-        'server_port'   :9999,
-        'msg_trans_unit':512,
-        'connection_max':32,
-        'socket_timeout':5,
-        'msg_timeout'   :15,
-    }
-
-
-    #T = cluster_ssh_terminal(t)
-    #T.add_grp(g)
-
-    #out1 = T['grp0'].run('lsblk')
-    #out2 = T['grp0']['host1'].run('lsblk')
-
-    #print(out1)
-    #print(out2)
-
+#    # recive info from socket
+#    # there will be a hash str send to terminal alone with the cmd, all commands will be hashed with it 
+#    s = {
+#        'server_id'     :b'test_user_id',
+#        'server_ip'     :'192.168.59.102',
+#        'server_port'   :9999,
+#        'msg_trans_unit':512,
+#        'connection_max':32,
+#        'socket_timeout':5,
+#        'msg_timeout'   :15,
+#    }
+#
+#
+#    #T = cluster_ssh_terminal(t)
+#    #T.add_grp(g)
+#
+#    #out1 = T['grp0'].run('lsblk')
+#    #out2 = T['grp0']['host1'].run('lsblk')
+#
+#    #print(out1)
+#    #print(out2)
+#
