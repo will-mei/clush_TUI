@@ -134,7 +134,7 @@ class SSHConnection(object):
         if localpath[-1] == '/':
             _localpath = _localpath + '/'
 
-        print("local", localpath, "abspath:", _localpath)
+        #print("local", localpath, "abspath:", _localpath)
         return _localpath
 
     def remotepath_expansion(self, remotepath):
@@ -162,7 +162,7 @@ class SSHConnection(object):
         if remotepath[-1] == '/':
             _remotepath = (_remotepath + '/').replace('//', '/')
 
-        print("remote", remotepath, "abspath:", _remotepath)
+        #print("remote", remotepath, "abspath:", _remotepath)
         return _remotepath
 
     def remote_target_type(self, remotepath):
@@ -209,7 +209,7 @@ class SSHConnection(object):
     def reset_transfer_output(self):
         self.transfer_output = copy.deepcopy(self._output_dict)
 
-    def generate_partial_output_of_file_transfer(self):
+    def append_partial_output_of_file_transfer(self):
         self.transfer_output['pid'].append(os.getpid())
         #self.transfer_output['stdin'].append('sftp: ' +remote_source +' to ' +local_dest) 
         self.transfer_output['stdout'].append('')
@@ -286,7 +286,7 @@ class SSHConnection(object):
         # get the file
         self._sftp.get(remote_source, local_dest)
 
-        self.generate_partial_output_of_file_transfer()
+        self.append_partial_output_of_file_transfer()
         self.transfer_output['stdin'].append('sftp get: ' +remote_source +' to ' +local_dest) 
         self.transfer_output['status'].append(0)
 
@@ -306,14 +306,14 @@ class SSHConnection(object):
             # empty folder 
             os.makedirs(local_dest)
 
-        self.generate_partial_output_of_file_transfer()
+        self.append_partial_output_of_file_transfer()
         self.transfer_output['stdin'].append('sftp get: ' +remote_source +' to ' +local_dest) 
         self.transfer_output['status'].append(0)
 
     #上传 - 递归同步
     def put(self, local_source, remote_dest, reset_output=True):
-        print('\n')
-        print('put:', local_source,' to: ', remote_dest)
+        #print('\n')
+        #print('put:', local_source,' to: ', remote_dest)
 
         if reset_output:
             self.reset_transfer_output()
@@ -335,7 +335,7 @@ class SSHConnection(object):
             self.mkdir_p(_dest_dir)
         _dest = self.remotepath_expansion(remote_dest)
 #        _dest   = (self.remotepath_expansion(_dest_dir) +'/' +os.path.basename(remote_dest)).replace('//', '/')
-        print(self._host, 'put:', _source, 'to:', _dest)
+        #print(self._host, 'put:', _source, 'to:', _dest)
 
         # source type
         # file
@@ -375,13 +375,14 @@ class SSHConnection(object):
             pass
 
         # output 
-        return self.transfer_output
+        if reset_output:
+            return self.transfer_output
 
-    def put_file(self, local_source, remote_dest):
+    def put_file(self, local_source, remote_dest, reset_output=True):
         # file a/x b/x
         # check dest file dir
         _dest_dir = os.path.dirname(remote_dest)
-        print('file:', local_source, remote_dest)
+        #print('file:', local_source, remote_dest)
         try:
             self._sftp.listdir(_dest_dir)
         except FileNotFoundError:
@@ -389,22 +390,22 @@ class SSHConnection(object):
 
         self._sftp.put(local_source, remote_dest, confirm=True)
 
-        self.generate_partial_output_of_file_transfer()
+        self.append_partial_output_of_file_transfer()
         self.transfer_output['stdin'].append('sftp put: ' +local_source +' to ' +remote_dest) 
         self.transfer_output['status'].append(0)
-        print(self.transfer_output)
+        #print(self.transfer_output)
 
     def put_dir(self, local_source, remote_dest):
-        print('dir:', local_source, remote_dest)
+        #print('dir:', local_source, remote_dest)
         self.mkdir_p(remote_dest)
 
         if os.path.exists(local_source):
             if os.path.isdir(local_source):
                 content_list = self.walk_local_dir_content(local_source)
                 if content_list:
-                    print(content_list)
-                    for x in content_list:
-                        print(x, remote_dest + x[len(local_source):])
+                    #print(content_list)
+                    #for x in content_list:
+                    #    print(x, remote_dest + x[len(local_source):])
                     list(map(
                         lambda sub_target : self.put(sub_target , remote_dest + sub_target[len(local_source):], reset_output=False),
                         content_list
@@ -414,9 +415,10 @@ class SSHConnection(object):
         else:
             raise FileNotFoundError("%s not found." % local_source)
 
+        self.append_partial_output_of_file_transfer()
         self.transfer_output['stdin'].append('sftp put: ' +local_source +' to ' +remote_dest) 
         self.transfer_output['status'].append(0)
-        print(self.transfer_output)
+        #print(self.transfer_output)
 
     # 创建远程目录
     def mkdir_p(self, _dir):
@@ -589,14 +591,16 @@ if __name__ == "__main__":
     #ok    con.put('~/repository/../a.sh', 'aa')
 
         # put dir 
-    #ok    con.put('~/repository/Cluster_jobs_TUI/log', '~/log')
+    #ok    out02 = con.put('~/aabc', '~/abc')
+    #    print_host_output(out02)
 
         # get file 
     #ok    out01 = con.get('~/aa', '~/abc')
     #    print_host_output(out01)
 
         # get dir 
-    #ok    con.get('~/log', '~/logsub/')
+        out03 = con.get('~/abc', '~/abc')
+        print_host_output(out03)
 
         # cmd list squnce 
     #ok    c = ['lsblk', 'blkid', 'ps aux|grep grep']
@@ -619,8 +623,8 @@ if __name__ == "__main__":
     #    print_host_output(out3)
 
         # run a script 
-        sout = con.exec_script('~/a.sh')
-        print_host_output(sout)
+    #ok    sout = con.exec_script('~/a.sh')
+    #    print_host_output(sout)
 
     # try reconnect 
 #ok    con.reconnect()

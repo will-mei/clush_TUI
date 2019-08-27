@@ -112,49 +112,55 @@ def get_group_output_report(output):
         # not None
         if output[host_index]:
             _out = output[host_index]
+            #print(_out)
 
-            # check sum dict
-            _sum = copy.deepcopy(_cmd_report_dict)
+            # check sum dict of command/transfer 
+            # this will be changed later
+            #_sum = copy.deepcopy(_cmd_report_dict) # oops !!
             while len(_summary) < len(_out['stdin']):
+                _sum = copy.deepcopy(_cmd_report_dict) # right
                 _summary.append(_sum)
 
-            # add cmd info to sum seq
-            for i in range(len(_out['stdin'])):
+            # add each cmd info to its sum seq
+            for report_index in range(len(_out['stdin'])):
+                cmd_index = report_index
+
                 # command text
-                _summary[i]['command'] = _out['stdin'][i]
-                # count sucess and error 
+                _summary[report_index]['command'] = _out['stdin'][cmd_index]
+                #for i in _summary:
+                #    print(i)
+                #print(_summary[report_index]['command'])
+
+                # count sucess and error for this command
                 _item = copy.deepcopy(_output_dict)
 
-                if _out['status'][i] == 0:
-                    _summary[i]['success'] +=1
-                    # count success output content
-                    if not _out['stdout']:
-                        continue
-                    _content = _out['stdout'][i]
+                if _out['status'][cmd_index] == 0:
+                    _summary[report_index]['success'] +=1
+
+                    # count number for different success output 
+                    _content = _out['stdout'][cmd_index]
                     _md5 = hashlib.md5(_content.encode('utf-8')).hexdigest()
-                    if _md5 in _summary[i]['success output sum'].keys():
-                        _summary[i]['success output sum'][_md5]['number'] +=1
-                        _summary[i]['success output sum'][_md5]['hosts'].append(_out['host'])
+                    if _md5 in _summary[report_index]['success output sum'].keys():
+                        _summary[report_index]['success output sum'][_md5]['number'] +=1
+                        _summary[report_index]['success output sum'][_md5]['hosts'].append(_out['host'])
                     else:
-                        _summary[i]['success output sum'][_md5] = _item
-                        _summary[i]['success output sum'][_md5]['content'] = _content
-                        _summary[i]['success output sum'][_md5]['number'] +=1
-                        _summary[i]['success output sum'][_md5]['hosts'].append(_out['host'])
+                        _summary[report_index]['success output sum'][_md5] = _item
+                        _summary[report_index]['success output sum'][_md5]['content'] = _content
+                        _summary[report_index]['success output sum'][_md5]['number'] +=1
+                        _summary[report_index]['success output sum'][_md5]['hosts'].append(_out['host'])
                 else:
-                    _summary[i]['error'] +=1
-                    # count success output content
-                    if not _out['stderr']:
-                        continue
-                    _content = _out['stderr'][i]
+                    _summary[_output_report]['error'] +=1
+                    # count different failed output content
+                    _content = _out['stderr'][cmd_index]
                     _md5 = hashlib.md5(_content.encode('utf-8')).hexdigest()
-                    if _md5 in _summary[i]['error output sum'].keys():
-                        _summary[i]['error output sum'][_md5]['number'] +=1
-                        _summary[i]['error output sum'][_md5]['hosts'].append(_out['host'])
+                    if _md5 in _summary[report_index]['error output sum'].keys():
+                        _summary[report_index]['error output sum'][_md5]['number'] +=1
+                        _summary[report_index]['error output sum'][_md5]['hosts'].append(_out['host'])
                     else:
-                        _summary[i]['error output sum'][_md5] = _item
-                        _summary[i]['error output sum'][_md5]['content'] = _content
-                        _summary[i]['error output sum'][_md5]['number'] +=1
-                        _summary[i]['error output sum'][_md5]['hosts'].append(_out['host'])
+                        _summary[report_index]['error output sum'][_md5] = _item
+                        _summary[report_index]['error output sum'][_md5]['content'] = _content
+                        _summary[report_index]['error output sum'][_md5]['number'] +=1
+                        _summary[report_index]['error output sum'][_md5]['hosts'].append(_out['host'])
 
         else:
             #_unaccessable +=1
@@ -164,6 +170,8 @@ def get_group_output_report(output):
     _output_report['unaccessable'] = _offline_hosts_list
     _output_report['output summary'] = _summary
 
+    #for i in _summary:
+    #    print(i)
     return _output_report
 
 def print_group_output_report(_output_report):
@@ -478,8 +486,8 @@ if __name__ == "__main__":
 
     # distribute a dir
     out4 = xsh.put('~/aabc', '~/abc')
-    print(out4)
-    print(out4['host252'])
+    #print(out4)
+    #print(out4['host252'])
     print_group_output(out4)
 #
 #    # collect one file from group to a dir 
