@@ -185,19 +185,33 @@ class SSHConnection(object):
         else:
             return 'file'
 
-    def walk_local_dir_content(self, dirname):
-        _result = []
-        for d in os.walk(dirname):
-            # dir
-            if d[0] != dirname:
-                _result.append(d[0])
-            # file
-            if d[2]:
-                for f in d[2]:
-                    _result.append(
-                        (d[0] + '/' + f).replace('//', '/')
-                    )
-        return _result
+    def walk_local_dir_content(self, dirname, output_type='list'):
+        if output_type == 'list':
+            _result = []
+            for d in os.walk(dirname):
+                # dir
+                if d[0] != dirname:
+                    _result.append(d[0])
+                # file
+                if d[2]:
+                    for f in d[2]:
+                        _result.append(
+                            (d[0] + '/' + f).replace('//', '/')
+                        )
+            return _result
+        elif output_type == 'dict':
+            _result = {'file':[], 'directory':[]}
+            for d in os.walk(dirname):
+                #print(d)
+                if d[0] != dirname:
+                    #print(d[0])
+                    _result['directory'].append(d[0])
+                if d[2]:
+                    for f in d[2]:
+                        _result['file'].append(
+                            (d[0] + '/' + f).replace('//', '/')
+                        )
+            return _result
 
     def reset_command_output(self):
         # clean output
@@ -219,8 +233,8 @@ class SSHConnection(object):
 
     #下载 - 递归同步
     def get(self, remote_source, local_dest, reset_output=True):
-        print('\n')
-        print('get:', remote_source,' to: ', local_dest)
+        #print('\n')
+        #print('get:', remote_source,' to: ', local_dest)
 
         if reset_output:
             self.reset_transfer_output()
@@ -237,13 +251,17 @@ class SSHConnection(object):
         if not os.path.exists(_dest_dir):
             os.makedirs(_dest_dir)
         _dest = self.localpath_expansion(local_dest)
-        _dest   = (self.localpath_expansion(_dest_dir) +'/' +os.path.basename(local_dest)).replace('//', '/')
-        print(self._host, 'put:', _source, 'to:', _dest)
+        print(self._host, 'get:', _source, 'to:', _dest)
 
         # source type 
         # file
         if self.remote_target_type(_source) == 'file':
-            if os.path.exists(_dest) and os.path.isdir(_dest):
+            # target type
+            # file
+            # dir
+            if local_dest[-1] == '/':
+                _dest = (_dest + '/' + os.path.basename(_source)).replace('//', '/')
+            elif os.path.exists(_dest) and os.path.isdir(_dest):
                 _dest = (_dest + '/' + os.path.basename(_source)).replace('//', '/')
             self.get_file(_source, _dest)
         # dir
@@ -296,8 +314,8 @@ class SSHConnection(object):
         content_list = list(filter(lambda x : len(x)>0,  self._sftp.listdir(remote_source) ))
         if len(content_list)>0:
             # get each file and subdir content 
-            remote_source = (remote_source + '/').replace('//', '/')
-            local_dest = (local_dest + '/').replace('//', '/')
+            #remote_source = (remote_source + '/').replace('//', '/')
+            #local_dest = (local_dest + '/').replace('//', '/')
             list(map(
                 lambda x : self.get(remote_source + x, local_dest + x, reset_output=False),
                 content_list
@@ -324,7 +342,7 @@ class SSHConnection(object):
         # source existence and abspath converting
         _source = self.localpath_expansion(local_source)
         if not os.path.exists(_source):
-            raise FileExistsError(_source)
+            raise FileNotFoundError(_source)
 
         # check the existence of dest file directory
         _dest_dir = os.path.dirname(remote_dest)
@@ -334,12 +352,12 @@ class SSHConnection(object):
         except FileNotFoundError:
             self.mkdir_p(_dest_dir)
         _dest = self.remotepath_expansion(remote_dest)
-#        _dest   = (self.remotepath_expansion(_dest_dir) +'/' +os.path.basename(remote_dest)).replace('//', '/')
         #print(self._host, 'put:', _source, 'to:', _dest)
 
         # source type
         # file
         if os.path.isfile(_source):
+            # target type
             if remote_dest[-1] == '/':
                 _dest = (_dest + '/' + os.path.basename(_source)).replace('//', '/')
             else:
@@ -401,15 +419,27 @@ class SSHConnection(object):
 
         if os.path.exists(local_source):
             if os.path.isdir(local_source):
-                content_list = self.walk_local_dir_content(local_source)
-                if content_list:
-                    #print(content_list)
-                    #for x in content_list:
-                    #    print(x, remote_dest + x[len(local_source):])
-                    list(map(
-                        lambda sub_target : self.put(sub_target , remote_dest + sub_target[len(local_source):], reset_output=False),
-                        content_list
-                    ))
+               # content_list = self.walk_local_dir_content(local_source)
+               # if content_list:
+               #     #print(content_list)
+               #     #for x in content_list:
+               #     #    print(x, remote_dest + x[len(local_source):])
+               #     list(map(
+               #         lambda sub_target : self.put(sub_target , remote_dest + sub_target[len(local_source):], reset_output=False),
+               #         content_list
+               #     ))
+               content_dict = self.walk_local_dir_content(local_source, output_type='dict')
+               for sd in content_dict['directory']:
+                   dd = remote_dest + sd[len(local_source):]
+                   self.mkdir_p(dd)
+
+                   self.append_partial_output_of_file_transfer()
+                   self.transfer_output['stdin'].append('sftp put: ' +sd +' to ' +dd) 
+                   self.transfer_output['status'].append(0)
+
+               for sf in content_dict['file']:
+                   df = remote_dest + sf[len(local_source):]
+                   self.put_file(sf, df)
             else:
                 raise TypeError("%s is not a directory!" % local_source)
         else:
@@ -427,6 +457,16 @@ class SSHConnection(object):
             return
         else:
             self.exec_command('mkdir -p %s' % _dir)
+
+    #def mkdir(self, path, mode=511, ignore_existing=False):
+    #    ''' Augments mkdir by adding an option to not fail if the folder exists  '''
+    #    try:
+    #        super(MySFTPClient, self).mkdir(path, mode)
+    #    except IOError:
+    #        if ignore_existing:
+    #            pass
+    #        else:
+    #            raise
 
     #执行命令
     def run(self, command):
@@ -593,14 +633,16 @@ if __name__ == "__main__":
         # put dir 
     #ok    out02 = con.put('~/aabc', '~/abc')
     #    print_host_output(out02)
+        #for i in out02['stdin']:
+        #    print(i)
 
         # get file 
     #ok    out01 = con.get('~/aa', '~/abc')
     #    print_host_output(out01)
 
         # get dir 
-        out03 = con.get('~/abc', '~/abc')
-        print_host_output(out03)
+    #ok    out03 = con.get('~/abc', '~/abc')
+    #    print_host_output(out03)
 
         # cmd list squnce 
     #ok    c = ['lsblk', 'blkid', 'ps aux|grep grep']
@@ -615,8 +657,8 @@ if __name__ == "__main__":
     #    print_host_output(out1)
 
         # single cmd 
-    #    out2 = con.exec_command('echo $HOSTNAME')
-    #    print_host_output(out2)
+        out2 = con.exec_command('echo $HOSTNAME')
+        print_host_output(out2)
 
         # cmd with error
     #ok    out3 = con.exec_command('ls notexistfile')
