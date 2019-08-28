@@ -153,6 +153,7 @@ def get_group_output_report(output):
                     # count different failed output content
                     _content = _out['stderr'][cmd_index]
                     _md5 = hashlib.md5(_content.encode('utf-8')).hexdigest()
+                    # again
                     if _md5 in _summary[report_index]['error output sum'].keys():
                         _summary[report_index]['error output sum'][_md5]['number'] +=1
                         _summary[report_index]['error output sum'][_md5]['hosts'].append(_out['host'])
@@ -228,7 +229,7 @@ class ConnectionGroup:
         # get ssh info combined together
         # (fqdn, ip)
         _host_info              = (hostname, self.ip_array[hostname])
-        _host_ssh_info          = self.ssh_info
+        _host_ssh_info          = copy.deepcopy(self.ssh_info) # oops
         _host_ssh_info['host']  = _host_info
 
         #print(hostname, 'connection ', mode)
@@ -388,6 +389,28 @@ class ConnectionGroup:
             )
         )
 
+    def get_health_status(self):
+        _result = {}
+        _result['accessable hosts'] = list(
+            filter(
+                lambda x: self._connections[x] != None,
+                self._connections
+            )
+        )
+        _result['unaccessable hosts'] = list(
+            filter(
+                lambda x: self._connections[x] == None,
+                self._connections
+            )
+        )
+        _result['accessable'] = len(_result['accessable hosts'])
+        _result['unaccessable'] = len(_result['unaccessable hosts'])
+        return _result
+
+    def get_history(self, history_length=0):
+        pass
+        #
+
     # drive out a host, info removed , connection closed 
     def remove_host(self, hostname):
         if self._connections[hostname]:
@@ -463,10 +486,20 @@ if __name__ == "__main__":
     #print(xsh._connections)
 
     # run a command
-#ok    out0 = xsh.exec_command('lsblk')
     # summary for each single host
     # summary for each single cmd
+#ok    out0 = xsh.exec_command('lsblk')
 #    print_group_output(out0)
+
+    # exec command list
+#ok    cl = ['ls /etc/ssh/', 'echo $HOME']
+#    out00 = xsh.exec_command(cl)
+#    # by host
+#    print(out00['host252'])
+#    rpt = get_group_output_report(out00)
+#    # by cmd index
+#    print(cl[1])
+#    print(rpt['output summary'][1])
 
     # a failed command
 #ok    out1 = xsh.exec_command('ls failtest')
@@ -485,54 +518,68 @@ if __name__ == "__main__":
 #    print_group_output(out3)
 
     # distribute a dir
-    out4 = xsh.put('~/aabc', '~/abc')
+#ok    out4 = xsh.put('~/aabc', '~/abc')
     #print(out4)
     #print(out4['host252'])
-    print_group_output(out4)
-#
-#    # collect one file from group to a dir 
-#    xsh.get('/etc/redhat-release', '~/release')
-#
-#    # collect dir from group
-#    xsh.get('/etc/ssh/', '~/ssh')
-#
-#    # configure fault tolerance 20%
+#    print_group_output(out4)
+
+    # collect dir from group
+#ok    out5 = xsh.get('~/abc', '~/abc')
+#    print_group_output(out5)
+
+    # collect one file from group to a dir 
+#ok    out6 = xsh.get('/etc/os-release', '~/osinfo')
+#    print_group_output(out6)
+
+    # get hosts list
+#ok    h = xsh.hosts()
+#    print(h)
+
+    # run cmd on a certain host
+#ok    if xsh['host250']:
+#        out7 = xsh['host250'].exec_command('echo $HOSTNAME')
+#        print(out7)
+#    if xsh['host252']:
+#        out7 = xsh['host252'].exec_command('echo $HOSTNAME')
+#        print(out7)
+
+    # get connections list 
+#ok    c = xsh.connections()
+#    print(c)
+
+    # get ssh info
+#ok    print(xsh.ssh_info)
+#    print(xsh.ip_array)
+
+    # get connections group health status
+#ok    if xsh.is_alive():
+#        s = xsh.get_health_status()
+#        #print(s['alive'])
+#        print(s)
+
+    # configure fault tolerance 20%
 #    xsh.set_valid_ratio(20.0)
-#
-#    # get fault tolerance info
+
+    # get fault tolerance info
 #    xsh.get_valid_ratio()
-#
-#    # get cmd history
-#    xsh.get_history()
-#
-#    # get a task to be executed over again
-#    xsh.redo_task(xsh.get_history()[-1]) 
-#
-#    # clean up history
+
+    # get cmd history
+    hs = xsh.get_history()
+    print(hs)
+
+    # clean up history
 #    xsh.clean_up_history()
-#
-#    # run cmd on a certain host
-#    xsh['host1'].exec_command('echo $HOSTNAME')
-#
-#    # get hosts list
-#    xsh.hosts()
-#
-#    # get connections list 
-#    xsh.connections()
-#
-#    # get ssh info
-#    xsh.ssh_info()
-#
-#    # get connections group health status
-#    xsh.health_info()
-#
+
+    # get a task to be executed over again
+#    xsh.redo_task(xsh.get_history()[-1]) 
+
     # close connections 
     xsh.close()
-#
-#    # reconnect
+
+    # reconnect
 #    xsh.reconnect()
-#
-#    # stop action
+
+    # stop action
 #    xsh.stop()
 
 
