@@ -12,12 +12,15 @@ import hashlib
 import logging 
 logging.basicConfig(
     #filename= '/var/log/messages',
-    filename= '../log/client_socket.log',
-    #level   = logging.INFO,
     level   = logging.DEBUG,
     format  = '%(asctime)s %(name)s %(process)d - %(thread)d:%(threadName)s - %(levelname)s - %(pathname)s %(funcName)s line: %(lineno)d - %(message)s',
     datefmt = '%Y/%m/%d %I:%M:%S %p'
 )
+
+fh = logging.FileHandler('../log/client_socket.log')
+logger1 = logging.getLogger('lib_api_client')
+logger1.setLevel(logging.DEBUG)
+logger1.addHandler(fh)
 
 # type target action data timestamp 
 '''
@@ -98,7 +101,7 @@ class api_client():
             'bin_id':   _bin_id, #bytes 
             'bin_data': _bin_data, #bytes 
         }
-        logging.debug(_join(
+        logger1.debug(_join(
             'data info:',
             '\nsum:',       _sum,
             '\nbin_id:',    _bin_id,
@@ -139,7 +142,7 @@ class api_client():
                     _status = 'failed'
                     # resend while transport failed
                     # pass 
-                logging.warn(_join(
+                logger1.warn(_join(
                     'slice info:',
                     '\nslice seq:', _seq, len(_seq),
                     '\nslice max:', _max, len(_max),
@@ -159,7 +162,7 @@ class api_client():
                 _status = 'success'
             else:
                 _status = 'failed'
-            logging.warn(_join(
+            logger1.warn(_join(
                 'slice info:',
                 '\nslice seq:', _seq, len(_seq),
                 '\nslice max:', _max, len(_max),
@@ -186,7 +189,7 @@ class api_client():
             # close socket
             _socket.send(b'exit')
             _socket.close()
-            logging.debug('connection closed')
+            logger1.debug('connection closed')
         return reply 
 
     # format and send
@@ -207,11 +210,11 @@ class api_client():
 
         reply       = self._send_bin_data(data_pkg)
         if reply == _marked_pkg['sum']:
-            logging.debug(_join(
+            logger1.debug(_join(
                 _data_pkg, 'send success'
             ))
         else:
-            logging.debug(_join('reply:', reply))
+            logger1.debug(_join('reply:', reply))
 
     def send_msg(self, _msg_str):
         self.send_data(_msg_str, form='msg')

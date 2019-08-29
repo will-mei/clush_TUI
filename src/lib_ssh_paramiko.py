@@ -15,8 +15,19 @@ import  warnings
 
 warnings.filterwarnings('ignore')
 
-#import logging
-# temporarily no log func , nothing will be loged to logfile or db
+import logging
+logging.basicConfig(
+    #filename= '/var/log/messages',
+    #level   = logging.DEBUG,
+    format  = '%(asctime)s %(name)s %(process)d - %(thread)d:%(threadName)s - %(levelname)s - %(pathname)s %(funcName)s line: %(lineno)d - %(message)s',
+    datefmt = '%Y/%m/%d %I:%M:%S %p'
+)
+
+fh2 = logging.FileHandler('../log/ssh_paramiko.log')
+logger2 = logging.getLogger('lib_ssh_paramiko')
+logger2.setLevel(logging.DEBUG)
+logger2.addHandler(fh2)
+
 
 #import asyncio 
 
@@ -251,7 +262,8 @@ class SSHConnection(object):
         if not os.path.exists(_dest_dir):
             os.makedirs(_dest_dir)
         _dest = self.localpath_expansion(local_dest)
-        print(self._host, 'get:', _source, 'to:', _dest)
+        #print(self._host, 'get:', _source, 'to:', _dest)
+        logger2.debug(self._host +' get:'+ _source+ ' to: '+ _dest)
 
         # source type 
         # file
@@ -353,6 +365,7 @@ class SSHConnection(object):
             self.mkdir_p(_dest_dir)
         _dest = self.remotepath_expansion(remote_dest)
         #print(self._host, 'put:', _source, 'to:', _dest)
+        logger2.debug(self._host+ ' put:'+ _source+ ' to: '+ _dest)
 
         # source type
         # file
@@ -475,6 +488,7 @@ class SSHConnection(object):
     # input str / list of str 
     # output tuple of hostname, stdout  and err  
     def exec_command(self, command):
+        logger2.debug(self._host + ' exec_command:' +str(command))
         ## clean output
         self.reset_command_output()
         # get connection 
@@ -534,7 +548,8 @@ class SSHConnection(object):
         self.command_output['date'].append(datetime.datetime.now())
 
     def exec_script(self, script_file):
-        print('exec script:', script_file)
+        #print('exec script:', script_file)
+        logger2.debug(self._host +' exec_script:'+ script_file)
         self.reset_script_output()
         if isinstance(script_file, str):
             self.single_copy_run(script_file)
@@ -586,6 +601,7 @@ class SSHConnection(object):
         if self._client:
             self._client.close()
         #print('closed')
+        #logger2.debug(self._host + ' connection close')
 
     def __str__(self):
         if not self._username:

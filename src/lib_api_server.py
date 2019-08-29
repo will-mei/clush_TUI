@@ -8,14 +8,18 @@ import json
 import hashlib
 
 import logging 
+
 logging.basicConfig(
     #filename= '/var/log/messages',
-    filename= '../log/server_socket.log',
-    #level   = logging.INFO,
-    level   = logging.DEBUG,
+    #level   = logging.DEBUG,
     format  = '%(asctime)s %(name)s %(process)d - %(thread)d:%(threadName)s - %(levelname)s - %(pathname)s %(funcName)s line: %(lineno)d - %(message)s',
     datefmt = '%Y/%m/%d %I:%M:%S %p'
 )
+
+fh0 = logging.FileHandler('../log/server_socket.log')
+logger0 = logging.getLogger('lib_api_server')
+logger0.setLevel(logging.DEBUG)
+logger0.addHandler(fh0)
 
 import pickle
 
@@ -57,7 +61,7 @@ class api_server():
         self._socket.bind( (self._server_ip, self._server_port) )
         self._socket.listen(self._con_max)
         self.status = 'on'
-        logging.debug(_join(
+        logger0.debug(_join(
                 self._server_ip, self._server_port, "waiting for connection .."
             ))
         self.create()
@@ -76,15 +80,15 @@ class api_server():
     #    pass 
 
     def _check_msg(self, _stream_bytes):
-        logging.debug(_join(b'try to load data form pkg:',  _stream_bytes))
+        logger0.debug(_join(b'try to load data form pkg:',  _stream_bytes))
         try:
             _data   = pickle.loads(_stream_bytes)
             _stat   = True
-            logging.debug('data loading success')
+            logger0.debug('data loading success')
         except:
             _data   = None
             _stat   = False 
-            logging.warn('data pkg format abnormal, load failed')
+            logger0.warn('data pkg format abnormal, load failed')
         return (_data, _stat)
 
     def parse_client_data(self, _data):
@@ -97,7 +101,7 @@ class api_server():
             _time_stamp = _bin_id.split(b'_')[0]
             _form_tag   = _bin_id.split(b'_')[1]
             _sent_time  = time.mktime(time.strptime(_time_stamp.decode('utf-8'), "%Y/%m/%d-%H:%M:%S")) 
-            logging.debug(_join(
+            logger0.debug(_join(
                 'data info:',
                 '\ndata sum:',      _sum,
                 '\ndata id:',       _bin_id,
@@ -106,7 +110,7 @@ class api_server():
                 '\ndata content:',  _bin_data,
             ))
         except:
-            logging.warn(_join(b'fail to parse msg content:', _data))
+            logger0.warn(_join(b'fail to parse msg content:', _data))
             reply   = b'info status: wrong format, droped'
             return reply
 
@@ -114,7 +118,7 @@ class api_server():
         _time_now = time.time()
         if _time_now - _sent_time > self._mtimeout:
             reply   = ('task %s recived and abandent, cause the timestamp is out of date' % _tid).encode('utf-8')
-            logging.debug(_join('reply:', reply))
+            logger0.debug(_join('reply:', reply))
             return reply
 
         # task_id existence status check (sqlite)
@@ -124,7 +128,7 @@ class api_server():
         if _sum_confirm == _sum:
             # reply 
             reply   = ('data %s  recived and confirmed' % _bin_id.decode('utf-8')).encode('utf-8')
-            logging.info(_join('reply:', reply))
+            logger0.info(_join('reply:', reply))
 
             # add tag into data and exec task 
             _data['id']         = _data['bin_id'].decode('utf-8')
@@ -137,7 +141,7 @@ class api_server():
             #self.perform_task(_data)
         else:
             reply   = ('task %s hash failed, task invalid' % _bin_id.decode('utf-8')).encode('utf-8')
-            logging.warn(_join(
+            logger0.warn(_join(
                 'hash info:',
                 '\nprefix:',        self._prefix,
                 '\ndata id:',       _bin_id,
@@ -145,13 +149,13 @@ class api_server():
                 '\nsum confirm:',   _sum_confirm,
                 '\ndat content:',   _bin_data,
             ))
-            logging.debug(_join('reply:', reply))
+            logger0.debug(_join('reply:', reply))
 
         return reply
 
     def thread_tcplink(self, sock, addr):
         # welcome
-        logging.debug("Accept new connection from %s:%s..." % addr)
+        logger0.debug("Accept new connection from %s:%s..." % addr)
 
         #sock.send(b'Welcom!')
         _slice_dict = {}
@@ -167,17 +171,17 @@ class api_server():
 
             # confirmed stop 
             if _stream_bytes == b'f'* self.hex_max*2:
-                logging.debug(_join('confirm stop reciving slices:\n', 'seq_max:', _slice_max))
+                logger0.debug(_join('confirm stop reciving slices:\n', 'seq_max:', _slice_max))
                 # check every slice of data pkg 
                 i = 0 
                 _data_pkg = b''
                 # check and splicing sequnces, seq num base 16
                 while i <= int(_slice_max.lstrip(b'f'), 16):
-                    logging.debug('check slice num %s' % i)
+                    logger0.debug('check slice num %s' % i)
                     try:
                         _data_pkg += _slice_dict[i]
                     except:
-                        logging.debug('slice number %s is missing, Retransmission error!' % i)
+                        logger0.debug('slice number %s is missing, Retransmission error!' % i)
                         _data_pkg = None
                         break
                     i = i+1
@@ -187,7 +191,7 @@ class api_server():
                 _client_data_pkg  = _client_data_info[0]
                 _client_data_stat = _client_data_info[1]
                 if _client_data_stat:
-                    logging.debug(_join('the complete msg data:\n', _client_data_pkg))
+                    logger0.debug(_join('the complete msg data:\n', _client_data_pkg))
                     # reply transportation result info to client 
                     reply = self.parse_client_data(_client_data_pkg)
                     sock.send(reply)
@@ -206,7 +210,7 @@ class api_server():
 
                 # hash result 
                 _sum_confirm  = hashlib.sha256(_seq + _slice).hexdigest().encode('utf-8')
-                logging.debug(_join(
+                logger0.debug(_join(
                     'recived slice info:'
                     '\nslice seq num:', str(_seq),
                     '\nslice seq max:', str(_max),
@@ -219,9 +223,9 @@ class api_server():
                     _slice_max = _max
                     index = int(_seq.lstrip(b'f'), self.hex_max*2)
                     if not index in _slice_dict:
-                        logging.debug('store slice data num %s to buffer dict:\n' % index)
+                        logger0.debug('store slice data num %s to buffer dict:\n' % index)
                         _slice_dict[index] = _slice
-                        logging.debug(_join('buffer dict:\n', _slice_dict))
+                        logger0.debug(_join('buffer dict:\n', _slice_dict))
                     # confirm
                     sock.send(_sum)
                 else:
@@ -229,7 +233,7 @@ class api_server():
                     sock.send(b'01') 
         # end 
         sock.close()
-        logging.debug('Connection from %s:%s closed.' % addr)
+        logger0.debug('Connection from %s:%s closed.' % addr)
 
     def run_forever(self):
         while self.status == 'on':

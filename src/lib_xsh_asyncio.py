@@ -11,16 +11,15 @@ except:
 import logging
 logging.basicConfig(
     #filename= '/var/log/messages',
-    #filename= '../log/messages',
-    level   = logging.INFO,
+    #level   = logging.DEBUG,
     format  = '%(asctime)s %(name)s %(process)d - %(thread)d:%(threadName)s - %(levelname)s - %(pathname)s %(funcName)s line: %(lineno)d - %(message)s',
     datefmt = '%Y/%m/%d %I:%M:%S %p'
 )
-#rHandler = RotatingFileHandler("log.txt", maxBytes = 100*1024*1024, backupCount = 5)
-#rHandler.setLevel(logging.INFO)
-#formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-#rHandler.setFormatter(formatter)
-#logger.addHandler(rHandler)
+
+fh3 = logging.FileHandler('../log/xsh_asyncio.log')
+logger3 = logging.getLogger('lib_xsh_asyncio')
+logger3.setLevel(logging.DEBUG)
+logger3.addHandler(fh3)
 
 #from multiprocessing.dummy import Pool as ThreadPool
 #from multiprocessing import Pool 
@@ -44,28 +43,6 @@ except:
 #from peewee import *
 #import datetime
 #
-#cluster_db = SqliteDatabase('../db/cluster_database.db')
-#
-#class BaseModel(Model):
-#    class Meta:
-#        database = cluster_db
-
-#terminal.db
-#   groups 
-#   hosts 
-#   device 
-#   
-#task.db
-#   exec source 
-#   target
-#
-#outut_db
-#   task
-#   test
-#   cmd
-#
-##io_test_db
-
 
 # check ip format 
 def valid_ip(ip):
@@ -225,6 +202,8 @@ class ConnectionGroup:
         if len(self.ip_array):
             self._manage_connections(mode='update')
 
+        self._histtory = []
+
     def _get_host_connection(self, hostname):
         # get ssh info combined together
         # (fqdn, ip)
@@ -233,8 +212,8 @@ class ConnectionGroup:
         _host_ssh_info['host']  = _host_info
 
         #print(hostname, 'connection ', mode)
-        _msg = 'ssh connection group: ' +self.grp_name + 'get ssh client connection @' +hostname 
-        logging.debug(_msg)
+        _msg = 'ssh connection group: ' +self.grp_name + ' get client connection @ ' +hostname 
+        logger3.debug(_msg)
 
         # ignore the failed ones
         try:
@@ -258,6 +237,7 @@ class ConnectionGroup:
             pass
 
     def _manage_connections(self, mode):
+        logger3.debug(self.grp_name + ' change connections status:' + mode)
         _threads_list   = []
         list(map(
                 lambda hostname: _threads_list.append(
@@ -302,7 +282,9 @@ class ConnectionGroup:
     def get(self, remote_source, local_dest):
         return self.group_exec(remote_source, local_dest, task_type='get')
 
-    def group_exec(self, *args, task_type='command'):
+    def group_exec(self, *args, task_type='exec_command'):
+        #print(type(args), args)
+        logger3.debug(self.grp_name + ' running task ' + task_type +': ' + str(args))
         if task_type == 'exec_command':
             task_function = self._run_command_on_single_host
         elif task_type == 'exec_script':
@@ -311,6 +293,8 @@ class ConnectionGroup:
             task_function = self._put_to_single_host
         elif task_type == 'get':
             task_function = self._get_from_single_host
+
+        self._histtory.append([task_type, args])
 
         self._output = {}
         _threads = []
@@ -408,8 +392,10 @@ class ConnectionGroup:
         return _result
 
     def get_history(self, history_length=0):
-        pass
-        #
+        return self._histtory
+
+    def clean_up_history(self):
+        self._histtory = []
 
     # drive out a host, info removed , connection closed 
     def remove_host(self, hostname):
@@ -557,21 +543,15 @@ if __name__ == "__main__":
 #        #print(s['alive'])
 #        print(s)
 
-    # configure fault tolerance 20%
-#    xsh.set_valid_ratio(20.0)
-
-    # get fault tolerance info
-#    xsh.get_valid_ratio()
-
     # get cmd history
+    # clean up history
+    out8 = xsh.exec_command(['echo $HOSTNAME', 'lsblk'])
+    print_group_output(out8)
     hs = xsh.get_history()
     print(hs)
-
-    # clean up history
 #    xsh.clean_up_history()
-
-    # get a task to be executed over again
-#    xsh.redo_task(xsh.get_history()[-1]) 
+#    hs2 = xsh.get_history()
+#    print(hs2)
 
     # close connections 
     xsh.close()
@@ -579,29 +559,16 @@ if __name__ == "__main__":
     # reconnect
 #    xsh.reconnect()
 
+    # get a task to be executed over again
+#    xsh.redo_task(xsh.get_history()[-1]) 
+
     # stop action
 #    xsh.stop()
 
+    # get fault tolerance info
+#    xsh.get_valid_ratio()
 
-#    # recive info from socket
-#    # there will be a hash str send to terminal alone with the cmd, all commands will be hashed with it 
-#    s = {
-#        'server_id'     :b'test_user_id',
-#        'server_ip'     :'192.168.59.102',
-#        'server_port'   :9999,
-#        'msg_trans_unit':512,
-#        'connection_max':32,
-#        'socket_timeout':5,
-#        'msg_timeout'   :15,
-#    }
-#
-#
-#    #T = cluster_ssh_terminal(t)
-#    #T.add_grp(g)
-#
-#    #out1 = T['grp0'].run('lsblk')
-#    #out2 = T['grp0']['host1'].run('lsblk')
-#
-#    #print(out1)
-#    #print(out2)
-#
+    # configure fault tolerance 20%
+#    xsh.set_valid_ratio(20.0)
+
+
