@@ -1,0 +1,5 @@
+192.168.59.252 exec_command:['echo $HOSTNAME', 'lsblk']
+192.168.59.252 connection close
+192.168.59.252 exec_command:['echo $HOSTNAME', 'lsblk']
+192.168.59.252 connection close
+192.168.59.252 exec_command:echo $HOSTNAME

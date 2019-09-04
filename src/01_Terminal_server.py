@@ -1,8 +1,29 @@
 #!/usr/bin/env python
 # coding=utf-8
 
-import lib_terminal
+#cluster_db = SqliteDatabase('../db/cluster_database.db')
+#
+#class BaseModel(Model):
+#    class Meta:
+#        database = cluster_db
 
+#terminal.db
+#   groups 
+#   hosts 
+#   device 
+#   
+#task.db
+#   exec source 
+#   target
+#
+#outut_db
+#   task
+#   test
+#   cmd
+#
+##io_test_db
+
+import lib_terminal
 
 
 # communicate wiht other app 
@@ -90,6 +111,7 @@ class ClusterTerminal(api_server):
 if __name__ == "__main__":
 
     # one server 
+    #recive info from socket
     server_info = {
         'server_id'     :b'test_user_id',
         'server_ip'     :'192.168.59.102',
@@ -120,3 +142,12 @@ if __name__ == "__main__":
 
 test_server()
 
+#    there will be a hash str send to terminal alone with the cmd, all commands will be hashed with it 
+#    #T.add_grp(g)
+#
+#    #out1 = T['grp0'].run('lsblk')
+#    #out2 = T['grp0']['host1'].run('lsblk')
+#
+#    #print(out1)
+#    #print(out2)
+#

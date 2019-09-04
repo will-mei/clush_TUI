@@ -1,0 +1,74 @@
+grp0 change connections status:update
+ssh connection group: grp0 get client connection @ host220
+ssh connection group: grp0 get client connection @ host221
+ssh connection group: grp0 get client connection @ host222
+ssh connection group: grp0 get client connection @ host223
+ssh connection group: grp0 get client connection @ host224
+ssh connection group: grp0 get client connection @ host225
+ssh connection group: grp0 get client connection @ host226
+ssh connection group: grp0 get client connection @ host227
+ssh connection group: grp0 get client connection @ host228
+ssh connection group: grp0 get client connection @ host229
+ssh connection group: grp0 get client connection @ host230
+ssh connection group: grp0 get client connection @ host231
+ssh connection group: grp0 get client connection @ host232
+ssh connection group: grp0 get client connection @ host233
+ssh connection group: grp0 get client connection @ host234
+ssh connection group: grp0 get client connection @ host235
+ssh connection group: grp0 get client connection @ host236
+ssh connection group: grp0 get client connection @ host237
+ssh connection group: grp0 get client connection @ host238
+ssh connection group: grp0 get client connection @ host239
+ssh connection group: grp0 get client connection @ host240
+ssh connection group: grp0 get client connection @ host241
+ssh connection group: grp0 get client connection @ host242
+ssh connection group: grp0 get client connection @ host243
+ssh connection group: grp0 get client connection @ host244
+ssh connection group: grp0 get client connection @ host245
+ssh connection group: grp0 get client connection @ host246
+ssh connection group: grp0 get client connection @ host247
+ssh connection group: grp0 get client connection @ host248
+ssh connection group: grp0 get client connection @ host249
+ssh connection group: grp0 get client connection @ host250
+ssh connection group: grp0 get client connection @ host251
+ssh connection group: grp0 get client connection @ host252
+ssh connection group: grp0 get client connection @ host253
+grp0 running task exec_command: echo $HOSTNAME lsblk
+grp0 change connections status:close
+grp0 change connections status:update
+ssh connection group: grp0 get client connection @ host220
+ssh connection group: grp0 get client connection @ host221
+ssh connection group: grp0 get client connection @ host222
+ssh connection group: grp0 get client connection @ host223
+ssh connection group: grp0 get client connection @ host224
+ssh connection group: grp0 get client connection @ host225
+ssh connection group: grp0 get client connection @ host226
+ssh connection group: grp0 get client connection @ host227
+ssh connection group: grp0 get client connection @ host228
+ssh connection group: grp0 get client connection @ host229
+ssh connection group: grp0 get client connection @ host230
+ssh connection group: grp0 get client connection @ host231
+ssh connection group: grp0 get client connection @ host232
+ssh connection group: grp0 get client connection @ host233
+ssh connection group: grp0 get client connection @ host234
+ssh connection group: grp0 get client connection @ host235
+ssh connection group: grp0 get client connection @ host236
+ssh connection group: grp0 get client connection @ host237
+ssh connection group: grp0 get client connection @ host238
+ssh connection group: grp0 get client connection @ host239
+ssh connection group: grp0 get client connection @ host240
+ssh connection group: grp0 get client connection @ host241
+ssh connection group: grp0 get client connection @ host242
+ssh connection group: grp0 get client connection @ host243
+ssh connection group: grp0 get client connection @ host244
+ssh connection group: grp0 get client connection @ host245
+ssh connection group: grp0 get client connection @ host246
+ssh connection group: grp0 get client connection @ host247
+ssh connection group: grp0 get client connection @ host248
+ssh connection group: grp0 get client connection @ host249
+ssh connection group: grp0 get client connection @ host250
+ssh connection group: grp0 get client connection @ host251
+ssh connection group: grp0 get client connection @ host252
+ssh connection group: grp0 get client connection @ host253
+grp0 running task exec_command: (['echo $HOSTNAME', 'lsblk'],)
+grp0 change connections status:close
