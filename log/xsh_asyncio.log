@@ -72,3 +72,49 @@ ssh connection group: grp0 get client connection @ host252
 ssh connection group: grp0 get client connection @ host253
 grp0 running task exec_command: (['echo $HOSTNAME', 'lsblk'],)
 grp0 change connections status:close
+grp0 change connections status:update
+ssh connection group: grp0 get client connection @ host110
+ssh connection group: grp0 get client connection @ host111
+ssh connection group: grp0 get client connection @ host112
+ssh connection group: grp0 get client connection @ host113
+ssh connection group: grp0 get client connection @ host114
+ssh connection group: grp0 get client connection @ host115
+ssh connection group: grp0 get client connection @ host116
+ssh connection group: grp0 get client connection @ host117
+ssh connection group: grp0 get client connection @ host118
+ssh connection group: grp0 get client connection @ host119
+ssh connection group: grp0 get client connection @ host120
+ssh connection group: grp0 get client connection @ host121
+ssh connection group: grp0 get client connection @ host122
+ssh connection group: grp0 get client connection @ host123
+ssh connection group: grp0 get client connection @ host124
+ssh connection group: grp0 get client connection @ host125
+ssh connection group: grp0 get client connection @ host126
+ssh connection group: grp0 get client connection @ host127
+ssh connection group: grp0 get client connection @ host128
+ssh connection group: grp0 get client connection @ host129
+ssh connection group: grp0 get client connection @ host130
+ssh connection group: grp0 get client connection @ host131
+ssh connection group: grp0 get client connection @ host132
+ssh connection group: grp0 get client connection @ host133
+ssh connection group: grp0 get client connection @ host134
+ssh connection group: grp0 get client connection @ host135
+ssh connection group: grp0 get client connection @ host136
+ssh connection group: grp0 get client connection @ host137
+ssh connection group: grp0 get client connection @ host138
+ssh connection group: grp0 get client connection @ host139
+ssh connection group: grp0 get client connection @ host140
+ssh connection group: grp0 get client connection @ host141
+ssh connection group: grp0 get client connection @ host142
+ssh connection group: grp0 get client connection @ host143
+ssh connection group: grp0 get client connection @ host144
+ssh connection group: grp0 get client connection @ host145
+ssh connection group: grp0 get client connection @ host146
+ssh connection group: grp0 get client connection @ host147
+ssh connection group: grp0 get client connection @ host148
+ssh connection group: grp0 get client connection @ host149
+grp0 running task exec_command: (['echo $HOSTNAME', 'lsblk'],)
+grp0 change connections status:close
+grp0 change connections status:update
+grp0 running task exec_command: (['echo $HOSTNAME', 'lsblk'],)
+grp0 change connections status:close

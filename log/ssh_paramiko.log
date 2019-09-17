@@ -3,3 +3,10 @@
 192.168.59.252 exec_command:['echo $HOSTNAME', 'lsblk']
 192.168.59.252 connection close
 192.168.59.252 exec_command:echo $HOSTNAME
+192.168.59.110 exec_command:echo $HOSTNAME
+192.168.59.112 exec_command:['echo $HOSTNAME', 'lsblk']
+192.168.59.110 exec_command:['echo $HOSTNAME', 'lsblk']
+192.168.59.113 exec_command:['echo $HOSTNAME', 'lsblk']
+192.168.59.113 exec_command:['echo $HOSTNAME', 'lsblk']
+192.168.59.112 exec_command:['echo $HOSTNAME', 'lsblk']
+192.168.59.110 exec_command:['echo $HOSTNAME', 'lsblk']

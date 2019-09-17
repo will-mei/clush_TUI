@@ -623,7 +623,7 @@ class ssh_to:
 if __name__ == "__main__":
     # a host
     h = {
-         'host':        ('host1', '192.168.59.252'),
+         'host':        ('host1', '192.168.59.110'),
          'port':        None,
          'user':        None,
          'password':    None,

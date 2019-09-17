@@ -162,19 +162,19 @@ def print_group_output_report(_output_report):
     print('offline hosts:', len(_offline_hosts_list))
     print('unaccessable:',  _offline_hosts_list)
 
-    print('\nsubtask output summary:')
+    print('\nsubtask output summary:\n')
     for i in range(len(_summary)):
         _sum = _summary[i]
-        print('discription:',   _sum['command'])
-        print('success:',       _sum['success'])
-        print('error:',         _sum['error'])
+        print('task discription:',   _sum['command'])
+        print('task success account:',       _sum['success'])
+        print('task error account:',         _sum['error'])
         for m in _sum['success output sum']:
             _cmd_sum = _sum['success output sum'][m]
-            print(_cmd_sum['number'], 'host', _cmd_sum['hosts'], '\ntask successfully returned as:')
+            print(_cmd_sum['number'], 'host', _cmd_sum['hosts'], '\n get a success output as:')
             print(_cmd_sum['content'])
         for m in _sum['error output sum']:
             _cmd_sum = _sum['error output sum'][m]
-            print(_cmd_sum['number'], 'host', _cmd_sum['hosts'], '\ntask with error returned as:')
+            print(_cmd_sum['number'], 'host', _cmd_sum['hosts'], '\n get an error output as:')
             print(_cmd_sum['content'])
 
 def print_group_output(output):
@@ -212,8 +212,8 @@ class ConnectionGroup:
         _host_ssh_info['host']  = _host_info
 
         #print(hostname, 'connection ', mode)
-        _msg = 'ssh connection group: ' +self.grp_name + ' get client connection @ ' +hostname 
-        logger3.debug(_msg)
+        #_msg = 'ssh connection group: ' +self.grp_name + ' get client connection @ ' +hostname 
+        #logger3.debug(_msg)
 
         # ignore the failed ones
         try:
@@ -455,7 +455,7 @@ if __name__ == "__main__":
         },
         'grp_ip_array': {
             # hostname:ip
-            'host' + str(x) : '192.168.59.' + str(x) for x in range(220, 254)
+            'host' + str(x) : '192.168.59.' + str(x) for x in range(110, 150)
         }
     }
 
